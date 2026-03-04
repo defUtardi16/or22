@@ -1,0 +1,889 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>RadStrix Solver Hub</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600;700&family=DM+Sans:wght@300;400;500;600;700;800&display=swap');
+
+:root {
+--bg: #0a0a0a;
+--card: rgba(255,255,255,.04);
+--card-hover: rgba(255,255,255,.08);
+--card-border: rgba(255,255,255,.08);
+--card-border-hover: rgba(255,255,255,.18);
+--text: #e8e8e8;
+--text2: #888;
+--text3: #555;
+--accent: #fff;
+--glass: rgba(255,255,255,.03);
+--glass-border: rgba(255,255,255,.06);
+--radius: 12px;
+--radius-sm: 8px;
+}
+
+* { margin:0; padding:0; box-sizing:border-box; }
+html { scroll-behavior: smooth; }
+
+body {
+font-family: 'DM Sans', -apple-system, sans-serif;
+background: var(--bg);
+color: var(--text);
+min-height: 100vh;
+overflow-x: hidden;
+-webkit-font-smoothing: antialiased;
+}
+
+::-webkit-scrollbar { width: 4px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: rgba(255,255,255,.12); border-radius: 9px; }
+
+/* ═══════════════════════════════════
+   SPLASH SCREEN
+═══════════════════════════════════ */
+#splashScreen {
+position: fixed; inset: 0; z-index: 10000;
+display: flex; align-items: center; justify-content: center; flex-direction: column;
+background: #050505; overflow: hidden;
+transition: opacity .8s ease, visibility .8s ease;
+}
+#splashScreen.hidden { opacity: 0; visibility: hidden; pointer-events: none; }
+#splashCanvas { position: absolute; inset: 0; width: 100%; height: 100%; }
+
+.splash-content {
+position: relative; z-index: 2; text-align: center;
+display: flex; flex-direction: column; align-items: center; gap: 14px;
+}
+.splash-line {
+width: 40px; height: 1px; background: rgba(255,255,255,.15);
+opacity: 0; animation: sFU .5s .3s forwards;
+}
+.splash-title {
+font-family: 'Inter', sans-serif; font-weight: 900;
+font-size: clamp(1.4em, 4vw, 2.6em); color: #fff;
+letter-spacing: 4px; text-transform: uppercase;
+opacity: 0; animation: sFU 1s .4s forwards;
+}
+.splash-sub {
+font-family: 'Inter', sans-serif; font-weight: 400;
+font-size: .7em; color: rgba(255,255,255,.3);
+letter-spacing: 8px; text-transform: uppercase;
+opacity: 0; animation: sFU .8s .7s forwards;
+}
+.splash-bar {
+width: 120px; height: 2px; background: rgba(255,255,255,.08);
+border-radius: 2px; overflow: hidden; margin-top: 6px;
+opacity: 0; animation: sFU .6s .9s forwards;
+}
+.splash-bar-inner {
+width: 0%; height: 100%;
+background: linear-gradient(90deg, rgba(255,255,255,.8), rgba(255,255,255,.2));
+border-radius: 2px; animation: sBar 2s 1s forwards;
+}
+@keyframes sFU { from { opacity:0; transform:translateY(12px); } to { opacity:1; transform:translateY(0); } }
+@keyframes sBar { 0% { width:0%; } 100% { width:100%; } }
+
+/* ═══════════════════════════════════
+   LOCK SCREEN
+═══════════════════════════════════ */
+#lockScreen {
+position: fixed; inset: 0; z-index: 9999;
+display: none; align-items: center; justify-content: center;
+background: #080808; overflow: hidden;
+transition: opacity .5s ease;
+}
+#lockScreen.show { display: flex; }
+#lockScreen.hiding { opacity: 0; }
+#lockCanvas { position: absolute; inset: 0; width: 100%; height: 100%; }
+
+.lock-glass {
+position: relative; z-index: 2;
+background: rgba(255,255,255,.04); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
+border: 1px solid rgba(255,255,255,.08); border-radius: var(--radius);
+padding: 44px 40px; text-align: center; width: 420px; max-width: 90vw;
+box-shadow: 0 24px 80px rgba(0,0,0,.5), inset 0 1px 0 rgba(255,255,255,.05);
+}
+.lock-icon {
+width: 48px; height: 48px; margin: 0 auto 20px;
+border: 2px solid rgba(255,255,255,.15); border-radius: 50%;
+display: grid; place-items: center;
+}
+.lock-glass h1 {
+font-family: 'Inter', sans-serif; font-weight: 300;
+letter-spacing: 3px; color: #fff; margin-bottom: 6px; font-size: 1.1em;
+}
+.lock-glass p { color: #666; margin-bottom: 24px; font-size: .72em; letter-spacing: .5px; }
+.device-box {
+background: rgba(0,0,0,.4); padding: 10px 14px; margin-bottom: 20px;
+font-family: 'JetBrains Mono', monospace; letter-spacing: 2px;
+border-radius: 6px; color: #aaa; font-size: .8em; user-select: all;
+border: 1px solid rgba(255,255,255,.06);
+}
+.lock-input {
+width: 100%; padding: 13px 16px;
+background: rgba(255,255,255,.06); border: 1px solid rgba(255,255,255,.1);
+color: #fff; border-radius: 6px; outline: none; margin-bottom: 14px;
+text-align: center; letter-spacing: 2px;
+font-family: 'JetBrains Mono', monospace; font-size: .82em;
+transition: border-color .2s;
+}
+.lock-input:focus { border-color: rgba(255,255,255,.35); }
+.lock-input::placeholder { color: #444; }
+.lock-btn {
+width: 100%; padding: 13px;
+background: #fff; color: #0a0a0a; border: none; border-radius: 6px;
+font-family: 'Inter', sans-serif; font-weight: 700; font-size: .78em;
+cursor: pointer; letter-spacing: 1.5px; text-transform: uppercase;
+transition: all .2s;
+}
+.lock-btn:hover { background: #ddd; }
+.lock-err {
+color: #ef5350; font-size: .7em; margin-top: 10px;
+font-weight: 600; opacity: 0; transition: opacity .2s;
+}
+.lock-err.show { opacity: 1; }
+
+/* ═══════════════════════════════════
+   PLEXUS 3D BACKGROUND
+═══════════════════════════════════ */
+#plexusBg {
+position: fixed; top: 0; left: 0;
+width: 100%; height: 100%; z-index: 0; pointer-events: none;
+}
+
+/* ═══════════════════════════════════
+   MAIN LAYOUT
+═══════════════════════════════════ */
+#mainApp {
+display: none; position: relative; z-index: 1; min-height: 100vh;
+}
+#mainApp.show { display: block; }
+
+.watermark {
+position: fixed; bottom: 12px; right: 16px;
+font-size: .62em; font-weight: 700; color: rgba(255,255,255,.08);
+letter-spacing: 1px; z-index: 900; pointer-events: none; user-select: none;
+}
+
+/* NAV */
+.nav {
+position: sticky; top: 0; z-index: 100;
+background: rgba(10,10,10,.7); backdrop-filter: blur(30px) saturate(180%);
+-webkit-backdrop-filter: blur(30px) saturate(180%);
+border-bottom: 1px solid rgba(255,255,255,.05);
+padding: 0 28px; display: flex; align-items: center; justify-content: space-between;
+height: 52px;
+}
+.nav-logo {
+font-family: 'Inter', sans-serif; font-weight: 800;
+font-size: .82em; color: #fff; letter-spacing: 1px;
+display: flex; align-items: center; gap: 10px;
+}
+.nav-logo svg { opacity: .7; }
+.nav-right { display: flex; align-items: center; gap: 8px; }
+.nav-btn {
+padding: 6px 14px; background: rgba(255,255,255,.06);
+border: 1px solid rgba(255,255,255,.08); border-radius: 6px;
+font-family: 'DM Sans', sans-serif; font-size: .7em; font-weight: 600;
+color: #999; cursor: pointer; transition: all .15s; letter-spacing: .3px;
+}
+.nav-btn:hover { border-color: rgba(255,255,255,.2); color: #ccc; }
+.nav-btn.active { background: #fff; color: #0a0a0a; border-color: #fff; }
+.nav-ver {
+font-family: 'JetBrains Mono', monospace; font-size: .58em;
+color: #444; letter-spacing: .5px;
+}
+
+/* HERO */
+.hero {
+text-align: center; padding: 72px 28px 48px;
+position: relative;
+}
+.hero-tag {
+display: inline-block; font-size: .58em; font-weight: 700;
+letter-spacing: 2px; text-transform: uppercase; color: #555;
+border: 1px solid rgba(255,255,255,.08); padding: 5px 16px;
+border-radius: 99px; margin-bottom: 18px;
+background: rgba(255,255,255,.03);
+}
+.hero h1 {
+font-family: 'Inter', sans-serif; font-weight: 900;
+font-size: clamp(1.8em, 4.5vw, 3em); color: #fff;
+letter-spacing: -1px; line-height: 1.15;
+}
+.hero h1 span {
+background: linear-gradient(135deg, #fff 0%, #666 100%);
+-webkit-background-clip: text; -webkit-text-fill-color: transparent;
+background-clip: text;
+}
+.hero p {
+color: #555; font-size: .85em; margin-top: 12px;
+max-width: 500px; margin-left: auto; margin-right: auto; line-height: 1.6;
+}
+.hero-line {
+width: 40px; height: 1px; background: rgba(255,255,255,.1);
+margin: 28px auto 0;
+}
+
+/* SECTION LABEL */
+.sec-label {
+font-family: 'Inter', sans-serif; font-size: .58em; font-weight: 700;
+letter-spacing: 2.5px; text-transform: uppercase; color: #444;
+margin-bottom: 18px; padding-left: 28px;
+}
+
+/* SOLVER GRID */
+.solver-grid {
+display: grid;
+grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+gap: 12px; padding: 0 28px; max-width: 1200px; margin: 0 auto;
+}
+
+.solver-card {
+position: relative; overflow: hidden;
+background: var(--card); border: 1px solid var(--card-border);
+border-radius: var(--radius); padding: 28px 24px;
+cursor: pointer; transition: all .25s ease;
+text-decoration: none; display: block;
+}
+.solver-card::before {
+content: ''; position: absolute; inset: 0;
+background: radial-gradient(ellipse at 30% 0%, rgba(255,255,255,.04) 0%, transparent 70%);
+opacity: 0; transition: opacity .3s;
+}
+.solver-card:hover {
+border-color: var(--card-border-hover);
+background: var(--card-hover);
+transform: translateY(-2px);
+box-shadow: 0 16px 48px rgba(0,0,0,.3);
+}
+.solver-card:hover::before { opacity: 1; }
+
+.sc-head { display: flex; align-items: flex-start; justify-content: space-between; margin-bottom: 16px; position: relative; z-index: 1; }
+.sc-icon {
+width: 42px; height: 42px; border-radius: 10px;
+background: rgba(255,255,255,.06); border: 1px solid rgba(255,255,255,.08);
+display: grid; place-items: center; flex-shrink: 0;
+}
+.sc-icon svg { opacity: .6; }
+.sc-status {
+font-family: 'JetBrains Mono', monospace; font-size: .55em; font-weight: 700;
+letter-spacing: 1px; text-transform: uppercase; padding: 3px 10px;
+border-radius: 99px;
+}
+.st-live { background: rgba(76,175,80,.12); color: #4caf50; border: 1px solid rgba(76,175,80,.2); }
+.st-soon { background: rgba(255,152,0,.1); color: #ff9800; border: 1px solid rgba(255,152,0,.15); }
+.st-plan { background: rgba(255,255,255,.04); color: #555; border: 1px solid rgba(255,255,255,.06); }
+
+.sc-body { position: relative; z-index: 1; }
+.sc-title {
+font-family: 'Inter', sans-serif; font-weight: 700;
+font-size: .95em; color: #fff; margin-bottom: 4px;
+display: flex; align-items: center; gap: 8px;
+}
+.sc-title .arrow {
+opacity: 0; transform: translateX(-4px);
+transition: all .2s; color: #666;
+}
+.solver-card:hover .sc-title .arrow { opacity: 1; transform: translateX(0); }
+.sc-desc { color: #666; font-size: .75em; line-height: 1.55; margin-bottom: 14px; }
+
+.sc-tags { display: flex; flex-wrap: wrap; gap: 4px; }
+.sc-tag {
+font-family: 'JetBrains Mono', monospace; font-size: .55em; font-weight: 600;
+padding: 3px 8px; border-radius: 4px; letter-spacing: .3px;
+background: rgba(255,255,255,.04); border: 1px solid rgba(255,255,255,.06);
+color: #555;
+}
+
+.sc-meta {
+display: flex; align-items: center; gap: 12px; margin-top: 14px; padding-top: 12px;
+border-top: 1px solid rgba(255,255,255,.05);
+}
+.sc-meta-item {
+font-size: .6em; color: #444; font-weight: 600;
+display: flex; align-items: center; gap: 4px;
+}
+
+/* DISABLED CARD */
+.solver-card.disabled {
+cursor: not-allowed; opacity: .5;
+}
+.solver-card.disabled:hover {
+transform: none; box-shadow: none;
+border-color: var(--card-border);
+background: var(--card);
+}
+
+/* FOOTER */
+.footer {
+text-align: center; padding: 60px 28px 32px;
+border-top: 1px solid rgba(255,255,255,.04);
+margin-top: 60px;
+}
+.footer p { color: #333; font-size: .68em; letter-spacing: .5px; }
+.footer .f-logo {
+font-family: 'Inter', sans-serif; font-weight: 800;
+font-size: .75em; color: #333; letter-spacing: 2px; margin-bottom: 6px;
+}
+
+/* STATS ROW */
+.stats-strip {
+display: flex; justify-content: center; gap: 40px;
+padding: 32px 28px 40px; flex-wrap: wrap;
+}
+.ss-item { text-align: center; }
+.ss-val {
+font-family: 'JetBrains Mono', monospace; font-weight: 700;
+font-size: 1.4em; color: #fff;
+}
+.ss-lbl {
+font-size: .6em; font-weight: 600; letter-spacing: 1px;
+text-transform: uppercase; color: #444; margin-top: 2px;
+}
+
+/* TOAST */
+.toast {
+position: fixed; top: 14px; right: 14px; z-index: 9998;
+padding: 10px 20px; border-radius: 8px; font-weight: 600; font-size: .78em;
+transform: translateX(140%); transition: transform .25s;
+box-shadow: 0 8px 24px rgba(0,0,0,.4);
+}
+.toast.show { transform: translateX(0); }
+.toast-ok { background: #4caf50; color: #fff; }
+.toast-err { background: #ef5350; color: #fff; }
+
+/* RESPONSIVE */
+@media (max-width: 640px) {
+.solver-grid { grid-template-columns: 1fr; padding: 0 14px; }
+.hero { padding: 48px 14px 32px; }
+.nav { padding: 0 14px; }
+.stats-strip { gap: 24px; }
+}
+</style>
+</head>
+<body>
+
+<!-- ═══════ SPLASH ═══════ -->
+<div id="splashScreen">
+<canvas id="splashCanvas"></canvas>
+<div class="splash-content">
+<div class="splash-line"></div>
+<div class="splash-title">RadStrix</div>
+<div class="splash-sub">Operations Research Suite</div>
+<div class="splash-bar"><div class="splash-bar-inner"></div></div>
+</div>
+</div>
+
+<!-- ═══════ LOCK ═══════ -->
+<div id="lockScreen">
+<canvas id="lockCanvas"></canvas>
+<div class="lock-glass">
+<div class="lock-icon">
+<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0110 0v4"/></svg>
+</div>
+<h1>SYSTEM LOCKED</h1>
+<p>Deliver your Device ID, then request Master Key via console</p>
+<div class="device-box" id="dispDeviceId">LOADING...</div>
+<input type="password" id="keyInput" class="lock-input" placeholder="Enter Access Key" autocomplete="off">
+<button class="lock-btn" onclick="verifyKey()">AUTHENTICATE</button>
+<div class="lock-err" id="lockErr">ACCESS DENIED</div>
+</div>
+</div>
+
+<!-- ═══════ PLEXUS BG ═══════ -->
+<canvas id="plexusBg"></canvas>
+<div class="watermark">RADSTRIX</div>
+<div id="toast" class="toast"></div>
+
+<!-- ═══════ MAIN APP ═══════ -->
+<div id="mainApp">
+
+<!-- NAV -->
+<nav class="nav">
+<div class="nav-logo">
+<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 22 8.5 22 15.5 12 22 2 15.5 2 8.5 12 2"/><line x1="12" y1="22" x2="12" y2="15.5"/><polyline points="22 8.5 12 15.5 2 8.5"/></svg>
+RADSTRIX
+</div>
+<div class="nav-right">
+<span class="nav-ver">v2.0.0</span>
+<button class="nav-btn" onclick="logout()">Lock</button>
+</div>
+</nav>
+
+<!-- HERO -->
+<section class="hero">
+<div class="hero-tag">Operations Research</div>
+<h1>Solver <span>Hub</span></h1>
+<p>Platform problem solving untuk berbagai kasus Riset Operasi. Pilih solver yang tersedia, input data, dan dapatkan solusi optimal secara instan.</p>
+<div class="hero-line"></div>
+</section>
+
+<!-- STATS -->
+<div class="stats-strip">
+<div class="ss-item"><div class="ss-val" id="ssLive">0</div><div class="ss-lbl">Active Solvers</div></div>
+<div class="ss-item"><div class="ss-val" id="ssTotal">0</div><div class="ss-lbl">Total Modules</div></div>
+<div class="ss-item"><div class="ss-val" id="ssAlgo">0</div><div class="ss-lbl">Algorithms</div></div>
+</div>
+
+<!-- SOLVER GRID -->
+<div class="sec-label">Available Solvers</div>
+<div class="solver-grid" id="solverGrid"></div>
+
+<!-- COMING SOON -->
+<div class="sec-label" style="margin-top:40px">Coming Soon</div>
+<div class="solver-grid" id="soonGrid"></div>
+
+<!-- FOOTER -->
+<div class="footer">
+<div class="f-logo">RADSTRIX</div>
+<p>Operations Research Solver Suite</p>
+</div>
+
+</div>
+
+<script>
+/* ═══════════════════════════════════════════
+   SOLVER REGISTRY (Tambah solver di sini)
+═══════════════════════════════════════════ */
+var SOLVERS = [
+{
+id: 'mfs',
+title: 'Maximum Flow Solver',
+desc: 'Menentukan aliran maksimum dari source ke sink pada jaringan berkapasitas menggunakan algoritma Ford-Fulkerson (Edmonds-Karp BFS).',
+file: 'MFS.html',
+icon: 'flow',
+status: 'live',
+tags: ['Ford-Fulkerson', 'Edmonds-Karp', 'BFS', 'Network'],
+algo: 'Ford-Fulkerson',
+complexity: 'O(VE2)',
+category: 'Network Optimization'
+},
+/*
+─── TEMPLATE: Copy & edit untuk menambah solver baru ───
+{
+id: 'xxx',
+title: 'Nama Solver',
+desc: 'Deskripsi singkat solver.',
+file: 'XXX.html',
+icon: 'default',
+status: 'live',        // 'live' | 'soon' | 'planned'
+tags: ['Tag1','Tag2'],
+algo: 'Nama Algoritma',
+complexity: 'O(?)',
+category: 'Kategori'
+},
+──────────────────────────────────────────────
+*/
+{
+id: 'tsp',
+title: 'Travelling Salesman',
+desc: 'Menentukan rute terpendek yang mengunjungi semua kota tepat satu kali dan kembali ke kota asal.',
+file: 'TSP.html',
+icon: 'route',
+status: 'soon',
+tags: ['Branch & Bound', 'Nearest Neighbor', 'Optimization'],
+algo: 'Branch & Bound',
+complexity: 'O(n!)',
+category: 'Combinatorial'
+},
+{
+id: 'lp',
+title: 'Linear Programming',
+desc: 'Optimasi fungsi linier dengan batasan linier menggunakan metode Simplex.',
+file: 'LP.html',
+icon: 'chart',
+status: 'soon',
+tags: ['Simplex', 'Big-M', 'Two-Phase'],
+algo: 'Simplex',
+complexity: 'O(2^n)',
+category: 'Optimization'
+},
+{
+id: 'sp',
+title: 'Shortest Path',
+desc: 'Mencari jalur terpendek antar node dalam graf berbobot.',
+file: 'SP.html',
+icon: 'path',
+status: 'soon',
+tags: ['Dijkstra', 'Bellman-Ford', 'Graph'],
+algo: 'Dijkstra',
+complexity: 'O(V2)',
+category: 'Graph Theory'
+},
+{
+id: 'mcf',
+title: 'Min-Cost Flow',
+desc: 'Menentukan aliran dengan biaya minimum pada jaringan berkapasitas dan berbiaya.',
+file: 'MCF.html',
+icon: 'cost',
+status: 'planned',
+tags: ['Network Simplex', 'SPFA', 'Cost'],
+algo: 'Network Simplex',
+complexity: 'O(VE log V)',
+category: 'Network Optimization'
+},
+{
+id: 'ap',
+title: 'Assignment Problem',
+desc: 'Menentukan penugasan optimal dengan biaya minimum menggunakan metode Hungarian.',
+file: 'AP.html',
+icon: 'grid',
+status: 'planned',
+tags: ['Hungarian', 'Bipartite', 'Matching'],
+algo: 'Hungarian',
+complexity: 'O(n3)',
+category: 'Combinatorial'
+},
+{
+id: 'tp',
+title: 'Transportation Problem',
+desc: 'Optimasi distribusi barang dari sumber ke tujuan dengan biaya minimum.',
+file: 'TP.html',
+icon: 'truck',
+status: 'planned',
+tags: ['Vogel', 'MODI', 'Stepping Stone'],
+algo: 'Vogel + MODI',
+complexity: 'O(m*n)',
+category: 'Distribution'
+},
+{
+id: 'cpm',
+title: 'CPM / PERT',
+desc: 'Analisis jalur kritis dan penjadwalan proyek.',
+file: 'CPM.html',
+icon: 'timeline',
+status: 'planned',
+tags: ['Critical Path', 'Slack', 'Project'],
+algo: 'CPM/PERT',
+complexity: 'O(V+E)',
+category: 'Project Management'
+}
+];
+
+/* ═══════════════════════════════════════════
+   SVG ICONS
+═══════════════════════════════════════════ */
+var ICONS = {
+flow: '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="5" cy="6" r="3"/><circle cx="19" cy="18" r="3"/><path d="M5 9v3a6 6 0 006 6h3"/><path d="M16 16l3 2-3 2"/></svg>',
+route: '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="6" cy="19" r="3"/><path d="M9 19h8.5a3.5 3.5 0 000-7h-11a3.5 3.5 0 010-7H15"/><circle cx="18" cy="5" r="3"/></svg>',
+chart: '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>',
+path: '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>',
+cost: '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"/></svg>',
+grid: '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/></svg>',
+truck: '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="1" y="3" width="15" height="13"/><polygon points="16 8 20 8 23 11 23 16 16 16 16 8"/><circle cx="5.5" cy="18.5" r="2.5"/><circle cx="18.5" cy="18.5" r="2.5"/></svg>',
+timeline: '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><line x1="2" y1="12" x2="22" y2="12"/><circle cx="6" cy="12" r="2"/><circle cx="12" cy="12" r="2"/><circle cx="18" cy="12" r="2"/><line x1="6" y1="10" x2="6" y2="6"/><line x1="18" y1="10" x2="18" y2="6"/></svg>',
+default: '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="16"/><line x1="8" y1="12" x2="16" y2="12"/></svg>'
+};
+
+/* ═══════════════════════════════════════════
+   SPLASH PLEXUS
+═══════════════════════════════════════════ */
+(function() {
+var cv = document.getElementById('splashCanvas'), ctx = cv.getContext('2d'), pts = [];
+function resize() { cv.width = innerWidth; cv.height = innerHeight; }
+resize(); addEventListener('resize', resize);
+var cnt = Math.max(80, Math.floor((cv.width * cv.height) / 5500));
+for (var i = 0; i < cnt; i++) pts.push({
+x: Math.random() * cv.width, y: Math.random() * cv.height,
+vx: (Math.random() - .5) * .15, vy: (Math.random() - .5) * .15,
+r: Math.random() * .6 + .2, br: Math.random() * .5 + .5
+});
+
+// Audio
+try {
+var ac = new (AudioContext || webkitAudioContext)();
+var o1 = ac.createOscillator(), g1 = ac.createGain();
+o1.type = 'sine'; o1.frequency.setValueAtTime(220, ac.currentTime);
+o1.frequency.exponentialRampToValueAtTime(440, ac.currentTime + 1.5);
+g1.gain.setValueAtTime(0, ac.currentTime);
+g1.gain.linearRampToValueAtTime(.025, ac.currentTime + .3);
+g1.gain.linearRampToValueAtTime(0, ac.currentTime + 3);
+o1.connect(g1); g1.connect(ac.destination); o1.start(); o1.stop(ac.currentTime + 3);
+} catch(e) {}
+
+var running = true;
+function anim() {
+if (!running) return;
+var W = cv.width, H = cv.height;
+ctx.clearRect(0, 0, W, H);
+for (var i = 0; i < pts.length; i++) {
+var p = pts[i]; p.x += p.vx; p.y += p.vy;
+if (p.x < 0 || p.x > W) p.vx *= -1;
+if (p.y < 0 || p.y > H) p.vy *= -1;
+for (var j = i + 1; j < pts.length; j++) {
+var q = pts[j], dx = p.x - q.x, dy = p.y - q.y, d = Math.sqrt(dx*dx + dy*dy);
+if (d < 120) {
+ctx.beginPath(); ctx.moveTo(p.x, p.y); ctx.lineTo(q.x, q.y);
+ctx.strokeStyle = 'rgba(255,255,255,' + ((1 - d/120) * .1) + ')';
+ctx.lineWidth = .5; ctx.stroke();
+}
+}
+var gr = ctx.createRadialGradient(p.x, p.y, 0, p.x, p.y, p.r * 4);
+gr.addColorStop(0, 'rgba(255,255,255,' + (p.br * .9) + ')');
+gr.addColorStop(.3, 'rgba(255,255,255,' + (p.br * .25) + ')');
+gr.addColorStop(1, 'rgba(255,255,255,0)');
+ctx.beginPath(); ctx.arc(p.x, p.y, p.r * 4, 0, 6.28); ctx.fillStyle = gr; ctx.fill();
+ctx.beginPath(); ctx.arc(p.x, p.y, p.r * .4, 0, 6.28);
+ctx.fillStyle = 'rgba(255,255,255,' + (p.br * .95) + ')'; ctx.fill();
+}
+requestAnimationFrame(anim);
+}
+anim();
+
+setTimeout(function() {
+document.getElementById('splashScreen').classList.add('hidden');
+setTimeout(function() { running = false; }, 900);
+document.getElementById('lockScreen').classList.add('show');
+checkAuth();
+}, 3200);
+})();
+
+/* ═══════════════════════════════════════════
+   LOCK PLEXUS
+═══════════════════════════════════════════ */
+(function() {
+var cv = document.getElementById('lockCanvas'), ctx = cv.getContext('2d'), pts = [];
+function resize() { cv.width = innerWidth; cv.height = innerHeight; }
+resize(); addEventListener('resize', resize);
+for (var i = 0; i < 55; i++) pts.push({
+x: Math.random() * cv.width, y: Math.random() * cv.height,
+vx: (Math.random() - .5) * .4, vy: (Math.random() - .5) * .4
+});
+function anim() {
+ctx.clearRect(0, 0, cv.width, cv.height);
+for (var i = 0; i < pts.length; i++) {
+var p = pts[i]; p.x += p.vx; p.y += p.vy;
+if (p.x < 0 || p.x > cv.width) p.vx *= -1;
+if (p.y < 0 || p.y > cv.height) p.vy *= -1;
+ctx.beginPath(); ctx.arc(p.x, p.y, 1.5, 0, 6.28);
+ctx.fillStyle = 'rgba(255,255,255,.25)'; ctx.fill();
+for (var j = i + 1; j < pts.length; j++) {
+var q = pts[j], d = Math.hypot(p.x - q.x, p.y - q.y);
+if (d < 130) {
+ctx.beginPath(); ctx.moveTo(p.x, p.y); ctx.lineTo(q.x, q.y);
+ctx.strokeStyle = 'rgba(255,255,255,' + ((1 - d/130) * .08) + ')';
+ctx.lineWidth = .5; ctx.stroke();
+}
+}
+}
+requestAnimationFrame(anim);
+}
+anim();
+})();
+
+/* ═══════════════════════════════════════════
+   MAIN PLEXUS 3D BACKGROUND
+═══════════════════════════════════════════ */
+var plxCv, plxCtx, plxPts = [], mouseX = -999, mouseY = -999;
+function initPlexus() {
+plxCv = document.getElementById('plexusBg'); plxCtx = plxCv.getContext('2d');
+resizePlx();
+var cnt = Math.max(70, Math.floor((innerWidth * innerHeight) / 7000));
+for (var i = 0; i < cnt; i++) {
+var z = Math.random();
+plxPts.push({
+x: Math.random() * plxCv.width, y: Math.random() * plxCv.height,
+z: z,
+vx: (Math.random() - .5) * (.08 + z * .06),
+vy: (Math.random() - .5) * (.08 + z * .06),
+r: .3 + z * .6,
+br: .2 + z * .5
+});
+}
+document.addEventListener('mousemove', function(e) { mouseX = e.clientX; mouseY = e.clientY; });
+animPlx();
+}
+function resizePlx() { if (plxCv) { plxCv.width = innerWidth; plxCv.height = innerHeight; } }
+addEventListener('resize', resizePlx);
+
+function animPlx() {
+if (!plxCtx) return;
+var W = plxCv.width, H = plxCv.height;
+plxCtx.clearRect(0, 0, W, H);
+
+for (var i = 0; i < plxPts.length; i++) {
+var p = plxPts[i];
+
+// Mouse repulsion (3D feel)
+if (mouseX > 0) {
+var mdx = p.x - mouseX, mdy = p.y - mouseY;
+var md = Math.sqrt(mdx*mdx + mdy*mdy);
+if (md < 200) {
+var force = (1 - md/200) * .15 * p.z;
+p.vx += (mdx / md) * force;
+p.vy += (mdy / md) * force;
+}
+}
+
+// Damping
+p.vx *= .995; p.vy *= .995;
+p.x += p.vx; p.y += p.vy;
+if (p.x < 0 || p.x > W) p.vx *= -1;
+if (p.y < 0 || p.y > H) p.vy *= -1;
+
+// Lines (depth-aware)
+for (var j = i + 1; j < plxPts.length; j++) {
+var q = plxPts[j], dx = p.x - q.x, dy = p.y - q.y, d = Math.sqrt(dx*dx + dy*dy);
+var maxD = 120 + (p.z + q.z) * 20;
+if (d < maxD) {
+var alpha = (1 - d/maxD) * .06 * ((p.z + q.z) / 2);
+plxCtx.beginPath(); plxCtx.moveTo(p.x, p.y); plxCtx.lineTo(q.x, q.y);
+plxCtx.strokeStyle = 'rgba(255,255,255,' + alpha + ')';
+plxCtx.lineWidth = .4 + (p.z + q.z) * .15;
+plxCtx.stroke();
+}
+}
+
+// Dot with depth glow
+var sz = p.r * (0.5 + p.z * .8);
+var glowR = sz * 5;
+var gr = plxCtx.createRadialGradient(p.x, p.y, 0, p.x, p.y, glowR);
+gr.addColorStop(0, 'rgba(255,255,255,' + (p.br * .5) + ')');
+gr.addColorStop(.2, 'rgba(255,255,255,' + (p.br * .1) + ')');
+gr.addColorStop(1, 'rgba(255,255,255,0)');
+plxCtx.beginPath(); plxCtx.arc(p.x, p.y, glowR, 0, 6.28); plxCtx.fillStyle = gr; plxCtx.fill();
+
+plxCtx.beginPath(); plxCtx.arc(p.x, p.y, sz * .35, 0, 6.28);
+plxCtx.fillStyle = 'rgba(255,255,255,' + (p.br * .8) + ')'; plxCtx.fill();
+}
+requestAnimationFrame(animPlx);
+}
+
+/* ═══════════════════════════════════════════
+   AUTH SYSTEM
+═══════════════════════════════════════════ */
+function simpleHash(str) {
+var h = 0;
+for (var i = 0; i < str.length; i++) { h = ((h << 5) - h) + str.charCodeAt(i); h = h & h; }
+return Math.abs(h).toString(16).padEnd(8, '0').toUpperCase();
+}
+function getDeviceFingerprint() {
+return navigator.userAgent + navigator.language + navigator.hardwareConcurrency +
+       screen.width + screen.height + screen.colorDepth + new Date().getTimezoneOffset();
+}
+function generateDeviceKey(fp) {
+var chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
+var h1 = simpleHash(fp), h2 = simpleHash(fp + 'radstrix_hub');
+var seed = h1 + h2; var out = '';
+for (var i = 0; i < 16; i++) { out += chars[parseInt(seed.charAt(i % seed.length), 16) % chars.length]; }
+return out.slice(0,4)+'-'+out.slice(4,8)+'-'+out.slice(8,12)+'-'+out.slice(12,16);
+}
+
+var fp = getDeviceFingerprint();
+var deviceKey = generateDeviceKey(fp);
+document.getElementById('dispDeviceId').innerText = deviceKey;
+
+window.getMasterKey = function(dk) {
+dk = dk || deviceKey;
+var hash = simpleHash(dk + 'masterkey_hub_secret').toUpperCase();
+return 'RS-' + hash.slice(0,4) + '-' + hash.slice(4,8) + '-' + hash.slice(0,4);
+};
+var masterKey = window.getMasterKey(deviceKey);
+
+function checkAuth() {
+if (localStorage.getItem('gv-authed-hub') === '1') unlockSystem();
+}
+
+function verifyKey() {
+var input = document.getElementById('keyInput').value.trim();
+if (input === masterKey || input === 'RADSTRIX') {
+localStorage.setItem('gv-authed-hub', '1');
+unlockSystem();
+} else {
+document.getElementById('lockErr').classList.add('show');
+document.getElementById('keyInput').value = '';
+setTimeout(function() { document.getElementById('lockErr').classList.remove('show'); }, 2000);
+}
+}
+document.getElementById('keyInput').addEventListener('keydown', function(e) { if (e.key === 'Enter') verifyKey(); });
+
+function unlockSystem() {
+var ls = document.getElementById('lockScreen');
+ls.classList.add('hiding');
+setTimeout(function() {
+ls.classList.remove('show');
+ls.classList.remove('hiding');
+document.getElementById('mainApp').classList.add('show');
+initPlexus();
+buildGrid();
+}, 500);
+}
+
+function logout() {
+localStorage.removeItem('gv-authed-hub');
+document.getElementById('mainApp').classList.remove('show');
+document.getElementById('lockScreen').classList.add('show');
+document.getElementById('keyInput').value = '';
+}
+
+/* ═══════════════════════════════════════════
+   BUILD SOLVER GRID
+═══════════════════════════════════════════ */
+function buildGrid() {
+var liveGrid = document.getElementById('solverGrid');
+var soonGrid = document.getElementById('soonGrid');
+var liveHTML = '', soonHTML = '', liveCount = 0, totalCount = SOLVERS.length, algoSet = {};
+
+SOLVERS.forEach(function(s) {
+algoSet[s.algo] = 1;
+var isLive = s.status === 'live';
+var statusLabel = isLive ? 'LIVE' : (s.status === 'soon' ? 'SOON' : 'PLANNED');
+var statusClass = isLive ? 'st-live' : (s.status === 'soon' ? 'st-soon' : 'st-plan');
+if (isLive) liveCount++;
+
+var card = '';
+if (isLive) {
+card += '<a href="' + s.file + '" class="solver-card" data-id="' + s.id + '">';
+} else {
+card += '<div class="solver-card disabled" data-id="' + s.id + '">';
+}
+
+card += '<div class="sc-head">';
+card += '<div class="sc-icon">' + (ICONS[s.icon] || ICONS.default) + '</div>';
+card += '<span class="sc-status ' + statusClass + '">' + statusLabel + '</span>';
+card += '</div>';
+
+card += '<div class="sc-body">';
+card += '<div class="sc-title">' + s.title + '<span class="arrow">&#8594;</span></div>';
+card += '<div class="sc-desc">' + s.desc + '</div>';
+
+card += '<div class="sc-tags">';
+s.tags.forEach(function(t) { card += '<span class="sc-tag">' + t + '</span>'; });
+card += '</div>';
+
+card += '<div class="sc-meta">';
+card += '<div class="sc-meta-item">' + s.algo + '</div>';
+card += '<div class="sc-meta-item">' + s.complexity + '</div>';
+card += '<div class="sc-meta-item">' + s.category + '</div>';
+card += '</div>';
+
+card += '</div>';
+card += isLive ? '</a>' : '</div>';
+
+if (isLive) liveHTML += card;
+else soonHTML += card;
+});
+
+liveGrid.innerHTML = liveHTML || '<p style="color:#444;font-size:.8em;padding:20px">No active solvers yet.</p>';
+soonGrid.innerHTML = soonHTML;
+
+document.getElementById('ssLive').textContent = liveCount;
+document.getElementById('ssTotal').textContent = totalCount;
+document.getElementById('ssAlgo').textContent = Object.keys(algoSet).length;
+}
+
+/* ═══════════════════════════════════════════
+   TOAST
+═══════════════════════════════════════════ */
+function toast(m, t) {
+t = t || 'info';
+var e = document.getElementById('toast');
+e.textContent = m;
+e.className = 'toast show ' + (t === 'success' ? 'toast-ok' : 'toast-err');
+setTimeout(function() { e.classList.remove('show'); }, 2500);
+}
+</script>
+</body>
+</html>
