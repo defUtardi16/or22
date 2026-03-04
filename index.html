@@ -1,1841 +1,1379 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-theme="dark">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>MaxFlow Solver</title>
 <style>
-  :root {
-    --bg: #0a0a0a;
-    --surface: #111111;
-    --surface2: #1a1a1a;
-    --surface3: #222222;
-    --border: #2a2a2a;
-    --border2: #333333;
-    --text: #e8e8e8;
-    --text2: #aaaaaa;
-    --text3: #666666;
-    --accent: #ffffff;
-    --accent2: #cccccc;
-    --dim: #444444;
-    --success: #888888;
-    --error: #999999;
-  }
-  * { margin: 0; padding: 0; box-sizing: border-box; }
-  body {
-    background: var(--bg);
-    color: var(--text);
-    font-family: 'SF Pro Display', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-    overflow: hidden;
-    height: 100vh;
-    width: 100vw;
-  }
+@import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&family=Inter:wght@400;500;600;700;800;900&display=swap');
+:root{
+  --bg:#f5f5f5;--bg2:#ebebeb;--bg3:#e0e0e0;--bg4:#d5d5d5;
+  --card:#fff;--card2:#fafafa;--border:#d0d0d0;--border2:#c0c0c0;
+  --text:#1a1a1a;--text2:#4a4a4a;--text3:#888;
+  --accent:#333;--accent2:#111;--accent-bg:#e8e8e8;
+  --radius:10px;--radius-sm:6px;
+  --shadow:0 1px 3px rgba(0,0,0,.06);--shadow-md:0 4px 12px rgba(0,0,0,.07);--shadow-lg:0 8px 24px rgba(0,0,0,.09);
+  --canvas-bg:#fafafa;--node-fill:#fff;--node-stroke:#d0d0d0;--edge-color:#d0d0d0;
+}
+[data-theme="dark"]{
+  --bg:#0f0f0f;--bg2:#1a1a1a;--bg3:#252525;--bg4:#333;
+  --card:#161616;--card2:#1c1c1c;--border:#333;--border2:#444;
+  --text:#e8e8e8;--text2:#b0b0b0;--text3:#666;
+  --accent:#ccc;--accent2:#fff;--accent-bg:#252525;
+  --canvas-bg:#1c1c1c;--node-fill:#252525;--node-stroke:#444;--edge-color:#444;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{font-family:'DM Sans',-apple-system,sans-serif;background:var(--bg);color:var(--text);min-height:100vh;-webkit-font-smoothing:antialiased;transition:background .3s,color .3s;overflow-x:hidden}
+::-webkit-scrollbar{width:5px;height:5px}
+::-webkit-scrollbar-track{background:transparent}
+::-webkit-scrollbar-thumb{background:var(--border2);border-radius:9px}
 
-  /* ========== SPLASH ========== */
-  #splash {
-    position: fixed; inset: 0; z-index: 9999;
-    background: #000000;
-    display: flex; flex-direction: column;
-    align-items: center; justify-content: center;
-    transition: opacity 0.8s ease;
-  }
-  #splash.fade-out { opacity: 0; pointer-events: none; }
-  #splashCanvas { position: absolute; inset: 0; }
-  .splash-content {
-    position: relative; z-index: 2;
-    display: flex; flex-direction: column;
-    align-items: center; gap: 32px;
-  }
-  .splash-logo {
-    display: flex; flex-direction: column; align-items: center; gap: 12px;
-  }
-  .splash-logo svg { opacity: 0.9; }
-  .splash-title {
-    font-size: 28px; font-weight: 300; letter-spacing: 8px;
-    color: #ffffff; text-transform: uppercase;
-  }
-  .splash-sub {
-    font-size: 11px; letter-spacing: 4px; color: #555555;
-    text-transform: uppercase; font-weight: 400;
-  }
-  .splash-bar-wrap {
-    width: 240px; height: 1px; background: #1a1a1a; position: relative; overflow: visible;
-  }
-  .splash-bar {
-    height: 1px; background: #ffffff; width: 0%;
-    transition: width 0.1s linear;
-    box-shadow: 0 0 8px #ffffff88;
-  }
-  .splash-pct {
-    position: absolute; right: 0; top: 8px;
-    font-size: 10px; color: #444444; letter-spacing: 2px;
-  }
-  .splash-status {
-    font-size: 10px; letter-spacing: 3px; color: #333333;
-    text-transform: uppercase; height: 14px;
-  }
+/* SPLASH */
+#splashScreen{position:fixed;inset:0;z-index:10000;display:flex;align-items:center;justify-content:center;flex-direction:column;background:#0a0a0a;overflow:hidden;transition:opacity .8s ease,visibility .8s ease}
+#splashScreen.hidden{opacity:0;visibility:hidden;pointer-events:none}
+#splashCanvas{position:absolute;inset:0;width:100%;height:100%}
+.splash-content{position:relative;z-index:2;text-align:center;display:flex;flex-direction:column;align-items:center;gap:14px}
+.splash-line{width:40px;height:1px;background:rgba(255,255,255,.15);opacity:0;animation:splashFadeUp .5s .5s forwards}
+.splash-title{font-family:'Inter','DM Sans',sans-serif;font-weight:900;font-size:clamp(1.4em,4vw,2.4em);color:#fff;letter-spacing:3px;text-transform:uppercase;opacity:0;animation:splashFadeUp 1s .3s forwards}
+.splash-sub{font-family:'Inter','DM Sans',sans-serif;font-weight:400;font-size:.7em;color:rgba(255,255,255,.35);letter-spacing:6px;text-transform:uppercase;opacity:0;animation:splashFadeUp .8s .6s forwards}
+.splash-bar{width:120px;height:2px;background:rgba(255,255,255,.1);border-radius:2px;overflow:hidden;margin-top:6px;opacity:0;animation:splashFadeUp .6s .8s forwards}
+.splash-bar-inner{width:0%;height:100%;background:linear-gradient(90deg,rgba(255,255,255,.8),rgba(255,255,255,.3));border-radius:2px;animation:splashBarFill 2.2s .9s forwards}
+@keyframes splashFadeUp{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
+@keyframes splashBarFill{0%{width:0%}100%{width:100%}}
 
-  /* ========== LOCK ========== */
-  #lock {
-    position: fixed; inset: 0; z-index: 9000;
-    background: #000000;
-    display: flex; flex-direction: column;
-    align-items: center; justify-content: center;
-    transition: opacity 0.8s ease;
-  }
-  #lock.hidden { opacity: 0; pointer-events: none; }
-  #lockCanvas { position: absolute; inset: 0; }
-  .lock-content {
-    position: relative; z-index: 2;
-    display: flex; flex-direction: column;
-    align-items: center; gap: 28px;
-    width: 360px;
-  }
-  .lock-icon svg { opacity: 0.6; }
-  .lock-title {
-    font-size: 13px; letter-spacing: 6px; color: #888888;
-    text-transform: uppercase; font-weight: 300;
-  }
-  .lock-device-wrap {
-    width: 100%; background: #0d0d0d; border: 1px solid #1e1e1e;
-    border-radius: 4px; padding: 12px 16px;
-  }
-  .lock-device-label {
-    font-size: 9px; letter-spacing: 3px; color: #333333;
-    text-transform: uppercase; margin-bottom: 6px;
-  }
-  .lock-device-id {
-    font-size: 13px; letter-spacing: 3px; color: #555555;
-    font-family: 'SF Mono', 'Courier New', monospace;
-    font-weight: 400;
-  }
-  .lock-input-wrap { width: 100%; position: relative; }
-  .lock-input {
-    width: 100%; background: #0d0d0d;
-    border: 1px solid #2a2a2a; border-radius: 4px;
-    padding: 14px 48px 14px 16px;
-    font-size: 13px; letter-spacing: 4px; color: #ffffff;
-    font-family: 'SF Mono', 'Courier New', monospace;
-    outline: none; text-transform: uppercase;
-    transition: border-color 0.2s;
-  }
-  .lock-input:focus { border-color: #444444; }
-  .lock-input.error { border-color: #555555; animation: shake 0.3s ease; }
-  .lock-input.success { border-color: #666666; }
-  @keyframes shake {
-    0%,100%{transform:translateX(0)}
-    25%{transform:translateX(-6px)}
-    75%{transform:translateX(6px)}
-  }
-  .lock-submit {
-    position: absolute; right: 12px; top: 50%;
-    transform: translateY(-50%);
-    background: none; border: none; cursor: pointer;
-    opacity: 0.4; transition: opacity 0.2s;
-  }
-  .lock-submit:hover { opacity: 0.9; }
-  .lock-hint {
-    font-size: 10px; letter-spacing: 2px; color: #333333;
-    text-align: center; line-height: 1.8;
-  }
-  .lock-err-msg {
-    font-size: 10px; letter-spacing: 2px; color: #666666;
-    height: 14px; text-align: center;
-  }
+/* LOCK */
+#lockScreen{position:fixed;inset:0;z-index:9000;display:flex;align-items:center;justify-content:center;flex-direction:column;background:#0a0a0a;overflow:hidden;transition:opacity .8s ease,visibility .8s ease}
+#lockScreen.hidden{opacity:0;visibility:hidden;pointer-events:none}
+#lockCanvas{position:absolute;inset:0;width:100%;height:100%}
+.lock-content{position:relative;z-index:2;text-align:center;display:flex;flex-direction:column;align-items:center;gap:20px;width:360px}
+.lock-title{font-family:'Inter',sans-serif;font-weight:700;font-size:.8em;color:rgba(255,255,255,.4);letter-spacing:5px;text-transform:uppercase}
+.lock-device-box{width:100%;background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.08);border-radius:8px;padding:14px 16px;text-align:left}
+.lock-device-label{font-size:.6em;letter-spacing:3px;color:rgba(255,255,255,.25);text-transform:uppercase;margin-bottom:6px}
+.lock-device-id{font-family:'JetBrains Mono',monospace;font-size:.85em;color:rgba(255,255,255,.45);letter-spacing:2px}
+.lock-input-wrap{width:100%;position:relative}
+.lock-input{width:100%;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.1);border-radius:8px;padding:14px 50px 14px 18px;font-size:.9em;letter-spacing:4px;color:#fff;font-family:'JetBrains Mono',monospace;outline:none;text-transform:uppercase;transition:border-color .2s}
+.lock-input:focus{border-color:rgba(255,255,255,.3)}
+.lock-input.err{border-color:rgba(255,80,80,.5);animation:shake .3s ease}
+.lock-input.ok{border-color:rgba(80,255,120,.4)}
+@keyframes shake{0%,100%{transform:translateX(0)}25%{transform:translateX(-6px)}75%{transform:translateX(6px)}}
+.lock-submit{position:absolute;right:14px;top:50%;transform:translateY(-50%);background:none;border:none;cursor:pointer;opacity:.4;transition:opacity .2s;color:#fff;font-size:1.1em;font-family:'DM Sans',sans-serif;font-weight:700}
+.lock-submit:hover{opacity:.9}
+.lock-hint{font-size:.65em;letter-spacing:2px;color:rgba(255,255,255,.2);text-align:center;line-height:1.9;text-transform:uppercase}
+.lock-err{font-size:.65em;letter-spacing:2px;color:rgba(255,100,100,.6);height:14px;text-align:center;text-transform:uppercase}
 
-  /* ========== MAIN APP ========== */
-  #app {
-    position: fixed; inset: 0; z-index: 1;
-    display: none; flex-direction: column;
-    opacity: 0; transition: opacity 0.6s ease;
-  }
-  #app.visible { display: flex; opacity: 1; }
-  #appCanvas { position: absolute; inset: 0; z-index: 0; }
+/* PLEXUS BG */
+#plexusBg{position:fixed;top:0;left:0;width:100%;height:100%;z-index:0;pointer-events:none}
 
-  /* ===== HEADER ===== */
-  .header {
-    position: relative; z-index: 10;
-    display: flex; align-items: center; justify-content: space-between;
-    padding: 16px 28px;
-    border-bottom: 1px solid #1a1a1a;
-    background: #00000088;
-    backdrop-filter: blur(20px);
-  }
-  .header-left { display: flex; align-items: center; gap: 14px; }
-  .header-logo { opacity: 0.8; }
-  .header-title {
-    font-size: 13px; letter-spacing: 5px; color: #888888;
-    text-transform: uppercase; font-weight: 300;
-  }
-  .header-right { display: flex; align-items: center; gap: 16px; }
-  .header-btn {
-    background: none; border: 1px solid #2a2a2a; border-radius: 3px;
-    color: #666666; font-size: 10px; letter-spacing: 2px;
-    padding: 6px 14px; cursor: pointer; text-transform: uppercase;
-    transition: all 0.2s; font-family: inherit;
-  }
-  .header-btn:hover { border-color: #444444; color: #aaaaaa; }
-  .header-badge {
-    font-size: 9px; letter-spacing: 2px; color: #333333;
-    text-transform: uppercase;
-  }
+/* TOP BAR */
+.top-bar{position:sticky;top:0;z-index:100;background:rgba(255,255,255,.6);backdrop-filter:blur(20px) saturate(180%);-webkit-backdrop-filter:blur(20px) saturate(180%);border-bottom:1px solid rgba(0,0,0,.06);padding:8px 20px;display:flex;align-items:center;justify-content:space-between;gap:8px;box-shadow:0 4px 30px rgba(0,0,0,.04)}
+[data-theme="dark"] .top-bar{background:rgba(22,22,22,.7);border-bottom:1px solid rgba(255,255,255,.05);box-shadow:0 4px 30px rgba(0,0,0,.3)}
+.top-bar-logo{font-weight:800;font-size:.85em;color:var(--text);display:flex;align-items:center;gap:8px}
+.top-bar-right{display:flex;align-items:center;gap:5px}
+.tb-btn{display:inline-flex;align-items:center;gap:4px;padding:5px 10px;background:var(--card2);border:1px solid var(--border);border-radius:5px;font-family:'DM Sans',sans-serif;font-size:.7em;font-weight:600;color:var(--text2);cursor:pointer;transition:all .15s;white-space:nowrap}
+.tb-btn:hover{border-color:var(--text);color:var(--text)}
+.tb-btn.accent-btn{background:var(--text);color:var(--card);border-color:var(--text)}
+.tb-btn.accent-btn:hover{background:var(--accent2)}
 
-  /* ===== MAIN LAYOUT ===== */
-  .main {
-    position: relative; z-index: 5;
-    flex: 1; display: flex; overflow: hidden;
-  }
+/* SHELL */
+.shell{max-width:1200px;margin:0 auto;padding:20px 24px 80px;position:relative;z-index:1}
 
-  /* ===== LEFT PANEL ===== */
-  .panel-left {
-    width: 300px; min-width: 300px;
-    border-right: 1px solid #1a1a1a;
-    background: #00000066;
-    backdrop-filter: blur(20px);
-    display: flex; flex-direction: column;
-    overflow: hidden;
-  }
-  .panel-section {
-    border-bottom: 1px solid #1a1a1a; padding: 16px;
-  }
-  .panel-label {
-    font-size: 9px; letter-spacing: 3px; color: #444444;
-    text-transform: uppercase; margin-bottom: 12px;
-    display: flex; align-items: center; justify-content: space-between;
-  }
-  .panel-label span { color: #333333; }
+/* HERO */
+.hero{text-align:center;padding:36px 0 28px}
+.hero-label{display:inline-block;font-size:.65em;font-weight:700;letter-spacing:1.2px;text-transform:uppercase;color:var(--text2);background:var(--bg2);border:1px solid var(--border);padding:4px 14px;border-radius:99px;margin-bottom:12px}
+.hero h1{font-size:clamp(1.5em,3.2vw,2.2em);font-weight:800;color:var(--text);letter-spacing:-.5px}
+.hero p{color:var(--text3);font-size:.85em;margin-top:6px}
 
-  /* input fields */
-  .inp-row { display: flex; gap: 8px; margin-bottom: 8px; align-items: center; }
-  .inp-label {
-    font-size: 10px; color: #555555; letter-spacing: 1px;
-    min-width: 28px; text-align: right;
-  }
-  .inp {
-    flex: 1; background: #0d0d0d; border: 1px solid #222222;
-    border-radius: 3px; padding: 7px 10px;
-    font-size: 12px; color: #cccccc; outline: none;
-    font-family: 'SF Mono', 'Courier New', monospace;
-    transition: border-color 0.2s;
-  }
-  .inp:focus { border-color: #3a3a3a; }
-  .inp::placeholder { color: #333333; }
-  .inp-sm { max-width: 60px; text-align: center; }
+/* SECTION */
+.section{background:rgba(255,255,255,.45);backdrop-filter:blur(16px) saturate(180%);-webkit-backdrop-filter:blur(16px) saturate(180%);border:1px solid rgba(255,255,255,.2);border-radius:var(--radius);padding:22px;margin-bottom:14px;box-shadow:0 8px 32px rgba(0,0,0,.08),inset 0 1px 0 rgba(255,255,255,.3);transition:background .3s,border-color .3s}
+[data-theme="dark"] .section{background:rgba(22,22,22,.5);border:1px solid rgba(255,255,255,.06);box-shadow:0 8px 32px rgba(0,0,0,.4),inset 0 1px 0 rgba(255,255,255,.03)}
+.section-head{display:flex;align-items:center;gap:10px;margin-bottom:18px}
+.section-num{width:26px;height:26px;display:grid;place-items:center;border-radius:50%;font-size:.72em;font-weight:700;background:var(--text);color:var(--card);flex-shrink:0}
+.section-title{font-size:1em;font-weight:700;color:var(--text)}
 
-  .arc-row {
-    display: flex; align-items: center; gap: 6px;
-    margin-bottom: 6px; padding: 8px 10px;
-    background: #0d0d0d; border: 1px solid #1e1e1e;
-    border-radius: 3px; position: relative;
-  }
-  .arc-row:hover { border-color: #2a2a2a; }
-  .arc-node-lbl {
-    font-size: 11px; color: #666666;
-    font-family: 'SF Mono', monospace; min-width: 18px; text-align: center;
-  }
-  .arc-arrow {
-    font-size: 9px; color: #333333;
-  }
-  .arc-cap-wrap {
-    display: flex; align-items: center; gap: 4px; flex: 1;
-  }
-  .arc-cap-lbl { font-size: 9px; color: #333333; letter-spacing: 1px; }
-  .arc-del {
-    background: none; border: none; color: #333333;
-    cursor: pointer; font-size: 14px; line-height: 1;
-    padding: 0 2px; transition: color 0.2s;
-  }
-  .arc-del:hover { color: #888888; }
+/* FORM */
+.lbl{font-size:.65em;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--text3);margin-bottom:8px}
+.field{display:flex;flex-direction:column;gap:4px}
+.field label{font-size:.65em;font-weight:700;letter-spacing:.5px;text-transform:uppercase;color:var(--text3)}
+.field input,.field select{background:var(--card2);border:1px solid var(--border);border-radius:var(--radius-sm);padding:8px 10px;color:var(--text);font-family:'JetBrains Mono',monospace;font-size:.82em;transition:border .15s;outline:none}
+.field input:focus,.field select:focus{border-color:var(--text);box-shadow:0 0 0 2px rgba(128,128,128,.12)}
+.row2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.row3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px}
+.row4{display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:8px}
 
-  .arc-list { max-height: 200px; overflow-y: auto; }
-  .arc-list::-webkit-scrollbar { width: 2px; }
-  .arc-list::-webkit-scrollbar-track { background: transparent; }
-  .arc-list::-webkit-scrollbar-thumb { background: #2a2a2a; border-radius: 2px; }
+/* PRESET */
+.pr-row{display:grid;grid-template-columns:repeat(auto-fill,minmax(130px,1fr));gap:5px;margin-bottom:14px}
+.pr-btn{background:var(--card2);border:1px dashed var(--border);border-radius:var(--radius-sm);padding:9px;text-align:center;cursor:pointer;transition:all .15s}
+.pr-btn:hover{border-color:var(--text);border-style:solid;background:var(--accent-bg)}
+.pr-btn .pn{font-weight:700;font-size:.75em;color:var(--text)}
+.pr-btn .pd{font-size:.6em;color:var(--text3);margin-top:2px}
 
-  .btn-full {
-    width: 100%; padding: 10px; border: none; border-radius: 3px;
-    font-size: 10px; letter-spacing: 3px; text-transform: uppercase;
-    cursor: pointer; font-family: inherit; transition: all 0.2s;
-  }
-  .btn-primary {
-    background: #ffffff; color: #000000; font-weight: 500;
-  }
-  .btn-primary:hover { background: #cccccc; }
-  .btn-primary:disabled { background: #2a2a2a; color: #444444; cursor: not-allowed; }
-  .btn-ghost {
-    background: transparent; color: #555555;
-    border: 1px solid #2a2a2a;
-  }
-  .btn-ghost:hover { border-color: #444444; color: #888888; }
+/* ARC TABLE */
+.arc-table-wrap{overflow:auto;border:1px solid var(--border);border-radius:var(--radius-sm);margin-top:6px}
+.arc-table{width:100%;border-collapse:collapse;font-family:'JetBrains Mono',monospace;font-size:.75em}
+.arc-table th{background:var(--bg2);padding:7px 10px;text-align:center;font-weight:700;color:var(--text2);border-bottom:1px solid var(--border);font-size:.8em;text-transform:uppercase}
+.arc-table td{padding:6px 10px;border-bottom:1px solid var(--border);text-align:center;color:var(--text)}
+.arc-table tr:last-child td{border-bottom:none}
+.arc-table tr:hover td{background:var(--card2)}
+.arc-del-btn{background:none;border:none;color:var(--text3);cursor:pointer;font-size:1em;padding:0 4px;transition:color .15s}
+.arc-del-btn:hover{color:var(--text)}
 
-  .btn-sm {
-    padding: 6px 12px; font-size: 9px; letter-spacing: 2px;
-    border-radius: 3px; border: 1px solid #2a2a2a;
-    background: none; color: #555555; cursor: pointer;
-    font-family: inherit; text-transform: uppercase;
-    transition: all 0.2s;
-  }
-  .btn-sm:hover { border-color: #444444; color: #888888; }
-  .btn-sm.active { background: #1e1e1e; border-color: #3a3a3a; color: #aaaaaa; }
+/* BUTTONS */
+.btn{display:inline-flex;align-items:center;gap:6px;padding:8px 18px;border:none;border-radius:var(--radius-sm);font-family:'DM Sans',sans-serif;font-weight:700;font-size:.78em;cursor:pointer;transition:all .15s}
+.btn-primary{background:var(--text);color:var(--card)}
+.btn-primary:hover{background:var(--accent2)}
+.btn-ghost{background:var(--card2);color:var(--text2);border:1px solid var(--border)}
+.btn-ghost:hover{background:var(--bg2);color:var(--text)}
+.btn-sm{padding:5px 10px;font-size:.72em}
+.btn-group{display:flex;gap:6px;flex-wrap:wrap;margin-top:14px}
 
-  /* ===== CENTER CANVAS ===== */
-  .canvas-wrap {
-    flex: 1; position: relative; overflow: hidden;
-  }
-  #graphCanvas {
-    position: absolute; inset: 0;
-    cursor: grab;
-  }
-  #graphCanvas:active { cursor: grabbing; }
-  .canvas-overlay {
-    position: absolute; bottom: 20px; left: 50%;
-    transform: translateX(-50%);
-    display: flex; gap: 8px;
-  }
-  .canvas-hint {
-    font-size: 9px; letter-spacing: 2px; color: #2a2a2a;
-    text-transform: uppercase; text-align: center;
-    position: absolute; bottom: 12px; right: 16px;
-  }
+/* CANVAS */
+.cv-wrap{background:rgba(255,255,255,.3);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);border:1px solid rgba(255,255,255,.15);border-radius:var(--radius-sm);position:relative;overflow:hidden;box-shadow:0 8px 32px rgba(0,0,0,.06)}
+[data-theme="dark"] .cv-wrap{background:rgba(28,28,28,.4);border:1px solid rgba(255,255,255,.05);box-shadow:0 8px 32px rgba(0,0,0,.4)}
+.cv-wrap canvas{display:block;width:100%;touch-action:none}
+.cv-bar{position:absolute;top:8px;right:8px;display:flex;gap:3px;z-index:2}
+.cv-bar button{width:28px;height:28px;display:grid;place-items:center;background:var(--card);border:1px solid var(--border);border-radius:5px;color:var(--text2);cursor:pointer;font-size:.8em;font-family:'DM Sans',sans-serif;font-weight:700;opacity:.85}
+.cv-bar button:hover{border-color:var(--text);color:var(--text);opacity:1}
+.cv-hint{position:absolute;bottom:6px;left:8px;font-size:.62em;color:var(--text3);background:var(--card);padding:2px 7px;border-radius:3px;opacity:.75}
+.lo-row{display:flex;gap:4px;flex-wrap:wrap;margin-top:8px}
+.lo-btn{padding:5px 11px;background:var(--card2);border:1px solid var(--border);border-radius:5px;font-family:'DM Sans',sans-serif;font-size:.7em;font-weight:600;color:var(--text2);cursor:pointer;transition:all .1s}
+.lo-btn:hover{border-color:var(--text3);color:var(--text)}
+.lo-btn.on{background:var(--text);border-color:var(--text);color:var(--card)}
 
-  /* ===== RIGHT PANEL ===== */
-  .panel-right {
-    width: 340px; min-width: 340px;
-    border-left: 1px solid #1a1a1a;
-    background: #00000066;
-    backdrop-filter: blur(20px);
-    display: flex; flex-direction: column;
-    overflow: hidden;
-  }
-  .result-scroll {
-    flex: 1; overflow-y: auto; padding: 16px;
-  }
-  .result-scroll::-webkit-scrollbar { width: 2px; }
-  .result-scroll::-webkit-scrollbar-thumb { background: #2a2a2a; }
+/* ITER CONTROLS */
+.iter-controls{display:flex;align-items:center;justify-content:space-between;gap:10px;margin:14px 0;padding:12px 16px;background:var(--card2);border:1px solid var(--border);border-radius:var(--radius-sm);flex-wrap:wrap}
+.iter-nav{display:flex;gap:6px;align-items:center}
+.iter-nav button{padding:6px 14px;background:var(--card);border:1px solid var(--border);border-radius:5px;font-family:'DM Sans',sans-serif;font-size:.72em;font-weight:700;color:var(--text2);cursor:pointer}
+.iter-nav button:hover:not(:disabled){border-color:var(--text);color:var(--text)}
+.iter-nav button:disabled{opacity:.3;cursor:not-allowed}
+.iter-nav button.primary-iter{background:var(--text);color:var(--card);border-color:var(--text)}
+.iter-info{font-size:.75em;font-weight:600;color:var(--text2);display:flex;align-items:center;gap:8px}
+.iter-badge{background:var(--text);color:var(--card);padding:2px 8px;border-radius:3px;font-family:'JetBrains Mono',monospace;font-size:.85em;font-weight:700}
+.playback-row{display:flex;align-items:center;gap:8px;margin-top:8px}
+.play-btn{padding:6px 16px;background:var(--accent-bg);color:var(--text);border:1px solid var(--border);border-radius:5px;font-family:'DM Sans',sans-serif;font-size:.72em;font-weight:700;cursor:pointer;display:inline-flex;align-items:center;gap:5px;transition:all .15s}
+.play-btn.playing{background:var(--text);color:var(--card)}
+.speed-select{padding:5px 8px;background:var(--card2);border:1px solid var(--border);border-radius:5px;font-family:'DM Sans',sans-serif;font-size:.72em;font-weight:600;color:var(--text2);cursor:pointer}
 
-  .result-empty {
-    display: flex; flex-direction: column; align-items: center;
-    justify-content: center; height: 200px; gap: 12px;
-    color: #2a2a2a;
-  }
-  .result-empty-txt {
-    font-size: 10px; letter-spacing: 3px; text-transform: uppercase;
-    color: #2a2a2a;
-  }
+/* RESULTS */
+#results{display:none}
+#results.vis{display:block}
+.stats-row{display:grid;grid-template-columns:repeat(auto-fill,minmax(130px,1fr));gap:8px;margin-bottom:18px}
+.stat{background:rgba(255,255,255,.4);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);border:1px solid rgba(255,255,255,.15);border-radius:var(--radius-sm);padding:14px;text-align:center;box-shadow:0 4px 16px rgba(0,0,0,.04)}
+[data-theme="dark"] .stat{background:rgba(28,28,28,.4);border:1px solid rgba(255,255,255,.05);box-shadow:0 4px 16px rgba(0,0,0,.3)}
+.stat .sv{font-size:1.2em;font-weight:800;font-family:'JetBrains Mono',monospace;color:var(--text)}
+.stat .sl{font-size:.6em;font-weight:700;letter-spacing:.6px;text-transform:uppercase;color:var(--text3);margin-top:3px}
 
-  .summary-box {
-    background: #0d0d0d; border: 1px solid #2a2a2a;
-    border-radius: 4px; padding: 16px; margin-bottom: 16px;
-  }
-  .summary-label {
-    font-size: 9px; letter-spacing: 3px; color: #444444;
-    text-transform: uppercase; margin-bottom: 8px;
-  }
-  .summary-value {
-    font-size: 32px; font-weight: 200; color: #ffffff;
-    letter-spacing: 2px;
-  }
-  .summary-unit { font-size: 12px; color: #444444; margin-left: 4px; }
-  .summary-meta {
-    margin-top: 10px; display: flex; gap: 16px;
-  }
-  .summary-meta-item { }
-  .summary-meta-label {
-    font-size: 9px; letter-spacing: 2px; color: #333333;
-    text-transform: uppercase;
-  }
-  .summary-meta-val {
-    font-size: 12px; color: #777777; margin-top: 2px;
-  }
+/* TABS */
+.tabs{display:flex;gap:1px;background:var(--bg2);padding:3px;border-radius:var(--radius-sm);margin-bottom:16px;border:1px solid var(--border);overflow-x:auto}
+.tab-btn{padding:7px 14px;border:none;background:transparent;border-radius:4px;font-family:'DM Sans',sans-serif;font-size:.75em;font-weight:600;color:var(--text3);cursor:pointer;white-space:nowrap}
+.tab-btn:hover{color:var(--text2)}
+.tab-btn.on{background:var(--card);color:var(--text);box-shadow:var(--shadow)}
+.tp{display:none}
+.tp.on{display:block}
 
-  .iter-controls {
-    display: flex; align-items: center; gap: 6px;
-    margin-bottom: 12px;
-  }
-  .iter-info {
-    flex: 1; text-align: center;
-    font-size: 10px; letter-spacing: 2px; color: #555555;
-    text-transform: uppercase;
-  }
+/* TIMELINE */
+.tl{padding-left:20px;position:relative}
+.tl::before{content:'';position:absolute;left:6px;top:0;bottom:0;width:1.5px;background:var(--border)}
+.tl-item{position:relative;margin-bottom:10px;background:var(--card2);border:1px solid var(--border);border-radius:var(--radius-sm);padding:10px 14px;cursor:pointer;transition:border-color .15s}
+.tl-item::before{content:'';position:absolute;left:-18px;top:14px;width:8px;height:8px;border-radius:50%;background:var(--text3);border:2px solid var(--card);z-index:1}
+.tl-item.fin::before{background:var(--text)}
+.tl-item.active{border-color:var(--text);box-shadow:0 0 0 1px var(--text)}
+.tl-item.active::before{background:var(--text)}
+.tl-item:hover{border-color:var(--text3)}
+.tl-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:4px}
+.tl-tag{font-family:'JetBrains Mono',monospace;font-size:.62em;font-weight:700;color:var(--text2);background:var(--bg2);padding:2px 7px;border-radius:3px;border:1px solid var(--border)}
+.tl-fin{font-size:.62em;font-weight:700;color:var(--text)}
+.tl-title{font-weight:700;font-size:.82em;margin-bottom:2px}
+.tl-desc{font-size:.78em;color:var(--text2);line-height:1.5}
 
-  .iter-card {
-    background: #0d0d0d; border: 1px solid #1e1e1e;
-    border-radius: 4px; padding: 14px; margin-bottom: 8px;
-    transition: border-color 0.2s;
-  }
-  .iter-card.active { border-color: #3a3a3a; background: #111111; }
-  .iter-card-header {
-    display: flex; align-items: center; justify-content: space-between;
-    margin-bottom: 10px;
-  }
-  .iter-num {
-    font-size: 9px; letter-spacing: 3px; color: #444444;
-    text-transform: uppercase;
-  }
-  .iter-pf {
-    font-size: 11px; color: #888888;
-    font-family: 'SF Mono', monospace;
-  }
-  .iter-path {
-    font-size: 11px; color: #666666;
-    font-family: 'SF Mono', monospace;
-    letter-spacing: 1px; margin-bottom: 10px;
-    line-height: 1.6;
-  }
-  .iter-path .path-node {
-    color: #aaaaaa;
-  }
-  .iter-path .path-arrow {
-    color: #333333; margin: 0 2px;
-  }
-  .iter-changes { }
-  .iter-change-row {
-    display: flex; align-items: center; justify-content: space-between;
-    padding: 4px 0; border-bottom: 1px solid #161616;
-    font-size: 10px;
-  }
-  .iter-change-row:last-child { border-bottom: none; }
-  .iter-change-arc {
-    color: #555555; font-family: 'SF Mono', monospace; letter-spacing: 1px;
-  }
-  .iter-change-before { color: #444444; }
-  .iter-change-arrow { color: #2a2a2a; margin: 0 4px; }
-  .iter-change-after { color: #888888; }
-  .iter-change-tag {
-    font-size: 8px; letter-spacing: 1px; color: #333333;
-    text-transform: uppercase; background: #1a1a1a;
-    padding: 2px 6px; border-radius: 2px;
-  }
+/* ITER DETAIL */
+.iter-detail-panel{margin:12px 0;border:1px solid var(--border);border-radius:var(--radius);overflow:hidden;background:var(--card)}
+.iter-detail-header{background:var(--bg2);padding:12px 16px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid var(--border)}
+.iter-detail-header h4{font-size:.82em;font-weight:700;color:var(--text)}
+.iter-detail-body{padding:16px}
+.detail-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px}
+.detail-card{background:var(--card2);border:1px solid var(--border);border-radius:var(--radius-sm);padding:12px}
+.detail-card-title{font-size:.62em;font-weight:700;letter-spacing:.8px;text-transform:uppercase;color:var(--text3);margin-bottom:8px;display:flex;align-items:center;gap:6px}
+.detail-card-title .dot{width:8px;height:8px;border-radius:50%;flex-shrink:0}
+.node-list{display:flex;flex-wrap:wrap;gap:4px}
+.node-chip{padding:3px 8px;border-radius:4px;font-family:'JetBrains Mono',monospace;font-size:.72em;font-weight:600}
+.chip-path{background:rgba(100,100,100,.2);color:var(--text);border:1px solid var(--border2)}
+.chip-active{background:rgba(80,80,80,.25);color:var(--text);border:1px solid var(--border2)}
+.chip-inactive{background:var(--bg3);color:var(--text3);border:1px solid var(--border)}
+.chip-arc{background:rgba(60,60,60,.2);color:var(--text2);border:1px solid var(--border)}
+.verbal-box{margin-top:12px;padding:12px;background:var(--accent-bg);border:1px solid var(--border);border-radius:var(--radius-sm)}
+.verbal-box .vl{font-size:.6em;font-weight:700;letter-spacing:.8px;text-transform:uppercase;color:var(--text3);margin-bottom:4px}
+.verbal-box p{font-size:.78em;color:var(--text2);line-height:1.65}
 
-  /* graph labels */
-  .node-tooltip {
-    position: absolute; pointer-events: none;
-    background: #111111; border: 1px solid #2a2a2a;
-    border-radius: 3px; padding: 6px 10px;
-    font-size: 10px; color: #888888; letter-spacing: 1px;
-    font-family: 'SF Mono', monospace;
-    display: none; z-index: 100;
-  }
+/* DETAIL TABLE */
+.detail-table{width:100%;border-collapse:collapse;font-size:.75em;margin-top:8px}
+.detail-table th{background:var(--bg2);padding:7px 8px;text-align:left;font-weight:700;color:var(--text2);font-size:.8em;text-transform:uppercase;border-bottom:1px solid var(--border)}
+.detail-table td{padding:6px 8px;border-bottom:1px solid var(--border);font-family:'JetBrains Mono',monospace;font-size:.85em}
 
-  /* add arc form */
-  .add-arc-form {
-    padding: 14px 16px; border-bottom: 1px solid #1a1a1a;
-  }
-  .add-arc-row {
-    display: flex; gap: 8px; align-items: center;
-    margin-bottom: 8px;
-  }
-  .add-arc-sep {
-    font-size: 10px; color: #333333; padding: 0 2px;
-  }
+/* ALL ITER */
+.all-iter-card{background:var(--card2);border:1px solid var(--border);border-radius:var(--radius-sm);margin-bottom:8px;overflow:hidden}
+.all-iter-card.expanded .all-iter-body{display:block}
+.all-iter-head{padding:10px 14px;display:flex;align-items:center;justify-content:space-between;cursor:pointer}
+.all-iter-head:hover{background:var(--bg2)}
+.iter-num{display:inline-flex;align-items:center;justify-content:center;width:22px;height:22px;border-radius:50%;background:var(--text);color:var(--card);font-size:.65em;font-weight:700;margin-right:8px;flex-shrink:0}
+.iter-title{font-weight:700;font-size:.78em;color:var(--text);flex:1}
+.chevron{color:var(--text3);font-size:.7em;transition:transform .2s}
+.all-iter-card.expanded .chevron{transform:rotate(180deg)}
+.all-iter-body{display:none;padding:12px 14px;border-top:1px solid var(--border)}
 
-  .flow-path-highlight { }
+/* ITER CHANGES */
+.iter-changes{margin:8px 0;padding:10px 14px;background:var(--card2);border:1px solid var(--border);border-radius:var(--radius-sm);font-size:.78em;color:var(--text2);line-height:1.6}
+.iter-changes .change-title{font-weight:700;color:var(--text);margin-bottom:4px;font-size:.9em}
+.iter-changes .change-item{padding:2px 0 2px 12px;position:relative}
+.iter-changes .change-item::before{content:'';position:absolute;left:0;top:9px;width:5px;height:5px;background:var(--text3);border-radius:50%}
 
-  /* status bar */
-  .statusbar {
-    position: relative; z-index: 10;
-    display: flex; align-items: center; justify-content: space-between;
-    padding: 6px 28px;
-    border-top: 1px solid #111111;
-    background: #00000099;
-  }
-  .statusbar-item {
-    font-size: 9px; letter-spacing: 2px; color: #2a2a2a;
-    text-transform: uppercase;
-  }
-  .statusbar-item.ok { color: #444444; }
+/* PATH ROW */
+.path-row{display:flex;align-items:center;flex-wrap:wrap;gap:3px;margin:8px 0}
+.pnode{background:var(--accent-bg);color:var(--text);padding:4px 10px;border-radius:4px;font-family:'JetBrains Mono',monospace;font-weight:700;font-size:.78em;border:1px solid var(--border)}
+.parrow{color:var(--text3);font-size:.85em}
+.edge-pills{display:flex;flex-wrap:wrap;gap:4px;margin:6px 0}
+.epill{background:var(--bg2);border:1px solid var(--border);color:var(--text);padding:3px 9px;border-radius:4px;font-family:'JetBrains Mono',monospace;font-size:.7em;font-weight:600}
 
-  /* notice */
-  .notice {
-    position: fixed; bottom: 40px; left: 50%;
-    transform: translateX(-50%);
-    background: #1a1a1a; border: 1px solid #2a2a2a;
-    border-radius: 4px; padding: 10px 20px;
-    font-size: 10px; letter-spacing: 2px; color: #777777;
-    z-index: 1000; pointer-events: none;
-    opacity: 0; transition: opacity 0.3s;
-    text-transform: uppercase;
-  }
-  .notice.show { opacity: 1; }
+/* TABLE */
+.rt-wrap{border:1px solid var(--border);border-radius:var(--radius-sm);overflow-x:auto}
+.rt{width:100%;border-collapse:collapse;font-size:.75em}
+.rt th{background:var(--bg2);padding:9px 10px;text-align:left;font-weight:700;color:var(--text2);font-size:.78em;text-transform:uppercase;border-bottom:1.5px solid var(--border)}
+.rt td{padding:8px 10px;border-bottom:1px solid var(--border);font-family:'JetBrains Mono',monospace;font-size:.85em}
+.rt tr:hover td{background:var(--card2)}
+.rt tr.hl td{background:var(--accent-bg);font-weight:700}
 
-  /* preset chips */
-  .preset-chips {
-    display: flex; flex-wrap: wrap; gap: 6px;
-  }
-  .chip {
-    padding: 4px 10px; border: 1px solid #1e1e1e;
-    border-radius: 2px; font-size: 9px; letter-spacing: 2px;
-    color: #444444; cursor: pointer; text-transform: uppercase;
-    transition: all 0.2s; background: none; font-family: inherit;
-  }
-  .chip:hover { border-color: #3a3a3a; color: #777777; }
+/* AI BOX */
+.ai-box{background:var(--card2);border:1px solid var(--border);border-radius:var(--radius);padding:20px}
+.ai-box h3{font-size:.95em;font-weight:700;margin-bottom:10px;color:var(--text)}
+.ai-box p{color:var(--text2);line-height:1.65;font-size:.85em;margin-bottom:7px}
+.ai-box ul{list-style:none;padding:0}
+.ai-box li{padding:4px 0 4px 14px;position:relative;color:var(--text2);font-size:.82em;line-height:1.5}
+.ai-box li::before{content:'';position:absolute;left:0;top:10px;width:4px;height:4px;background:var(--text3);border-radius:50%}
 
-  .divider { height: 1px; background: #111111; margin: 8px 0; }
+/* TOAST */
+.toast{position:fixed;top:14px;right:14px;padding:9px 18px;border-radius:var(--radius-sm);font-weight:600;font-size:.78em;z-index:9999;transform:translateX(140%);transition:transform .25s;box-shadow:var(--shadow-md)}
+.toast.show{transform:translateX(0)}
+.toast-ok{background:var(--text);color:var(--card)}
+.toast-err{background:#555;color:#fff}
+.toast-info{background:var(--accent-bg);color:var(--text);border:1px solid var(--border)}
 
-  /* graph canvas container */
-  .graph-wrap { flex: 1; display: flex; overflow: hidden; }
+/* OVERLAY */
+.ov{display:none;position:fixed;inset:0;background:rgba(0,0,0,.4);z-index:998;justify-content:center;align-items:center;flex-direction:column;backdrop-filter:blur(4px)}
+.ov.show{display:flex}
+.ov-card{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:32px;text-align:center;box-shadow:var(--shadow-lg)}
+.spin{width:32px;height:32px;border:3px solid var(--border);border-top-color:var(--text);border-radius:50%;animation:sp .55s linear infinite;margin:0 auto 12px}
+@keyframes sp{to{transform:rotate(360deg)}}
 
-  /* scrollable panel content */
-  .panel-scroll {
-    flex: 1; overflow-y: auto; padding: 0;
-  }
-  .panel-scroll::-webkit-scrollbar { width: 2px; }
-  .panel-scroll::-webkit-scrollbar-thumb { background: #1e1e1e; border-radius: 2px; }
+/* WATERMARK */
+.watermark{position:fixed;bottom:12px;right:16px;font-size:.68em;font-weight:600;color:var(--text3);letter-spacing:.5px;opacity:.55;z-index:900;pointer-events:none;user-select:none}
 
-  .info-badge {
-    font-size: 9px; letter-spacing: 1px; color: #333333;
-    background: #111111; border: 1px solid #1e1e1e;
-    border-radius: 2px; padding: 2px 6px;
-  }
+/* MATRIX CAP */
+.cap-matrix-wrap{overflow:auto;border:1px solid var(--border);border-radius:var(--radius-sm);margin-top:6px;max-height:400px}
+.cap-matrix{border-collapse:collapse;font-family:'JetBrains Mono',monospace;font-size:.72em}
+.cap-matrix th{background:var(--bg2);padding:6px 8px;text-align:center;font-weight:700;color:var(--text2);border:1px solid var(--border);min-width:44px;position:sticky;top:0;z-index:2}
+.cap-matrix th.corner{position:sticky;left:0;z-index:3;background:var(--bg)}
+.cap-matrix th.rh{position:sticky;left:0;z-index:1;background:var(--bg2)}
+.cap-matrix td{padding:6px 4px;border:1px solid var(--border);text-align:center;color:var(--text);font-size:.9em}
+.cap-matrix td.zero{color:var(--text3)}
+.cap-matrix td.active{color:var(--text);font-weight:700;background:var(--accent-bg)}
+.cap-matrix td.diag{background:var(--bg2);color:var(--text3)}
 
-  .flow-val {
-    font-size: 11px; color: #666666;
-    font-family: 'SF Mono', monospace;
-  }
-
-  /* matrix view */
-  .matrix-wrap {
-    overflow-x: auto; padding: 8px 0;
-  }
-  .matrix-table {
-    border-collapse: collapse; font-size: 10px;
-    font-family: 'SF Mono', monospace;
-    width: 100%;
-  }
-  .matrix-table th, .matrix-table td {
-    border: 1px solid #1a1a1a; padding: 5px 8px;
-    text-align: center; color: #555555;
-  }
-  .matrix-table th { color: #333333; background: #0a0a0a; font-weight: 400; }
-  .matrix-table td.active { color: #999999; }
-  .matrix-table td.zero { color: #222222; }
+@media(max-width:768px){.shell{padding:10px}.section{padding:14px}.row3,.row4{grid-template-columns:1fr}.stats-row{grid-template-columns:1fr 1fr}.iter-controls{flex-direction:column;align-items:stretch}.detail-grid{grid-template-columns:1fr}}
 </style>
 </head>
 <body>
 
-<!-- ========== SPLASH ========== -->
-<div id="splash">
+<!-- SPLASH -->
+<div id="splashScreen">
   <canvas id="splashCanvas"></canvas>
   <div class="splash-content">
-    <div class="splash-logo">
-      <svg width="48" height="48" viewBox="0 0 48 48" fill="none">
-        <circle cx="24" cy="24" r="23" stroke="#222222" stroke-width="1"/>
-        <circle cx="24" cy="24" r="18" stroke="#1a1a1a" stroke-width="0.5"/>
-        <circle cx="8" cy="24" r="2.5" fill="#444444"/>
-        <circle cx="40" cy="24" r="2.5" fill="#444444"/>
-        <circle cx="24" cy="8" r="2.5" fill="#444444"/>
-        <circle cx="24" cy="40" r="2.5" fill="#444444"/>
-        <circle cx="24" cy="24" r="3" fill="#888888"/>
-        <line x1="8" y1="24" x2="24" y2="24" stroke="#333333" stroke-width="0.5"/>
-        <line x1="24" y1="8" x2="24" y2="24" stroke="#333333" stroke-width="0.5"/>
-        <line x1="24" y1="24" x2="40" y2="24" stroke="#333333" stroke-width="0.5"/>
-        <line x1="24" y1="24" x2="24" y2="40" stroke="#333333" stroke-width="0.5"/>
-        <line x1="8" y1="24" x2="24" y2="8" stroke="#222222" stroke-width="0.5"/>
-        <line x1="40" y1="24" x2="24" y2="8" stroke="#222222" stroke-width="0.5"/>
-      </svg>
-    </div>
-    <div>
-      <div class="splash-title">MaxFlow</div>
-      <div class="splash-sub">Network Flow Solver</div>
-    </div>
-    <div style="width:240px;">
-      <div class="splash-bar-wrap">
-        <div class="splash-bar" id="splashBar"></div>
-        <div class="splash-pct" id="splashPct">0%</div>
-      </div>
-      <div class="splash-status" id="splashStatus">initializing</div>
-    </div>
+    <div class="splash-line"></div>
+    <div class="splash-title">MaxFlow Solver</div>
+    <div class="splash-sub">Network Flow Analyzer</div>
+    <div class="splash-bar"><div class="splash-bar-inner"></div></div>
   </div>
 </div>
 
-<!-- ========== LOCK ========== -->
-<div id="lock">
+<!-- LOCK -->
+<div id="lockScreen">
   <canvas id="lockCanvas"></canvas>
   <div class="lock-content">
-    <div class="lock-icon">
-      <svg width="32" height="32" viewBox="0 0 32 32" fill="none">
-        <rect x="8" y="14" width="16" height="12" rx="1" stroke="#444444" stroke-width="1"/>
-        <path d="M11 14V10a5 5 0 0110 0v4" stroke="#333333" stroke-width="1" fill="none"/>
-        <circle cx="16" cy="20" r="1.5" fill="#555555"/>
-      </svg>
-    </div>
-    <div class="lock-title">Authentication Required</div>
-    <div class="lock-device-wrap">
+    <div class="lock-title">Access Required</div>
+    <div class="lock-device-box">
       <div class="lock-device-label">Device Identifier</div>
       <div class="lock-device-id" id="lockDeviceId">computing...</div>
     </div>
     <div class="lock-input-wrap">
-      <input type="text" class="lock-input" id="lockInput"
-        placeholder="XXXX-XXXX-XXXX"
-        maxlength="19" autocomplete="off" spellcheck="false"/>
-      <button class="lock-submit" id="lockSubmit">
-        <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
-          <path d="M3 8h10M9 4l4 4-4 4" stroke="#ffffff" stroke-width="1"/>
-        </svg>
+      <input type="text" class="lock-input" id="lockInput" placeholder="ENTER ACCESS KEY" maxlength="19" autocomplete="off" spellcheck="false"/>
+      <button class="lock-submit" id="lockSubmit">--&gt;</button>
+    </div>
+    <div class="lock-err" id="lockErr"></div>
+    <div class="lock-hint">Enter your device key or universal key<br>to access the solver</div>
+  </div>
+</div>
+
+<!-- PLEXUS BG -->
+<canvas id="plexusBg"></canvas>
+<div class="watermark">MAXFLOW SOLVER</div>
+<div id="toast" class="toast"></div>
+
+<!-- OVERLAY -->
+<div id="ov" class="ov">
+  <div class="ov-card">
+    <div class="spin"></div>
+    <div id="ovText" style="color:var(--text2);font-weight:600;font-size:.82em">Solving...</div>
+  </div>
+</div>
+
+<!-- TOP BAR -->
+<div class="top-bar">
+  <div class="top-bar-logo">
+    <svg width="18" height="18" viewBox="0 0 18 18" fill="none">
+      <circle cx="3" cy="9" r="2" fill="currentColor" opacity=".6"/>
+      <circle cx="15" cy="9" r="2" fill="currentColor" opacity=".6"/>
+      <circle cx="9" cy="3" r="2" fill="currentColor" opacity=".5"/>
+      <circle cx="9" cy="15" r="2" fill="currentColor" opacity=".5"/>
+      <circle cx="9" cy="9" r="2.5" fill="currentColor" opacity=".8"/>
+      <line x1="3" y1="9" x2="9" y2="9" stroke="currentColor" stroke-width=".6" opacity=".4"/>
+      <line x1="9" y1="3" x2="9" y2="9" stroke="currentColor" stroke-width=".6" opacity=".4"/>
+      <line x1="9" y1="9" x2="15" y2="9" stroke="currentColor" stroke-width=".6" opacity=".4"/>
+      <line x1="9" y1="9" x2="9" y2="15" stroke="currentColor" stroke-width=".6" opacity=".4"/>
+    </svg>
+    MaxFlow Solver
+  </div>
+  <div class="top-bar-right">
+    <button class="tb-btn" onclick="toggleDark()" id="darkBtn">Light</button>
+    <button class="tb-btn" onclick="lockApp()">Lock</button>
+    <button class="tb-btn accent-btn" onclick="runSolve()">Solve</button>
+  </div>
+</div>
+
+<!-- MAIN -->
+<div class="shell" id="appShell" style="display:none">
+
+  <!-- HERO -->
+  <div class="hero">
+    <div class="hero-label">Operations Research</div>
+    <h1>Maximum Flow Problem Solver</h1>
+    <p>Ford-Fulkerson Algorithm with BFS (Edmonds-Karp) -- Step-by-step visualization</p>
+  </div>
+
+  <!-- SECTION 1: CONFIG -->
+  <div class="section">
+    <div class="section-head"><div class="section-num">1</div><div class="section-title">Network Configuration</div></div>
+    <div class="lbl">Presets</div>
+    <div class="pr-row">
+      <div class="pr-btn" onclick="loadPreset('pdf')"><div class="pn">PDF Example</div><div class="pd">7 nodes, 11 arcs</div></div>
+      <div class="pr-btn" onclick="loadPreset('simple')"><div class="pn">Simple</div><div class="pd">4 nodes</div></div>
+      <div class="pr-btn" onclick="loadPreset('medium')"><div class="pn">Medium</div><div class="pd">6 nodes</div></div>
+      <div class="pr-btn" onclick="loadPreset('complex')"><div class="pn">Complex</div><div class="pd">8 nodes</div></div>
+    </div>
+    <div class="row3" style="margin-bottom:14px">
+      <div class="field"><label>Number of Nodes</label><input type="number" id="inpNodes" min="2" max="20" value="7" onchange="onNodesChange()"></div>
+      <div class="field"><label>Source Node</label><input type="number" id="inpSource" min="1" value="1"></div>
+      <div class="field"><label>Sink Node</label><input type="number" id="inpSink" min="1" value="7"></div>
+    </div>
+    <div class="lbl">Add Arc</div>
+    <div class="row4" style="margin-bottom:8px">
+      <div class="field"><label>From Node</label><input type="number" id="arcFrom" min="1" placeholder="u"></div>
+      <div class="field"><label>To Node</label><input type="number" id="arcTo" min="1" placeholder="v"></div>
+      <div class="field"><label>Cap (u to v)</label><input type="number" id="capFwd" min="0" value="0" placeholder="forward"></div>
+      <div class="field"><label>Cap (v to u)</label><input type="number" id="capRev" min="0" value="0" placeholder="reverse"></div>
+    </div>
+    <div class="btn-group" style="margin-top:0">
+      <button class="btn btn-ghost btn-sm" onclick="addArcFromForm()">Add Arc</button>
+      <button class="btn btn-ghost btn-sm" onclick="clearArcs()">Clear All Arcs</button>
+    </div>
+    <div style="margin-top:14px">
+      <div class="lbl">Arc List <span id="arcCountLbl" style="font-size:.85em;color:var(--text3);font-weight:400;text-transform:none;letter-spacing:0">(0 arcs)</span></div>
+      <div class="arc-table-wrap" id="arcTableWrap">
+        <table class="arc-table">
+          <thead><tr><th>#</th><th>From</th><th>To</th><th>Cap (u-v)</th><th>Cap (v-u)</th><th></th></tr></thead>
+          <tbody id="arcTableBody"><tr><td colspan="6" style="color:var(--text3);font-size:.8em;padding:16px;text-align:center">No arcs defined. Add arcs above or load a preset.</td></tr></tbody>
+        </table>
+      </div>
+    </div>
+    <div class="btn-group">
+      <button class="btn btn-primary" onclick="runSolve()">Solve Maximum Flow</button>
+      <button class="btn btn-ghost" onclick="resetAll()">Reset</button>
+    </div>
+  </div>
+
+  <!-- SECTION 2: VISUALIZATION -->
+  <div class="section">
+    <div class="section-head"><div class="section-num">2</div><div class="section-title">Graph Visualization</div></div>
+    <div class="lbl">Layout</div>
+    <div class="lo-row">
+      <button class="lo-btn on" onclick="setLayout('circle',this)">Circle</button>
+      <button class="lo-btn" onclick="setLayout('layered',this)">Layered</button>
+      <button class="lo-btn" onclick="setLayout('spring',this)">Force</button>
+      <button class="lo-btn" onclick="setLayout('random',this)">Random</button>
+    </div>
+    <p style="font-size:.68em;color:var(--text3);margin:6px 0 8px">Drag nodes to reposition. Use iteration controls to step through the algorithm.</p>
+    <div class="cv-wrap" id="cvWrap">
+      <canvas id="cv"></canvas>
+      <div class="cv-bar">
+        <button onclick="zoomIn()">+</button>
+        <button onclick="zoomOut()">-</button>
+        <button onclick="zoomReset()">R</button>
+      </div>
+      <div class="cv-hint">Drag nodes</div>
+    </div>
+    <div class="iter-controls" id="iterCtrl" style="display:none">
+      <div class="iter-info">
+        <span>Iteration</span>
+        <span class="iter-badge" id="iterBadge">0/0</span>
+        <span id="iterLabel"></span>
+      </div>
+      <div class="iter-nav">
+        <button id="iterFirst" onclick="iterGo(0)">|&lt;</button>
+        <button id="iterPrev" onclick="iterGo(curIter-1)">&lt;</button>
+        <button id="iterNext" class="primary-iter" onclick="iterGo(curIter+1)">&gt;</button>
+        <button id="iterLast" onclick="iterGo(iterStates.length-1)">&gt;|</button>
+      </div>
+    </div>
+    <div class="playback-row" id="playbackRow" style="display:none">
+      <button class="play-btn" id="playBtn" onclick="togglePlayback()">
+        <span id="playIcon">&#9654;</span>
+        <span id="playText">Play</span>
       </button>
+      <select class="speed-select" id="speedSelect" onchange="playSpeed=+this.value">
+        <option value="2000">0.5x</option>
+        <option value="1200" selected>1x</option>
+        <option value="700">2x</option>
+        <option value="350">4x</option>
+      </select>
     </div>
-    <div class="lock-err-msg" id="lockErrMsg"></div>
-    <div class="lock-hint">
-      Enter your device access key<br>
-      or universal key to continue
+    <div class="iter-detail-panel" id="iterDetailPanel" style="display:none">
+      <div class="iter-detail-header">
+        <h4 id="iterDetailTitle">Detail</h4>
+        <span style="font-size:.65em;color:var(--text3);font-weight:600" id="iterDetailSub"></span>
+      </div>
+      <div class="iter-detail-body" id="iterDetailBody"></div>
     </div>
-  </div>
-</div>
-
-<!-- ========== APP ========== -->
-<div id="app">
-  <canvas id="appCanvas"></canvas>
-
-  <!-- Header -->
-  <div class="header">
-    <div class="header-left">
-      <svg class="header-logo" width="20" height="20" viewBox="0 0 20 20" fill="none">
-        <circle cx="3" cy="10" r="2" fill="#555555"/>
-        <circle cx="17" cy="10" r="2" fill="#555555"/>
-        <circle cx="10" cy="3" r="2" fill="#444444"/>
-        <circle cx="10" cy="17" r="2" fill="#444444"/>
-        <circle cx="10" cy="10" r="2.5" fill="#777777"/>
-        <line x1="3" y1="10" x2="10" y2="10" stroke="#333333" stroke-width="0.7"/>
-        <line x1="10" y1="3" x2="10" y2="10" stroke="#333333" stroke-width="0.7"/>
-        <line x1="10" y1="10" x2="17" y2="10" stroke="#333333" stroke-width="0.7"/>
-        <line x1="10" y1="10" x2="10" y2="17" stroke="#333333" stroke-width="0.7"/>
-      </svg>
-      <div class="header-title">MaxFlow Solver</div>
-    </div>
-    <div class="header-right">
-      <div class="header-badge" id="headerBadge">Ford-Fulkerson / BFS</div>
-      <button class="header-btn" onclick="resetAll()">Reset</button>
-      <button class="header-btn" onclick="lockApp()">Lock</button>
-    </div>
+    <div id="iterChanges"></div>
   </div>
 
-  <!-- Main -->
-  <div class="main">
-
-    <!-- LEFT PANEL -->
-    <div class="panel-left">
-      <div class="panel-scroll">
-
-        <!-- Network Config -->
-        <div class="panel-section">
-          <div class="panel-label">Network Configuration</div>
-          <div class="inp-row">
-            <div class="inp-label" style="font-size:9px;letter-spacing:1px;color:#444;min-width:48px">Nodes</div>
-            <input type="number" class="inp" id="inpNodes" placeholder="7" min="2" max="20" value="7"/>
-          </div>
-          <div class="inp-row">
-            <div class="inp-label" style="font-size:9px;letter-spacing:1px;color:#444;min-width:48px">Source</div>
-            <input type="number" class="inp" id="inpSource" placeholder="1" min="1" value="1"/>
-            <div class="inp-label" style="font-size:9px;letter-spacing:1px;color:#444;min-width:48px">Sink</div>
-            <input type="number" class="inp" id="inpSink" placeholder="7" min="1" value="7"/>
-          </div>
-          <div style="margin-top:8px;">
-            <div class="panel-label" style="margin-bottom:8px;">Presets</div>
-            <div class="preset-chips">
-              <button class="chip" onclick="loadPreset('pdf')">PDF Example</button>
-              <button class="chip" onclick="loadPreset('simple')">Simple 4-Node</button>
-              <button class="chip" onclick="loadPreset('complex')">Complex 8-Node</button>
-            </div>
-          </div>
-        </div>
-
-        <!-- Add Arc -->
-        <div class="panel-section">
-          <div class="panel-label">Add Arc</div>
-          <div class="add-arc-form" style="padding:0;">
-            <div class="add-arc-row">
-              <input type="number" class="inp inp-sm" id="arcFrom" placeholder="u" min="1"/>
-              <div class="add-arc-sep">to</div>
-              <input type="number" class="inp inp-sm" id="arcTo" placeholder="v" min="1"/>
-            </div>
-            <div class="add-arc-row" style="align-items:flex-start; flex-direction:column; gap:6px;">
-              <div style="font-size:9px;letter-spacing:2px;color:#333;text-transform:uppercase;">Capacities</div>
-              <div style="display:flex;gap:8px;align-items:center;width:100%;">
-                <div style="flex:1;">
-                  <div style="font-size:9px;color:#333;letter-spacing:1px;margin-bottom:4px;">u to v (forward)</div>
-                  <input type="number" class="inp" id="capFwd" placeholder="cap(u,v)" min="0" value="0"/>
-                </div>
-                <div style="flex:1;">
-                  <div style="font-size:9px;color:#333;letter-spacing:1px;margin-bottom:4px;">v to u (reverse)</div>
-                  <input type="number" class="inp" id="capRev" placeholder="cap(v,u)" min="0" value="0"/>
-                </div>
-              </div>
-            </div>
-            <button class="btn-full btn-ghost" style="margin-top:8px;" onclick="addArcFromForm()">Add Arc</button>
-          </div>
-        </div>
-
-        <!-- Arc List -->
-        <div class="panel-section" style="flex:1;">
-          <div class="panel-label">
-            Arc List
-            <span id="arcCount">0 arcs</span>
-          </div>
-          <div class="arc-list" id="arcList"></div>
-        </div>
-
-        <!-- Solve -->
-        <div class="panel-section">
-          <button class="btn-full btn-primary" id="solveBtn" onclick="solve()">
-            Solve Maximum Flow
-          </button>
-          <div style="margin-top:8px;">
-            <button class="btn-full btn-ghost" onclick="clearArcs()">Clear Arcs</button>
-          </div>
-        </div>
-
+  <!-- SECTION 3: RESULTS -->
+  <div id="results">
+    <div class="section">
+      <div class="section-head"><div class="section-num">3</div><div class="section-title">Analysis Results</div></div>
+      <div class="stats-row" id="sRow"></div>
+      <div id="pDisp"></div>
+      <div class="tabs">
+        <button class="tab-btn on" onclick="sTab('steps',this)">Steps</button>
+        <button class="tab-btn" onclick="sTab('table',this)">Table</button>
+        <button class="tab-btn" onclick="sTab('detail',this)">All Iterations</button>
+        <button class="tab-btn" onclick="sTab('matrix',this)">Capacity Matrix</button>
+        <button class="tab-btn" onclick="sTab('analysis',this)">Analysis</button>
       </div>
+      <div class="tp on" id="tp-steps"><div class="tl" id="tline"></div></div>
+      <div class="tp" id="tp-table"><div class="rt-wrap" id="rTbl"></div></div>
+      <div class="tp" id="tp-detail"><div id="allIterSection"></div></div>
+      <div class="tp" id="tp-matrix">
+        <div class="lbl" style="margin-bottom:8px">Residual Capacity Matrix (Current Iteration)</div>
+        <div class="cap-matrix-wrap" id="capMatrixWrap"></div>
+      </div>
+      <div class="tp" id="tp-analysis"><div class="ai-box" id="aiB"></div></div>
     </div>
-
-    <!-- CENTER: Graph Canvas -->
-    <div class="canvas-wrap graph-wrap">
-      <canvas id="graphCanvas"></canvas>
-      <div class="canvas-hint">drag nodes to reposition</div>
-      <div id="nodeTooltip" class="node-tooltip"></div>
-    </div>
-
-    <!-- RIGHT PANEL -->
-    <div class="panel-right">
-      <div class="panel-section" style="padding:12px 16px;">
-        <div class="panel-label">Results</div>
-        <div id="summaryBox" style="display:none;" class="summary-box">
-          <div class="summary-label">Maximum Flow</div>
-          <div class="summary-value" id="maxFlowVal">0<span class="summary-unit">units</span></div>
-          <div class="summary-meta">
-            <div class="summary-meta-item">
-              <div class="summary-meta-label">Iterations</div>
-              <div class="summary-meta-val" id="sumIterCount">-</div>
-            </div>
-            <div class="summary-meta-item">
-              <div class="summary-meta-label">Nodes</div>
-              <div class="summary-meta-val" id="sumNodes">-</div>
-            </div>
-            <div class="summary-meta-item">
-              <div class="summary-meta-label">Arcs</div>
-              <div class="summary-meta-val" id="sumArcs">-</div>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <!-- Iteration Controls -->
-      <div class="panel-section" id="iterControlsWrap" style="display:none;">
-        <div class="iter-controls">
-          <button class="btn-sm" id="btnFirst" onclick="gotoIter(0)">First</button>
-          <button class="btn-sm" id="btnPrev" onclick="prevIter()">Prev</button>
-          <div class="iter-info" id="iterInfo">-</div>
-          <button class="btn-sm" id="btnNext" onclick="nextIter()">Next</button>
-          <button class="btn-sm" id="btnLast" onclick="gotoIter(999)">Last</button>
-        </div>
-        <div style="display:flex;gap:6px;">
-          <button class="btn-sm" id="btnPlay" onclick="togglePlay()">Play</button>
-          <button class="btn-sm" onclick="toggleMatrix()">Matrix</button>
-        </div>
-      </div>
-
-      <!-- Matrix view -->
-      <div id="matrixWrap" style="display:none;padding:12px 16px;border-bottom:1px solid #1a1a1a;">
-        <div class="panel-label" style="margin-bottom:8px;">Residual Capacity Matrix</div>
-        <div class="matrix-wrap" id="matrixContent"></div>
-      </div>
-
-      <!-- Iterations list -->
-      <div class="result-scroll" id="resultScroll">
-        <div class="result-empty" id="resultEmpty">
-          <svg width="40" height="40" viewBox="0 0 40 40" fill="none">
-            <circle cx="20" cy="20" r="19" stroke="#1e1e1e" stroke-width="1"/>
-            <path d="M13 20h14M20 13v14" stroke="#1e1e1e" stroke-width="1"/>
-          </svg>
-          <div class="result-empty-txt">Configure and solve</div>
-        </div>
-        <div id="iterList"></div>
-      </div>
-    </div>
-
   </div>
 
-  <!-- Status bar -->
-  <div class="statusbar">
-    <div class="statusbar-item ok" id="sbLeft">Ready</div>
-    <div class="statusbar-item" id="sbMid">Ford-Fulkerson Algorithm</div>
-    <div class="statusbar-item" id="sbRight">MaxFlow Solver v1.0</div>
-  </div>
-
-</div>
-
-<!-- Notice -->
-<div class="notice" id="notice"></div>
+</div><!-- /shell -->
 
 <script>
 // ============================================================
-//  SECURITY SYSTEM
+//  SECURITY
 // ============================================================
-const HARDCODE_KEY = 'RADSTRIX';
+const HKEY = 'RADSTRIX';
 
 function getDeviceFingerprint() {
-  const nav = navigator;
-  const raw = [
-    nav.userAgent,
-    nav.language,
-    nav.hardwareConcurrency || 4,
-    screen.width,
-    screen.height,
-    screen.colorDepth,
-    new Date().getTimezoneOffset()
-  ].join('|');
-  let hash = 0;
-  for (let i = 0; i < raw.length; i++) {
-    const c = raw.charCodeAt(i);
-    hash = ((hash << 5) - hash) + c;
-    hash |= 0;
-  }
-  return Math.abs(hash);
+  const raw = [navigator.userAgent,navigator.language,navigator.hardwareConcurrency||4,screen.width,screen.height,screen.colorDepth,new Date().getTimezoneOffset()].join('|');
+  let h = 0;
+  for (let i = 0; i < raw.length; i++) { h = ((h << 5) - h) + raw.charCodeAt(i); h |= 0; }
+  return Math.abs(h);
 }
-
 function generateDeviceKey(fp) {
   const chars = '23456789ABCDEFGHJKLMNPQRSTUVWXYZ';
   let seed = fp;
-  function next() {
-    seed = (seed * 1664525 + 1013904223) & 0xffffffff;
-    return chars[Math.abs(seed) % chars.length];
-  }
+  function next() { seed = (seed * 1664525 + 1013904223) & 0xffffffff; return chars[Math.abs(seed) % chars.length]; }
   const parts = [];
-  for (let p = 0; p < 3; p++) {
-    let part = '';
-    for (let i = 0; i < 4; i++) part += next();
-    parts.push(part);
-  }
+  for (let p = 0; p < 3; p++) { let s = ''; for (let i = 0; i < 4; i++) s += next(); parts.push(s); }
   return parts.join('-');
 }
-
 function getMasterKey(dk) {
   if (!dk) dk = window._dk;
-  let hash = 0;
-  for (let i = 0; i < dk.length; i++) {
-    hash = ((hash << 5) - hash) + dk.charCodeAt(i);
-    hash |= 0;
-  }
-  hash = Math.abs(hash);
+  let h = 0;
+  for (let i = 0; i < dk.length; i++) { h = ((h << 5) - h) + dk.charCodeAt(i); h |= 0; }
+  h = Math.abs(h) ^ 0xDEADBEEF;
   const chars = '23456789ABCDEFGHJKLMNPQRSTUVWXYZ';
-  let seed = hash ^ 0xDEADBEEF;
-  function next() {
-    seed = (seed * 22695477 + 1) & 0xffffffff;
-    return chars[Math.abs(seed) % chars.length];
-  }
+  let seed = h;
+  function next() { seed = (seed * 22695477 + 1) & 0xffffffff; return chars[Math.abs(seed) % chars.length]; }
   const parts = [];
-  for (let p = 0; p < 3; p++) {
-    let part = '';
-    for (let i = 0; i < 4; i++) part += next();
-    parts.push(part);
-  }
+  for (let p = 0; p < 3; p++) { let s = ''; for (let i = 0; i < 4; i++) s += next(); parts.push(s); }
   return 'RS-' + parts.join('-');
 }
-
 const _fp = getDeviceFingerprint();
 const _dk = generateDeviceKey(_fp);
 const _mk = getMasterKey(_dk);
-window._dk = _dk;
-window._mk = _mk;
-window.getMasterKey = getMasterKey;
-
-function checkKey(input) {
-  const val = input.trim().toUpperCase();
-  return val === _mk || val === HARDCODE_KEY || val === _dk;
-}
-
-function isAuthed() {
-  return localStorage.getItem('gv-authed') === '1';
-}
-function setAuthed() {
-  localStorage.setItem('gv-authed', '1');
-}
-function clearAuth() {
-  localStorage.removeItem('gv-authed');
-}
+window._dk = _dk; window._mk = _mk; window.getMasterKey = getMasterKey;
+function checkKey(v) { v = v.trim().toUpperCase(); return v === _mk || v === HKEY || v === _dk; }
+function isAuthed() { return localStorage.getItem('gv-authed') === '1'; }
+function setAuthed() { localStorage.setItem('gv-authed', '1'); }
+function clearAuth() { localStorage.removeItem('gv-authed'); }
 
 // ============================================================
-//  PLEXUS ANIMATION
+//  PLEXUS UTIL
 // ============================================================
-function createPlexus(canvas, opts = {}) {
-  const O = Object.assign({
-    count: 80, maxDist: 120, speed: 0.3,
-    nodeColor: '#333333', lineColor: '#1a1a1a',
-    nodeSize: 1.5, bg: '#000000', glow: false
-  }, opts);
-
+function createPlexus(canvas, opts) {
+  const O = Object.assign({count:80, maxDist:120, speed:0.15, nodeColor:'rgba(255,255,255,.15)', lineColor:'rgba(255,255,255,.06)', bg:'#0a0a0a', glowColor:'255,255,255'}, opts);
   const ctx = canvas.getContext('2d');
-  let W, H, nodes = [], raf;
-
-  function resize() {
-    W = canvas.width = canvas.offsetWidth || window.innerWidth;
-    H = canvas.height = canvas.offsetHeight || window.innerHeight;
-  }
-
+  let W, H, parts = [], raf;
+  function resize() { W = canvas.width = canvas.offsetWidth || window.innerWidth; H = canvas.height = canvas.offsetHeight || window.innerHeight; }
   function init() {
-    resize();
-    nodes = [];
-    for (let i = 0; i < O.count; i++) {
-      nodes.push({
-        x: Math.random() * W, y: Math.random() * H,
-        vx: (Math.random() - 0.5) * O.speed,
-        vy: (Math.random() - 0.5) * O.speed,
-        r: O.nodeSize * (0.5 + Math.random() * 0.5),
-        depth: Math.random()
-      });
-    }
+    resize(); parts = [];
+    for (let i = 0; i < O.count; i++) parts.push({x:Math.random()*W, y:Math.random()*H, vx:(Math.random()-.5)*O.speed, vy:(Math.random()-.5)*O.speed, r:Math.random()*.6+.2, br:Math.random()*.5+.5});
   }
-
   function draw() {
-    ctx.clearRect(0, 0, W, H);
-    if (O.bg) { ctx.fillStyle = O.bg; ctx.fillRect(0, 0, W, H); }
-
-    // update
-    for (const n of nodes) {
-      n.x += n.vx; n.y += n.vy;
-      if (n.x < 0 || n.x > W) n.vx *= -1;
-      if (n.y < 0 || n.y > H) n.vy *= -1;
-    }
-
-    // lines
-    for (let i = 0; i < nodes.length; i++) {
-      for (let j = i + 1; j < nodes.length; j++) {
-        const a = nodes[i], b = nodes[j];
-        const dx = a.x - b.x, dy = a.y - b.y;
-        const dist = Math.sqrt(dx*dx + dy*dy);
-        if (dist < O.maxDist) {
-          const alpha = (1 - dist / O.maxDist) * 0.6;
-          ctx.beginPath();
-          ctx.moveTo(a.x, a.y);
-          ctx.lineTo(b.x, b.y);
-          ctx.strokeStyle = O.lineColor;
-          ctx.globalAlpha = alpha;
-          ctx.lineWidth = 0.5;
-          ctx.stroke();
-        }
+    ctx.clearRect(0,0,W,H);
+    if (O.bg) { ctx.fillStyle = O.bg; ctx.fillRect(0,0,W,H); }
+    for (let p of parts) {
+      p.x += p.vx; p.y += p.vy;
+      if (p.x<0||p.x>W) p.vx*=-1; if (p.y<0||p.y>H) p.vy*=-1;
+      for (let q of parts) {
+        if (p===q) continue;
+        const dx=p.x-q.x, dy=p.y-q.y, d=Math.sqrt(dx*dx+dy*dy);
+        if (d<O.maxDist) { const a=(1-d/O.maxDist)*.12; ctx.beginPath(); ctx.moveTo(p.x,p.y); ctx.lineTo(q.x,q.y); ctx.strokeStyle=O.lineColor; ctx.globalAlpha=a; ctx.lineWidth=.5; ctx.stroke(); ctx.globalAlpha=1; }
       }
+      const gr = ctx.createRadialGradient(p.x,p.y,0,p.x,p.y,p.r*5);
+      gr.addColorStop(0,`rgba(${O.glowColor},${p.br*.7})`); gr.addColorStop(1,`rgba(${O.glowColor},0)`);
+      ctx.beginPath(); ctx.arc(p.x,p.y,p.r*5,0,6.28); ctx.fillStyle=gr; ctx.fill();
+      ctx.beginPath(); ctx.arc(p.x,p.y,p.r*.4,0,6.28); ctx.fillStyle=`rgba(${O.glowColor},${p.br*.9})`; ctx.fill();
     }
-
-    // nodes
-    ctx.globalAlpha = 1;
-    for (const n of nodes) {
-      ctx.beginPath();
-      ctx.arc(n.x, n.y, n.r, 0, Math.PI * 2);
-      ctx.fillStyle = O.nodeColor;
-      ctx.fill();
-    }
-
     raf = requestAnimationFrame(draw);
   }
-
   function start() { init(); draw(); }
   function stop() { cancelAnimationFrame(raf); }
-  function onResize() { resize(); }
-
-  window.addEventListener('resize', onResize);
+  window.addEventListener('resize', () => { resize(); });
   return { start, stop };
 }
 
 // ============================================================
 //  SPLASH
 // ============================================================
-function runSplash(cb) {
-  const canvas = document.getElementById('splashCanvas');
-  canvas.style.width = '100%'; canvas.style.height = '100%';
-  const plexus = createPlexus(canvas, { count: 100, speed: 0.2, maxDist: 130, nodeColor: '#2a2a2a', lineColor: '#151515' });
-  plexus.start();
-
-  const bar = document.getElementById('splashBar');
-  const pct = document.getElementById('splashPct');
-  const status = document.getElementById('splashStatus');
-  const msgs = ['initializing','loading modules','building graph engine','computing residuals','calibrating solver','ready'];
-  let p = 0;
-  let msgIdx = 0;
-
-  const iv = setInterval(() => {
-    p += Math.random() * 8 + 2;
-    if (p > 100) p = 100;
-    bar.style.width = p + '%';
-    pct.textContent = Math.round(p) + '%';
-    const mi = Math.floor((p / 100) * (msgs.length - 1));
-    if (mi !== msgIdx) { msgIdx = mi; status.textContent = msgs[msgIdx]; }
-    if (p >= 100) {
-      clearInterval(iv);
-      status.textContent = msgs[msgs.length - 1];
-      setTimeout(() => {
-        plexus.stop();
-        const splash = document.getElementById('splash');
-        splash.classList.add('fade-out');
-        setTimeout(cb, 800);
-      }, 600);
-    }
-  }, 60);
-}
+(function(){
+  const sc = document.getElementById('splashCanvas');
+  sc.style.width = '100%'; sc.style.height = '100%';
+  const pl = createPlexus(sc, {count:100, speed:.12, maxDist:130, bg:'#0a0a0a', lineColor:'rgba(255,255,255,.06)', glowColor:'255,255,255'});
+  pl.start();
+  setTimeout(function(){
+    document.getElementById('splashScreen').classList.add('hidden');
+    pl.stop();
+    if (isAuthed()) { showApp(); } else { showLock(); }
+  }, 3200);
+})();
 
 // ============================================================
-//  LOCK SCREEN
+//  LOCK
 // ============================================================
 let lockPlexus = null;
-
 function showLock() {
-  const lock = document.getElementById('lock');
-  lock.classList.remove('hidden');
-  lock.style.display = 'flex';
-
-  const canvas = document.getElementById('lockCanvas');
-  canvas.style.width = '100%'; canvas.style.height = '100%';
-  if (lockPlexus) lockPlexus.stop();
-  lockPlexus = createPlexus(canvas, { count: 60, speed: 0.15, maxDist: 110, nodeColor: '#222222', lineColor: '#111111' });
-  lockPlexus.start();
-
+  const ls = document.getElementById('lockScreen');
+  ls.classList.remove('hidden'); ls.style.display = 'flex';
   document.getElementById('lockDeviceId').textContent = _dk;
+  const lc = document.getElementById('lockCanvas');
+  lc.style.width = '100%'; lc.style.height = '100%';
+  if (lockPlexus) lockPlexus.stop();
+  lockPlexus = createPlexus(lc, {count:60, speed:.1, maxDist:110, bg:'#0a0a0a', lineColor:'rgba(255,255,255,.05)', glowColor:'255,255,255'});
+  lockPlexus.start();
 }
-
 function hideLock() {
-  const lock = document.getElementById('lock');
-  lock.classList.add('hidden');
-  setTimeout(() => { lock.style.display = 'none'; if (lockPlexus) lockPlexus.stop(); }, 800);
+  const ls = document.getElementById('lockScreen');
+  ls.classList.add('hidden');
+  setTimeout(() => { ls.style.display = 'none'; if (lockPlexus) lockPlexus.stop(); }, 800);
 }
-
 function showApp() {
-  const app = document.getElementById('app');
-  app.style.display = 'flex';
-  setTimeout(() => { app.classList.add('visible'); }, 50);
-  initAppPlexus();
-  initGraphCanvas();
+  document.getElementById('appShell').style.display = 'block';
+  initPlexusBg();
+  initCanvas();
+  drawCurrent();
 }
-
-document.getElementById('lockInput').addEventListener('input', function() {
-  this.classList.remove('error', 'success');
-  document.getElementById('lockErrMsg').textContent = '';
-});
-
-document.getElementById('lockInput').addEventListener('keydown', function(e) {
-  if (e.key === 'Enter') attemptUnlock();
-});
-
+document.getElementById('lockInput').addEventListener('keydown', e => { if (e.key === 'Enter') attemptUnlock(); });
 document.getElementById('lockSubmit').addEventListener('click', attemptUnlock);
-
+document.getElementById('lockInput').addEventListener('input', function() { this.classList.remove('err','ok'); document.getElementById('lockErr').textContent = ''; });
 function attemptUnlock() {
   const inp = document.getElementById('lockInput');
-  const val = inp.value;
-  if (checkKey(val)) {
-    inp.classList.add('success');
-    setAuthed();
+  if (checkKey(inp.value)) {
+    inp.classList.add('ok'); setAuthed();
     setTimeout(() => { hideLock(); showApp(); }, 400);
   } else {
-    inp.classList.add('error');
-    document.getElementById('lockErrMsg').textContent = 'invalid key';
-    inp.value = '';
-    setTimeout(() => inp.classList.remove('error'), 1000);
+    inp.classList.add('err'); document.getElementById('lockErr').textContent = 'invalid key';
+    inp.value = ''; setTimeout(() => inp.classList.remove('err'), 1000);
   }
 }
-
 function lockApp() {
   clearAuth();
-  const app = document.getElementById('app');
-  app.classList.remove('visible');
-  setTimeout(() => { app.style.display = 'none'; }, 600);
+  document.getElementById('appShell').style.display = 'none';
   document.getElementById('lockInput').value = '';
-  document.getElementById('lockErrMsg').textContent = '';
+  document.getElementById('lockErr').textContent = '';
   showLock();
 }
 
 // ============================================================
-//  APP PLEXUS (background)
+//  PLEXUS BG
 // ============================================================
-let appPlexus = null;
-function initAppPlexus() {
-  const canvas = document.getElementById('appCanvas');
-  canvas.style.width = '100%'; canvas.style.height = '100%';
-  if (appPlexus) appPlexus.stop();
-  appPlexus = createPlexus(canvas, {
-    count: 50, speed: 0.1, maxDist: 100,
-    nodeColor: '#1a1a1a', lineColor: '#111111', bg: '#0a0a0a'
-  });
-  appPlexus.start();
+let bgPlexus = null;
+function initPlexusBg() {
+  const cv = document.getElementById('plexusBg');
+  cv.style.width = '100%'; cv.style.height = '100%';
+  if (bgPlexus) bgPlexus.stop();
+  const isDk = document.documentElement.getAttribute('data-theme') === 'dark';
+  bgPlexus = createPlexus(cv, {count:60, speed:.08, maxDist:130, bg:null, lineColor: isDk ? 'rgba(255,255,255,.04)' : 'rgba(26,26,26,.04)', glowColor: isDk ? '255,255,255' : '26,26,26'});
+  bgPlexus.start();
+}
+
+// ============================================================
+//  DARK MODE
+// ============================================================
+let isDark = true;
+function toggleDark() {
+  isDark = !isDark;
+  document.documentElement.setAttribute('data-theme', isDark ? 'dark' : 'light');
+  document.getElementById('darkBtn').textContent = isDark ? 'Light' : 'Dark';
+  if (bgPlexus) bgPlexus.stop();
+  initPlexusBg();
+  drawCurrent();
 }
 
 // ============================================================
 //  DATA MODEL
 // ============================================================
-let arcs = []; // {from, to, capFwd, capRev}
-let nodes = [];
-let nodePositions = {}; // {nodeId: {x, y}}
+let arcs = [];
+let nodePositions = {};
+let sc = 1, dragIdx = -1, dragOff = {x:0,y:0};
+let curLayout = 'circle';
+let curIter = 0, iterStates = [], playInterval = null, playSpeed = 1200;
 let solution = null;
 
-function getNodeCount() {
-  return parseInt(document.getElementById('inpNodes').value) || 7;
-}
-function getSource() {
-  return parseInt(document.getElementById('inpSource').value) || 1;
-}
-function getSink() {
-  return parseInt(document.getElementById('inpSink').value) || 7;
-}
+function getN() { return parseInt(document.getElementById('inpNodes').value) || 7; }
+function getSrc() { return parseInt(document.getElementById('inpSource').value) || 1; }
+function getSink() { return parseInt(document.getElementById('inpSink').value) || 7; }
 
-function addArcFromForm() {
-  const from = parseInt(document.getElementById('arcFrom').value);
-  const to = parseInt(document.getElementById('arcTo').value);
-  const capFwd = parseInt(document.getElementById('capFwd').value) || 0;
-  const capRev = parseInt(document.getElementById('capRev').value) || 0;
-  const n = getNodeCount();
-  if (!from || !to || from === to || from < 1 || to < 1 || from > n || to > n) {
-    showNotice('invalid arc'); return;
-  }
-  arcs.push({ from, to, capFwd, capRev });
-  document.getElementById('arcFrom').value = '';
-  document.getElementById('arcTo').value = '';
-  document.getElementById('capFwd').value = '0';
-  document.getElementById('capRev').value = '0';
-  renderArcList();
-  drawGraph();
-}
-
-function clearArcs() {
-  arcs = [];
-  renderArcList();
-  drawGraph();
-  solution = null;
-  renderResults();
-}
-
-function deleteArc(idx) {
-  arcs.splice(idx, 1);
-  renderArcList();
-  drawGraph();
-}
-
-function renderArcList() {
-  const list = document.getElementById('arcList');
-  document.getElementById('arcCount').textContent = arcs.length + ' arcs';
-  if (arcs.length === 0) { list.innerHTML = '<div style="font-size:10px;color:#2a2a2a;letter-spacing:2px;text-align:center;padding:16px 0;text-transform:uppercase;">no arcs defined</div>'; return; }
-  list.innerHTML = arcs.map((a, i) => `
-    <div class="arc-row">
-      <div class="arc-node-lbl">${a.from}</div>
-      <div class="arc-arrow">--</div>
-      <div class="arc-node-lbl">${a.to}</div>
-      <div class="arc-cap-wrap">
-        <div class="arc-cap-lbl">fwd:</div>
-        <div class="flow-val">${a.capFwd}</div>
-        <div class="arc-cap-lbl" style="margin-left:6px;">rev:</div>
-        <div class="flow-val">${a.capRev}</div>
-      </div>
-      <button class="arc-del" onclick="deleteArc(${i})">x</button>
-    </div>
-  `).join('');
-}
+function onNodesChange() { computeLayout(curLayout); drawCurrent(); }
 
 // ============================================================
 //  PRESETS
 // ============================================================
 function loadPreset(name) {
+  stopPlayback();
   if (name === 'pdf') {
     document.getElementById('inpNodes').value = 7;
     document.getElementById('inpSource').value = 1;
     document.getElementById('inpSink').value = 7;
     arcs = [
-      {from:1,to:2,capFwd:4,capRev:0},
-      {from:1,to:3,capFwd:3,capRev:0},
-      {from:1,to:4,capFwd:5,capRev:0},
-      {from:2,to:4,capFwd:2,capRev:0},
-      {from:2,to:5,capFwd:2,capRev:0},
-      {from:3,to:4,capFwd:1,capRev:0},
-      {from:3,to:6,capFwd:3,capRev:0},
-      {from:4,to:5,capFwd:3,capRev:4},
-      {from:4,to:6,capFwd:2,capRev:0},
-      {from:5,to:7,capFwd:4,capRev:0},
-      {from:6,to:7,capFwd:4,capRev:0},
+      {from:1,to:2,capFwd:4,capRev:0},{from:1,to:3,capFwd:3,capRev:0},{from:1,to:4,capFwd:5,capRev:0},
+      {from:2,to:4,capFwd:2,capRev:0},{from:2,to:5,capFwd:2,capRev:0},
+      {from:3,to:4,capFwd:1,capRev:0},{from:3,to:6,capFwd:3,capRev:0},
+      {from:4,to:5,capFwd:3,capRev:4},{from:4,to:6,capFwd:2,capRev:0},
+      {from:5,to:7,capFwd:4,capRev:0},{from:6,to:7,capFwd:4,capRev:0},
     ];
   } else if (name === 'simple') {
     document.getElementById('inpNodes').value = 4;
     document.getElementById('inpSource').value = 1;
     document.getElementById('inpSink').value = 4;
-    arcs = [
-      {from:1,to:2,capFwd:3,capRev:0},
-      {from:1,to:3,capFwd:3,capRev:0},
-      {from:2,to:3,capFwd:2,capRev:0},
-      {from:2,to:4,capFwd:3,capRev:0},
-      {from:3,to:4,capFwd:2,capRev:0},
-    ];
+    arcs = [{from:1,to:2,capFwd:3,capRev:0},{from:1,to:3,capFwd:3,capRev:0},{from:2,to:3,capFwd:2,capRev:0},{from:2,to:4,capFwd:3,capRev:0},{from:3,to:4,capFwd:2,capRev:0}];
+  } else if (name === 'medium') {
+    document.getElementById('inpNodes').value = 6;
+    document.getElementById('inpSource').value = 1;
+    document.getElementById('inpSink').value = 6;
+    arcs = [{from:1,to:2,capFwd:7,capRev:0},{from:1,to:3,capFwd:4,capRev:0},{from:2,to:4,capFwd:5,capRev:0},{from:2,to:3,capFwd:3,capRev:0},{from:3,to:5,capFwd:6,capRev:0},{from:4,to:6,capFwd:8,capRev:0},{from:5,to:4,capFwd:3,capRev:0},{from:5,to:6,capFwd:5,capRev:0}];
   } else if (name === 'complex') {
     document.getElementById('inpNodes').value = 8;
     document.getElementById('inpSource').value = 1;
     document.getElementById('inpSink').value = 8;
-    arcs = [
-      {from:1,to:2,capFwd:10,capRev:0},
-      {from:1,to:3,capFwd:10,capRev:0},
-      {from:2,to:4,capFwd:4,capRev:0},
-      {from:2,to:5,capFwd:8,capRev:0},
-      {from:3,to:5,capFwd:5,capRev:0},
-      {from:3,to:6,capFwd:7,capRev:0},
-      {from:4,to:7,capFwd:10,capRev:0},
-      {from:5,to:7,capFwd:5,capRev:0},
-      {from:5,to:8,capFwd:5,capRev:3},
-      {from:6,to:8,capFwd:10,capRev:0},
-      {from:7,to:8,capFwd:10,capRev:0},
-    ];
+    arcs = [{from:1,to:2,capFwd:10,capRev:0},{from:1,to:3,capFwd:10,capRev:0},{from:2,to:4,capFwd:4,capRev:0},{from:2,to:5,capFwd:8,capRev:0},{from:3,to:5,capFwd:5,capRev:0},{from:3,to:6,capFwd:7,capRev:0},{from:4,to:7,capFwd:10,capRev:0},{from:5,to:7,capFwd:5,capRev:0},{from:5,to:8,capFwd:5,capRev:3},{from:6,to:8,capFwd:10,capRev:0},{from:7,to:8,capFwd:10,capRev:0}];
   }
-  initNodePositions();
-  renderArcList();
-  drawGraph();
-  solution = null;
-  renderResults();
-  showNotice('preset loaded');
+  renderArcTable();
+  computeLayout(curLayout);
+  solution = null; iterStates = []; curIter = 0;
+  document.getElementById('results').classList.remove('vis');
+  document.getElementById('iterCtrl').style.display = 'none';
+  document.getElementById('playbackRow').style.display = 'none';
+  document.getElementById('iterDetailPanel').style.display = 'none';
+  drawCurrent();
+  toast(name + ' preset loaded', 'ok');
+}
+
+// ============================================================
+//  ARC MANAGEMENT
+// ============================================================
+function addArcFromForm() {
+  const from = parseInt(document.getElementById('arcFrom').value);
+  const to = parseInt(document.getElementById('arcTo').value);
+  const capFwd = parseInt(document.getElementById('capFwd').value) || 0;
+  const capRev = parseInt(document.getElementById('capRev').value) || 0;
+  const n = getN();
+  if (!from || !to || from === to || from < 1 || to < 1 || from > n || to > n) { toast('Invalid arc definition', 'err'); return; }
+  arcs.push({from, to, capFwd, capRev});
+  document.getElementById('arcFrom').value = '';
+  document.getElementById('arcTo').value = '';
+  document.getElementById('capFwd').value = '0';
+  document.getElementById('capRev').value = '0';
+  renderArcTable();
+  drawCurrent();
+}
+
+function deleteArc(i) { arcs.splice(i,1); renderArcTable(); drawCurrent(); }
+
+function clearArcs() { arcs = []; renderArcTable(); drawCurrent(); }
+
+function renderArcTable() {
+  const tbody = document.getElementById('arcTableBody');
+  document.getElementById('arcCountLbl').textContent = `(${arcs.length} arc${arcs.length!==1?'s':''})`;
+  if (!arcs.length) {
+    tbody.innerHTML = '<tr><td colspan="6" style="color:var(--text3);font-size:.8em;padding:16px;text-align:center">No arcs defined. Add arcs above or load a preset.</td></tr>';
+    return;
+  }
+  tbody.innerHTML = arcs.map((a,i) => `
+    <tr>
+      <td>${i+1}</td><td>${a.from}</td><td>${a.to}</td>
+      <td>${a.capFwd}</td><td>${a.capRev}</td>
+      <td><button class="arc-del-btn" onclick="deleteArc(${i})">x</button></td>
+    </tr>`).join('');
+}
+
+// ============================================================
+//  LAYOUT
+// ============================================================
+function setLayout(t, btn) {
+  document.querySelectorAll('.lo-btn').forEach(b => b.classList.remove('on'));
+  if (btn) btn.classList.add('on');
+  curLayout = t; computeLayout(t); drawCurrent();
+}
+
+function computeLayout(t) {
+  const n = getN();
+  const cv = document.getElementById('cv');
+  const W = cv.parentElement.clientWidth || 700, H = 460;
+  const cx = W/2, cy = H/2;
+  nodePositions = {};
+  if (t === 'circle') {
+    const r = Math.min(W,H) * .34;
+    for (let i = 1; i <= n; i++) { const a = 2*Math.PI*(i-1)/n - Math.PI/2; nodePositions[i] = {x:cx+r*Math.cos(a), y:cy+r*Math.sin(a)}; }
+  } else if (t === 'layered') {
+    const src = getSrc(), snk = getSink();
+    nodePositions[src] = {x: 80, y: H/2};
+    nodePositions[snk] = {x: W-80, y: H/2};
+    const rest = [];
+    for (let i = 1; i <= n; i++) { if (i !== src && i !== snk) rest.push(i); }
+    const cols = Math.ceil(rest.length / 3);
+    rest.forEach((id, idx) => {
+      const col = Math.floor(idx / 3), row = idx % 3;
+      const x = 80 + (W-160) * (col+1) / (cols+1);
+      const y = H/2 + (row - 1) * 110;
+      nodePositions[id] = {x, y};
+    });
+  } else if (t === 'spring') {
+    const pad = 70;
+    for (let i = 1; i <= n; i++) nodePositions[i] = {x:pad+Math.random()*(W-2*pad), y:pad+Math.random()*(H-2*pad)};
+    for (let it = 0; it < 200; it++) {
+      const f = {};
+      for (let i = 1; i <= n; i++) f[i] = {x:0,y:0};
+      for (let a = 1; a <= n; a++) for (let b = a+1; b <= n; b++) {
+        const dx=nodePositions[a].x-nodePositions[b].x, dy=nodePositions[a].y-nodePositions[b].y, d=Math.sqrt(dx*dx+dy*dy)||1, ff=4000/(d*d);
+        f[a].x+=dx/d*ff; f[a].y+=dy/d*ff; f[b].x-=dx/d*ff; f[b].y-=dy/d*ff;
+      }
+      for (const arc of arcs) {
+        const dx=nodePositions[arc.to].x-nodePositions[arc.from].x, dy=nodePositions[arc.to].y-nodePositions[arc.from].y, d=Math.sqrt(dx*dx+dy*dy)||1, ff=.005*d;
+        f[arc.from].x+=dx/d*ff; f[arc.from].y+=dy/d*ff; f[arc.to].x-=dx/d*ff; f[arc.to].y-=dy/d*ff;
+      }
+      const tmp = 1 - it/200;
+      for (let i = 1; i <= n; i++) {
+        f[i].x += (cx-nodePositions[i].x)*.002; f[i].y += (cy-nodePositions[i].y)*.002;
+        nodePositions[i].x = Math.max(pad, Math.min(W-pad, nodePositions[i].x + f[i].x*tmp));
+        nodePositions[i].y = Math.max(pad, Math.min(H-pad, nodePositions[i].y + f[i].y*tmp));
+      }
+    }
+  } else {
+    const pad = 60;
+    for (let i = 1; i <= n; i++) nodePositions[i] = {x:pad+Math.random()*(W-2*pad), y:pad+Math.random()*(H-2*pad)};
+  }
+}
+
+// ============================================================
+//  CANVAS / GRAPH DRAW
+// ============================================================
+function initCanvas() {
+  const cv = document.getElementById('cv');
+  computeLayout('circle');
+  cv.addEventListener('mousedown', onMD);
+  cv.addEventListener('mousemove', onMM);
+  cv.addEventListener('mouseup', () => dragIdx=-1);
+  cv.addEventListener('mouseleave', () => dragIdx=-1);
+  cv.addEventListener('touchstart', e => { const p=xyFromEvent(e,cv); for(let i=getN();i>=1;i--){const dx=p.x-nodePositions[i].x,dy=p.y-nodePositions[i].y;if(dx*dx+dy*dy<600){dragIdx=i;dragOff={x:dx,y:dy};e.preventDefault();return;}} },{passive:false});
+  cv.addEventListener('touchmove', e => { if(dragIdx<0)return;const p=xyFromEvent(e,cv);nodePositions[dragIdx]={x:p.x-dragOff.x,y:p.y-dragOff.y};drawCurrent();e.preventDefault(); },{passive:false});
+  cv.addEventListener('touchend', () => dragIdx=-1);
+  window.addEventListener('resize', drawCurrent);
+  drawCurrent();
+}
+function xyFromEvent(e, cv) {
+  const r = cv.getBoundingClientRect();
+  const cx = e.touches ? e.touches[0].clientX : e.clientX;
+  const cy2 = e.touches ? e.touches[0].clientY : e.clientY;
+  return {x:(cx-r.left)/sc, y:(cy2-r.top)/sc};
+}
+function onMD(e) { const p=xyFromEvent(e,document.getElementById('cv')); for(let i=getN();i>=1;i--){const dx=p.x-nodePositions[i].x,dy=p.y-nodePositions[i].y;if(dx*dx+dy*dy<600){dragIdx=i;dragOff={x:dx,y:dy};return;}} }
+function onMM(e) { if(dragIdx<0)return;const p=xyFromEvent(e,document.getElementById('cv'));nodePositions[dragIdx]={x:p.x-dragOff.x,y:p.y-dragOff.y};drawCurrent(); }
+function zoomIn(){sc=Math.min(2,sc+.15);drawCurrent();}
+function zoomOut(){sc=Math.max(.5,sc-.15);drawCurrent();}
+function zoomReset(){sc=1;computeLayout(curLayout);drawCurrent();}
+
+function drawCurrent() {
+  if (iterStates.length > 0 && curIter >= 0 && curIter < iterStates.length) {
+    const st = iterStates[curIter];
+    draw(st.hlArcs, st.hlNodes, st.pathArcs, st.pathNodes, st.capLabels);
+  } else {
+    draw([], [], [], [], null);
+  }
+}
+
+function draw(hlArcs, hlNodes, pathArcs, pathNodes, capLabels) {
+  hlArcs=hlArcs||[]; hlNodes=hlNodes||[]; pathArcs=pathArcs||[]; pathNodes=pathNodes||[]; capLabels=capLabels||null;
+  const cv = document.getElementById('cv');
+  const W = cv.parentElement.clientWidth || 700, H = 460;
+  const dpr = window.devicePixelRatio || 1;
+  cv.width = W*dpr; cv.height = H*dpr; cv.style.height = H+'px';
+  const ctx = cv.getContext('2d');
+  ctx.scale(dpr*sc, dpr*sc);
+  const sW = W/sc, sH = H/sc;
+
+  const cs = getComputedStyle(document.documentElement);
+  const bgC = cs.getPropertyValue('--canvas-bg').trim();
+  const nF = cs.getPropertyValue('--node-fill').trim();
+  const nS = cs.getPropertyValue('--node-stroke').trim();
+  const eC = cs.getPropertyValue('--edge-color').trim();
+  const tC = cs.getPropertyValue('--text').trim();
+  const cardC = cs.getPropertyValue('--card').trim();
+
+  ctx.fillStyle = bgC; ctx.fillRect(0,0,sW,sH);
+
+  const n = getN();
+  for (let i = 1; i <= n; i++) { if (!nodePositions[i]) return; }
+
+  // Draw arcs
+  for (const arc of arcs) {
+    const p1 = nodePositions[arc.from], p2 = nodePositions[arc.to];
+    if (!p1 || !p2) continue;
+    const isPath = pathArcs.some(a => a.from===arc.from && a.to===arc.to);
+    const isHl = hlArcs.some(a => a.from===arc.from && a.to===arc.to);
+
+    // Forward arc
+    drawDirectedArc(ctx, p1, p2, arc.from, arc.to, arc.capFwd, arc.capRev, capLabels, isPath, isHl, tC, eC, bgC, cardC, false);
+    // Reverse arc if has reverse capacity
+    if (arc.capRev > 0 || (capLabels && capLabels[arc.to] && capLabels[arc.to][arc.from] > 0)) {
+      const isPathRev = pathArcs.some(a => a.from===arc.to && a.to===arc.from);
+      drawDirectedArc(ctx, p2, p1, arc.to, arc.from, arc.capRev, arc.capFwd, capLabels, isPathRev, false, tC, eC, bgC, cardC, true);
+    }
+  }
+
+  // Draw nodes
+  for (let i = 1; i <= n; i++) {
+    const p = nodePositions[i];
+    if (!p) continue;
+    const isPath = pathNodes.includes(i);
+    const isHl = hlNodes.includes(i);
+    const isSrc = i === getSrc(), isSink = i === getSink();
+    const nr = 18;
+
+    if (isPath) {
+      ctx.beginPath(); ctx.arc(p.x,p.y,nr+7,0,6.28);
+      ctx.fillStyle = isDark ? 'rgba(255,255,255,.06)' : 'rgba(26,26,26,.06)'; ctx.fill();
+    }
+    ctx.beginPath(); ctx.arc(p.x,p.y,nr,0,6.28);
+    ctx.fillStyle = (isPath||isHl) ? tC : nF; ctx.fill();
+    ctx.strokeStyle = (isPath||isHl) ? tC : isSrc||isSink ? (isDark?'#666':'#888') : nS;
+    ctx.lineWidth = isSrc||isSink ? 2 : 1.2; ctx.stroke();
+
+    // Inner ring for src/sink
+    if (isSrc || isSink) {
+      ctx.beginPath(); ctx.arc(p.x,p.y,nr-5,0,6.28);
+      ctx.strokeStyle = isDark ? 'rgba(255,255,255,.2)' : 'rgba(0,0,0,.15)'; ctx.lineWidth=.8; ctx.stroke();
+    }
+
+    ctx.fillStyle = (isPath||isHl) ? cardC : tC;
+    ctx.font = '700 10px "DM Sans",sans-serif'; ctx.textAlign='center'; ctx.textBaseline='middle';
+    ctx.fillText(i, p.x, p.y);
+
+    if (isSrc) { ctx.font='600 7px "DM Sans",sans-serif'; ctx.fillStyle=isDark?'#555':'#999'; ctx.fillText('SRC',p.x,p.y+nr+9); }
+    if (isSink) { ctx.font='600 7px "DM Sans",sans-serif'; ctx.fillStyle=isDark?'#555':'#999'; ctx.fillText('SNK',p.x,p.y+nr+9); }
+  }
+
+  ctx.font='500 7px "DM Sans",sans-serif'; ctx.fillStyle=isDark?'rgba(255,255,255,.04)':'rgba(0,0,0,.04)';
+  ctx.textAlign='right'; ctx.textBaseline='bottom'; ctx.fillText('MAXFLOW SOLVER', sW-8, sH-6);
+}
+
+function drawDirectedArc(ctx, p1, p2, fromId, toId, capFwd, capRev, capLabels, isPath, isHl, tC, eC, bgC, cardC, isReverse) {
+  const dx=p2.x-p1.x, dy=p2.y-p1.y, dist=Math.sqrt(dx*dx+dy*dy)||1;
+  const nx=dx/dist, ny=dy/dist, r=18;
+  const offset = (isReverse || capRev > 0) ? 7 : 0;
+  const ox = -ny*offset*(isReverse?-1:1), oy = nx*offset*(isReverse?-1:1);
+  const sx=p1.x+nx*r+ox, sy=p1.y+ny*r+oy;
+  const ex=p2.x-nx*r+ox, ey=p2.y-ny*r+oy;
+
+  let curCap = capFwd;
+  if (capLabels && capLabels[fromId] && capLabels[fromId][toId] !== undefined) curCap = capLabels[fromId][toId];
+
+  ctx.beginPath(); ctx.moveTo(sx,sy); ctx.lineTo(ex,ey);
+  ctx.strokeStyle = isPath ? tC : isHl ? (isDark?'#888':'#555') : (curCap>0?eC:(isDark?'rgba(80,80,80,.3)':'rgba(200,200,200,.5)'));
+  ctx.lineWidth = isPath ? 2 : isHl ? 1.5 : 1;
+  ctx.stroke();
+
+  // Arrowhead
+  const ang = Math.atan2(ey-sy, ex-sx);
+  ctx.beginPath();
+  ctx.moveTo(ex,ey);
+  ctx.lineTo(ex-7*Math.cos(ang-.35),ey-7*Math.sin(ang-.35));
+  ctx.moveTo(ex,ey);
+  ctx.lineTo(ex-7*Math.cos(ang+.35),ey-7*Math.sin(ang+.35));
+  ctx.strokeStyle = isPath ? tC : (isDark?'#555':'#aaa'); ctx.lineWidth=1.2; ctx.stroke();
+
+  // Capacity label at near-source
+  const labelX = sx + nx*18, labelY = sy + ny*18;
+  const lbl = capLabels ? `${curCap}` : `${capFwd}`;
+  const tw = ctx.measureText(lbl).width + 6;
+  ctx.font = '600 8px "JetBrains Mono",monospace';
+  ctx.fillStyle = bgC; ctx.fillRect(labelX-tw/2, labelY-6, tw, 11);
+  ctx.fillStyle = isPath ? tC : (isDark?'#666':'#999');
+  ctx.textAlign='center'; ctx.textBaseline='middle';
+  ctx.fillText(lbl, labelX, labelY);
 }
 
 // ============================================================
 //  FORD-FULKERSON ENGINE
 // ============================================================
-function solve() {
-  const n = getNodeCount();
-  const source = getSource();
-  const sink = getSink();
+function deepCopy(obj) {
+  const r = {};
+  for (const k in obj) { r[k] = {}; for (const j in obj[k]) r[k][j] = obj[k][j]; }
+  return r;
+}
 
-  if (arcs.length === 0) { showNotice('no arcs defined'); return; }
-  if (source < 1 || sink < 1 || source > n || sink > n || source === sink) {
-    showNotice('invalid source/sink'); return;
-  }
-
-  // Build residual graph as adjacency map
-  // cap[u][v] = current residual capacity
-  // We use object of objects for flexibility
-  const cap = {};
-  const nodeSet = new Set();
-  nodeSet.add(source); nodeSet.add(sink);
-
-  for (let i = 1; i <= n; i++) { cap[i] = {}; nodeSet.add(i); }
-  for (const node of nodeSet) { if (!cap[node]) cap[node] = {}; }
-
-  // Initialize
-  for (const a of arcs) {
-    const {from: u, to: v, capFwd, capRev} = a;
-    if (!cap[u]) cap[u] = {};
-    if (!cap[v]) cap[v] = {};
-    // forward
-    cap[u][v] = (cap[u][v] || 0) + capFwd;
-    // reverse (initial)
-    cap[v][u] = (cap[v][u] || 0) + capRev;
-  }
-
-  const iterations = [];
-  let maxFlow = 0;
-
-  // Record initial state
-  const initialCap = deepCopy(cap);
-
-  // BFS to find augmenting path
-  function bfsPath(cap, s, t) {
-    const visited = {};
-    const parent = {};
-    const queue = [s];
-    visited[s] = true;
-    while (queue.length > 0) {
-      const u = queue.shift();
-      for (const v in cap[u]) {
-        if (!visited[v] && cap[u][v] > 0) {
-          visited[v] = true;
-          parent[v] = u;
-          if (parseInt(v) === t) {
-            // reconstruct path
-            const path = [];
-            let cur = t;
-            while (cur !== undefined) {
-              path.unshift(parseInt(cur));
-              cur = parent[cur];
-            }
-            return path;
-          }
-          queue.push(v);
+function bfsPath(cap, src, sink) {
+  const visited = {}, parent = {}, queue = [src];
+  visited[src] = true;
+  while (queue.length) {
+    const u = queue.shift();
+    for (const v in cap[u]) {
+      if (!visited[v] && cap[u][v] > 0) {
+        visited[v] = true; parent[v] = u;
+        if (parseInt(v) === sink) {
+          const path = []; let cur = sink;
+          while (cur !== undefined) { path.unshift(parseInt(cur)); cur = parent[cur]; }
+          return path;
         }
+        queue.push(v);
       }
     }
-    return null;
-  }
-
-  function deepCopy(obj) {
-    const res = {};
-    for (const k in obj) {
-      res[k] = {};
-      for (const j in obj[k]) res[k][j] = obj[k][j];
-    }
-    return res;
-  }
-
-  let iterNum = 0;
-  const maxIter = 1000;
-
-  while (iterNum < maxIter) {
-    const path = bfsPath(cap, source, sink);
-    if (!path) break;
-
-    // Find bottleneck
-    let bottleneck = Infinity;
-    for (let i = 0; i < path.length - 1; i++) {
-      const u = path[i], v = path[i+1];
-      bottleneck = Math.min(bottleneck, cap[u][v]);
-    }
-
-    // Record changes
-    const changes = [];
-    const capBefore = deepCopy(cap);
-
-    // Update residual
-    for (let i = 0; i < path.length - 1; i++) {
-      const u = path[i], v = path[i+1];
-      const before_uv = cap[u][v];
-      const before_vu = cap[v][u] || 0;
-      cap[u][v] -= bottleneck;
-      if (!cap[v]) cap[v] = {};
-      cap[v][u] = (cap[v][u] || 0) + bottleneck;
-      changes.push({
-        arc: `${u} -> ${v}`,
-        direction: 'forward',
-        before: before_uv,
-        after: cap[u][v],
-        delta: -bottleneck
-      });
-      changes.push({
-        arc: `${v} -> ${u}`,
-        direction: 'reverse',
-        before: before_vu,
-        after: cap[v][u],
-        delta: +bottleneck
-      });
-    }
-
-    maxFlow += bottleneck;
-    iterNum++;
-
-    iterations.push({
-      num: iterNum,
-      path: [...path],
-      bottleneck,
-      changes,
-      capAfter: deepCopy(cap),
-      cumFlow: maxFlow
-    });
-  }
-
-  // Compute actual flow on each arc
-  const flowOnArc = [];
-  for (const a of arcs) {
-    const {from: u, to: v, capFwd} = a;
-    const residual = cap[u][v] || 0;
-    const flow = capFwd - residual;
-    if (flow > 0) {
-      flowOnArc.push({from: u, to: v, flow, cap: capFwd});
-    }
-  }
-
-  solution = {
-    maxFlow, iterations, nodeCount: n,
-    source, sink, arcCount: arcs.length,
-    initialCap, finalCap: deepCopy(cap),
-    flowOnArc,
-    nodeSet: Array.from(nodeSet).sort((a,b)=>a-b)
-  };
-
-  currentIter = 0;
-  renderResults();
-  drawGraph();
-  document.getElementById('sbLeft').textContent = `Max Flow: ${maxFlow} units`;
-  showNotice(`maximum flow = ${maxFlow} units`);
-}
-
-// ============================================================
-//  RESULTS RENDERING
-// ============================================================
-let currentIter = 0;
-let playing = false;
-let playInterval = null;
-let showMatrix = false;
-
-function renderResults() {
-  if (!solution) {
-    document.getElementById('resultEmpty').style.display = 'flex';
-    document.getElementById('summaryBox').style.display = 'none';
-    document.getElementById('iterControlsWrap').style.display = 'none';
-    document.getElementById('iterList').innerHTML = '';
-    return;
-  }
-
-  document.getElementById('resultEmpty').style.display = 'none';
-  document.getElementById('summaryBox').style.display = 'block';
-  document.getElementById('iterControlsWrap').style.display = 'block';
-
-  document.getElementById('maxFlowVal').innerHTML = `${solution.maxFlow}<span class="summary-unit">units</span>`;
-  document.getElementById('sumIterCount').textContent = solution.iterations.length;
-  document.getElementById('sumNodes').textContent = solution.nodeCount;
-  document.getElementById('sumArcs').textContent = solution.arcCount;
-
-  renderIterList();
-  updateIterControls();
-  if (showMatrix) renderMatrix();
-}
-
-function renderIterList() {
-  const list = document.getElementById('iterList');
-  if (solution.iterations.length === 0) {
-    list.innerHTML = '<div style="font-size:10px;color:#333;letter-spacing:2px;text-align:center;padding:20px;text-transform:uppercase;">no augmenting path found</div>';
-    return;
-  }
-  list.innerHTML = solution.iterations.map((it, idx) => `
-    <div class="iter-card ${idx === currentIter ? 'active' : ''}" id="iterCard${idx}" onclick="gotoIter(${idx})">
-      <div class="iter-card-header">
-        <div class="iter-num">Iteration ${it.num}</div>
-        <div class="iter-pf">pf = ${it.bottleneck} &nbsp; flow = ${it.cumFlow}</div>
-      </div>
-      <div class="iter-path">
-        Path: ${it.path.map((n,i) => `<span class="path-node">${n}</span>${i < it.path.length-1 ? '<span class="path-arrow">-></span>' : ''}`).join('')}
-      </div>
-      <div class="iter-changes">
-        ${it.changes.map(c => `
-          <div class="iter-change-row">
-            <div class="iter-change-arc">${c.arc}</div>
-            <div>
-              <span class="iter-change-before">${c.before}</span>
-              <span class="iter-change-arrow">-></span>
-              <span class="iter-change-after">${c.after}</span>
-            </div>
-            <div class="iter-change-tag">${c.direction === 'forward' ? '-' + it.bottleneck : '+' + it.bottleneck}</div>
-          </div>
-        `).join('')}
-      </div>
-    </div>
-  `).join('');
-
-  // scroll active into view
-  const active = document.getElementById(`iterCard${currentIter}`);
-  if (active) active.scrollIntoView({behavior:'smooth', block:'nearest'});
-}
-
-function updateIterControls() {
-  const total = solution ? solution.iterations.length : 0;
-  document.getElementById('iterInfo').textContent = total > 0 ? `${currentIter + 1} / ${total}` : '0 / 0';
-  document.getElementById('btnPrev').disabled = currentIter === 0;
-  document.getElementById('btnFirst').disabled = currentIter === 0;
-  document.getElementById('btnNext').disabled = currentIter >= total - 1;
-  document.getElementById('btnLast').disabled = currentIter >= total - 1;
-}
-
-function gotoIter(idx) {
-  if (!solution) return;
-  const max = solution.iterations.length - 1;
-  currentIter = Math.max(0, Math.min(idx, max));
-  renderIterList();
-  updateIterControls();
-  drawGraph();
-  if (showMatrix) renderMatrix();
-}
-
-function prevIter() { gotoIter(currentIter - 1); }
-function nextIter() { gotoIter(currentIter + 1); }
-
-function togglePlay() {
-  playing = !playing;
-  const btn = document.getElementById('btnPlay');
-  if (playing) {
-    btn.textContent = 'Pause'; btn.classList.add('active');
-    playInterval = setInterval(() => {
-      if (!solution || currentIter >= solution.iterations.length - 1) {
-        togglePlay(); return;
-      }
-      nextIter();
-    }, 1200);
-  } else {
-    btn.textContent = 'Play'; btn.classList.remove('active');
-    clearInterval(playInterval);
-  }
-}
-
-function toggleMatrix() {
-  showMatrix = !showMatrix;
-  const wrap = document.getElementById('matrixWrap');
-  wrap.style.display = showMatrix ? 'block' : 'none';
-  if (showMatrix) renderMatrix();
-}
-
-function renderMatrix() {
-  if (!solution) return;
-  const cap = solution ? (currentIter < solution.iterations.length ? solution.iterations[currentIter].capAfter : solution.finalCap) : solution.finalCap;
-  const ns = solution.nodeSet;
-  let html = '<table class="matrix-table"><tr><th></th>';
-  for (const v of ns) html += `<th>${v}</th>`;
-  html += '</tr>';
-  for (const u of ns) {
-    html += `<tr><th>${u}</th>`;
-    for (const v of ns) {
-      const val = (cap[u] && cap[u][v]) ? cap[u][v] : 0;
-      html += `<td class="${val > 0 ? 'active' : 'zero'}">${val > 0 ? val : '-'}</td>`;
-    }
-    html += '</tr>';
-  }
-  html += '</table>';
-  document.getElementById('matrixContent').innerHTML = html;
-}
-
-// ============================================================
-//  GRAPH CANVAS
-// ============================================================
-let graphCanvas, graphCtx;
-let draggingNode = null;
-let dragOffX = 0, dragOffY = 0;
-let panX = 0, panY = 0;
-let isPanning = false;
-let panStartX, panStartY;
-
-function initNodePositions() {
-  const n = getNodeCount();
-  const canvas = document.getElementById('graphCanvas');
-  const W = canvas.offsetWidth || 600;
-  const H = canvas.offsetHeight || 500;
-  nodePositions = {};
-
-  if (n <= 1) {
-    nodePositions[1] = {x: W/2, y: H/2};
-    return;
-  }
-
-  // Circular layout with source left, sink right
-  const source = getSource();
-  const sink = getSink();
-  const others = [];
-  for (let i = 1; i <= n; i++) {
-    if (i !== source && i !== sink) others.push(i);
-  }
-
-  const cx = W / 2, cy = H / 2;
-  const rx = Math.min(W, H) * 0.35;
-  const ry = Math.min(W, H) * 0.30;
-
-  // Source on left, sink on right
-  nodePositions[source] = {x: cx - rx, y: cy};
-  nodePositions[sink] = {x: cx + rx, y: cy};
-
-  // Others in ellipse between
-  const step = (Math.PI * 2) / (others.length + 2);
-  others.forEach((id, i) => {
-    const angle = -Math.PI/2 + step * (i + 1);
-    nodePositions[id] = {
-      x: cx + rx * 0.6 * Math.cos(angle),
-      y: cy + ry * Math.sin(angle)
-    };
-  });
-}
-
-function initGraphCanvas() {
-  graphCanvas = document.getElementById('graphCanvas');
-  graphCtx = graphCanvas.getContext('2d');
-  resizeGraphCanvas();
-  initNodePositions();
-
-  graphCanvas.addEventListener('mousedown', onGraphMouseDown);
-  graphCanvas.addEventListener('mousemove', onGraphMouseMove);
-  graphCanvas.addEventListener('mouseup', onGraphMouseUp);
-  graphCanvas.addEventListener('mouseleave', onGraphMouseUp);
-  graphCanvas.addEventListener('mousemove', onGraphHover);
-
-  window.addEventListener('resize', () => { resizeGraphCanvas(); drawGraph(); });
-  drawGraph();
-}
-
-function resizeGraphCanvas() {
-  const wrap = graphCanvas.parentElement;
-  graphCanvas.width = wrap.offsetWidth;
-  graphCanvas.height = wrap.offsetHeight;
-}
-
-function getNodeAt(mx, my) {
-  const n = getNodeCount();
-  for (let i = 1; i <= n; i++) {
-    const pos = nodePositions[i];
-    if (!pos) continue;
-    const dx = mx - pos.x, dy = my - pos.y;
-    if (Math.sqrt(dx*dx + dy*dy) < 22) return i;
   }
   return null;
 }
 
-function onGraphMouseDown(e) {
-  const rect = graphCanvas.getBoundingClientRect();
-  const mx = e.clientX - rect.left;
-  const my = e.clientY - rect.top;
-  const node = getNodeAt(mx, my);
-  if (node !== null) {
-    draggingNode = node;
-    dragOffX = mx - nodePositions[node].x;
-    dragOffY = my - nodePositions[node].y;
-  } else {
-    isPanning = true;
-    panStartX = mx; panStartY = my;
-  }
-}
+function runSolve() {
+  const n = getN(), src = getSrc(), sink = getSink();
+  if (!arcs.length) { toast('No arcs defined', 'err'); return; }
+  if (src < 1 || sink < 1 || src > n || sink > n || src === sink) { toast('Invalid source/sink', 'err'); return; }
+  stopPlayback();
+  document.getElementById('ov').classList.add('show');
 
-function onGraphMouseMove(e) {
-  if (draggingNode === null && !isPanning) return;
-  const rect = graphCanvas.getBoundingClientRect();
-  const mx = e.clientX - rect.left;
-  const my = e.clientY - rect.top;
-  if (draggingNode !== null) {
-    nodePositions[draggingNode] = {x: mx - dragOffX, y: my - dragOffY};
-    drawGraph();
-  }
-}
+  setTimeout(() => {
+    try {
+      // Build residual graph
+      const cap = {};
+      for (let i = 1; i <= n; i++) cap[i] = {};
+      for (const a of arcs) {
+        if (!cap[a.from]) cap[a.from] = {};
+        if (!cap[a.to]) cap[a.to] = {};
+        cap[a.from][a.to] = (cap[a.from][a.to]||0) + a.capFwd;
+        cap[a.to][a.from] = (cap[a.to][a.from]||0) + a.capRev;
+      }
 
-function onGraphMouseUp() {
-  draggingNode = null;
-  isPanning = false;
-}
+      const initialCap = deepCopy(cap);
+      const states = [];
+      let maxFlow = 0, iterNum = 0;
 
-function onGraphHover(e) {
-  const rect = graphCanvas.getBoundingClientRect();
-  const mx = e.clientX - rect.left;
-  const my = e.clientY - rect.top;
-  const node = getNodeAt(mx, my);
-  const tooltip = document.getElementById('nodeTooltip');
-  if (node !== null) {
-    const source = getSource(), sink = getSink();
-    let label = `Node ${node}`;
-    if (node === source) label += ' (source)';
-    if (node === sink) label += ' (sink)';
-    tooltip.textContent = label;
-    tooltip.style.display = 'block';
-    tooltip.style.left = (e.clientX - rect.left + 16) + 'px';
-    tooltip.style.top = (e.clientY - rect.top - 8) + 'px';
-  } else {
-    tooltip.style.display = 'none';
-  }
-}
+      // Initial state
+      states.push(mkState('Initialization', ['Set all arc capacities from input. Source: '+src+', Sink: '+sink+'. Begin searching augmenting paths.'], [], [], [], [], deepCopy(cap)));
 
-function drawGraph() {
-  if (!graphCanvas || !graphCtx) return;
-  const ctx = graphCtx;
-  const W = graphCanvas.width, H = graphCanvas.height;
-  const n = getNodeCount();
-  const source = getSource(), sink = getSink();
+      while (iterNum < 500) {
+        const path = bfsPath(cap, src, sink);
+        if (!path) break;
 
-  // ensure positions
-  for (let i = 1; i <= n; i++) {
-    if (!nodePositions[i]) initNodePositions();
-  }
+        let bottleneck = Infinity;
+        for (let i = 0; i < path.length-1; i++) bottleneck = Math.min(bottleneck, cap[path[i]][path[i+1]]);
 
-  ctx.clearRect(0, 0, W, H);
+        const changes = [];
+        for (let i = 0; i < path.length-1; i++) {
+          const u=path[i], v=path[i+1];
+          const bFwd = cap[u][v], bRev = cap[v][u]||0;
+          cap[u][v] -= bottleneck;
+          cap[v][u] = (cap[v][u]||0) + bottleneck;
+          changes.push(`Arc ${u}->${v}: capacity ${bFwd} - ${bottleneck} = ${cap[u][v]} (forward reduced)`);
+          changes.push(`Arc ${v}->${u}: capacity ${bRev} + ${bottleneck} = ${cap[v][u]} (reverse increased)`);
+        }
 
-  // Get active path if solution
-  let activePath = [];
-  let activePathSet = new Set();
-  if (solution && solution.iterations.length > 0) {
-    const iter = solution.iterations[Math.min(currentIter, solution.iterations.length-1)];
-    activePath = iter.path;
-    for (let i = 0; i < activePath.length - 1; i++) {
-      activePathSet.add(`${activePath[i]}-${activePath[i+1]}`);
+        maxFlow += bottleneck;
+        iterNum++;
+
+        const pathArcs = path.slice(0,-1).map((u,i)=>({from:u,to:path[i+1]}));
+        const pathNodes = [...path];
+        changes.unshift(`Path: ${path.join(' -> ')} | Bottleneck (pf) = ${bottleneck} | Cumulative flow = ${maxFlow}`);
+
+        states.push(mkState(
+          `Iteration ${iterNum}: Path ${path.join('->')} (pf=${bottleneck})`,
+          changes, pathArcs, pathNodes, pathArcs, pathNodes, deepCopy(cap), bottleneck, maxFlow
+        ));
+      }
+
+      // Final state
+      const flowArcs = [];
+      for (const a of arcs) {
+        const res = cap[a.from][a.to] !== undefined ? cap[a.from][a.to] : 0;
+        const flow = a.capFwd - res;
+        if (flow > 0) flowArcs.push({from:a.from, to:a.to, flow, cap:a.capFwd});
+      }
+      states.push(mkState('Final Result', [`Maximum flow = ${maxFlow} units. Algorithm complete after ${iterNum} iterations.`], flowArcs.map(a=>({from:a.from,to:a.to})), flowArcs.map(a=>a.from).concat(flowArcs.map(a=>a.to)).filter((v,i,s)=>s.indexOf(v)===i), flowArcs.map(a=>({from:a.from,to:a.to})), [], deepCopy(cap)));
+
+      solution = {maxFlow, iterations:iterNum, nodeCount:n, arcCount:arcs.length, src, sink, states, flowArcs, initialCap, finalCap:deepCopy(cap), nodeSet: Array.from({length:n},(_,i)=>i+1)};
+      iterStates = states;
+      curIter = iterStates.length - 1;
+
+      showResults();
+      setupIterCtrl();
+      drawCurrent();
+      toast(`Maximum Flow = ${maxFlow} units`, 'ok');
+    } catch(err) {
+      console.error(err); toast('Error: '+err.message, 'err');
     }
-  }
-
-  // Get current capacities
-  let curCap = null;
-  if (solution) {
-    if (currentIter < solution.iterations.length) {
-      curCap = solution.iterations[currentIter].capAfter;
-    } else {
-      curCap = solution.finalCap;
-    }
-  }
-
-  // Draw arcs
-  for (const a of arcs) {
-    const from = nodePositions[a.from];
-    const to = nodePositions[a.to];
-    if (!from || !to) continue;
-
-    const isActive = activePathSet.has(`${a.from}-${a.to}`) || activePathSet.has(`${a.to}-${a.from}`);
-    drawArrow(ctx, from, to, a.from, a.to, a.capFwd, a.capRev, curCap, isActive, activePath);
-  }
-
-  // Draw nodes
-  for (let i = 1; i <= n; i++) {
-    const pos = nodePositions[i];
-    if (!pos) continue;
-    const isSource = i === source;
-    const isSink = i === sink;
-    const isOnPath = activePath.includes(i);
-
-    // outer ring
-    ctx.beginPath();
-    ctx.arc(pos.x, pos.y, 20, 0, Math.PI * 2);
-    ctx.fillStyle = isOnPath ? '#1e1e1e' : '#0d0d0d';
-    ctx.fill();
-    ctx.strokeStyle = isSource ? '#555555' : isSink ? '#555555' : isOnPath ? '#3a3a3a' : '#222222';
-    ctx.lineWidth = isSource || isSink ? 1.5 : 1;
-    ctx.stroke();
-
-    // inner circle
-    if (isSource || isSink) {
-      ctx.beginPath();
-      ctx.arc(pos.x, pos.y, 14, 0, Math.PI * 2);
-      ctx.strokeStyle = '#333333';
-      ctx.lineWidth = 0.5;
-      ctx.stroke();
-    }
-
-    // node label
-    ctx.font = `${isSource || isSink ? '500' : '400'} 12px SF Mono, Courier New, monospace`;
-    ctx.fillStyle = isOnPath ? '#cccccc' : isSource || isSink ? '#888888' : '#555555';
-    ctx.textAlign = 'center';
-    ctx.textBaseline = 'middle';
-    ctx.fillText(i, pos.x, pos.y);
-
-    // source/sink indicator
-    if (isSource) {
-      ctx.font = '8px sans-serif';
-      ctx.fillStyle = '#444444';
-      ctx.fillText('S', pos.x, pos.y + 26);
-    }
-    if (isSink) {
-      ctx.font = '8px sans-serif';
-      ctx.fillStyle = '#444444';
-      ctx.fillText('T', pos.x, pos.y + 26);
-    }
-  }
+    document.getElementById('ov').classList.remove('show');
+  }, 300);
 }
 
-function drawArrow(ctx, from, to, fromId, toId, capFwd, capRev, curCap, isActive, activePath) {
-  const dx = to.x - from.x;
-  const dy = to.y - from.y;
-  const dist = Math.sqrt(dx*dx + dy*dy);
-  if (dist < 1) return;
-
-  const nx = dx/dist, ny = dy/dist;
-  const r = 20;
-  const sx = from.x + nx * r;
-  const sy = from.y + ny * r;
-  const ex = to.x - nx * r;
-  const ey = to.y - ny * r;
-
-  // Get current residual caps
-  let curFwd = capFwd, curRev = capRev;
-  if (curCap) {
-    curFwd = (curCap[fromId] && curCap[fromId][toId] !== undefined) ? curCap[fromId][toId] : 0;
-    curRev = (curCap[toId] && curCap[toId][fromId] !== undefined) ? curCap[toId][fromId] : 0;
-  }
-
-  // Check if on active path
-  const isArcActive = activePath && activePath.length > 0;
-  let fwdOnPath = false, revOnPath = false;
-  for (let i = 0; i < activePath.length - 1; i++) {
-    if (activePath[i] === fromId && activePath[i+1] === toId) fwdOnPath = true;
-    if (activePath[i] === toId && activePath[i+1] === fromId) revOnPath = true;
-  }
-
-  const offset = (capRev > 0 || curRev > 0) ? 6 : 0;
-
-  // Draw forward arc
-  drawSingleArrow(ctx, sx, sy, ex, ey, nx, ny, curFwd, capFwd, fwdOnPath, offset, false);
-
-  // Draw reverse arc (if exists)
-  if (capRev > 0 || curRev > 0) {
-    drawSingleArrow(ctx, ex, ey, sx, sy, -nx, -ny, curRev, capRev, revOnPath, offset, true);
-  }
-
-  // Label at midpoint
-  const mx = (sx + ex) / 2 + ny * (offset + 12);
-  const my = (sy + ey) / 2 - nx * (offset + 12);
-
-  ctx.font = '9px SF Mono, Courier New, monospace';
-  ctx.textAlign = 'center';
-  ctx.textBaseline = 'middle';
-
-  if (curCap) {
-    // Show residual capacity
-    ctx.fillStyle = fwdOnPath ? '#888888' : '#333333';
-    ctx.fillText(`${curFwd}`, mx, my);
-  } else {
-    // Show original cap
-    ctx.fillStyle = '#333333';
-    const label = capRev > 0 ? `${capFwd}/${capRev}` : `${capFwd}`;
-    ctx.fillText(label, mx, my);
-  }
-}
-
-function drawSingleArrow(ctx, x1, y1, x2, y2, nx, ny, curCap, origCap, onPath, offset, reverse) {
-  const ox = -ny * offset * (reverse ? -1 : 1);
-  const oy = nx * offset * (reverse ? -1 : 1);
-
-  ctx.beginPath();
-  ctx.moveTo(x1 + ox, y1 + oy);
-  ctx.lineTo(x2 + ox, y2 + oy);
-  ctx.strokeStyle = onPath ? '#666666' : (curCap > 0 ? '#2a2a2a' : '#1a1a1a');
-  ctx.lineWidth = onPath ? 1.5 : 0.8;
-  ctx.stroke();
-
-  // Arrowhead
-  const angle = Math.atan2(y2 - y1, x2 - x1);
-  const aLen = 7;
-  const aAngle = 0.4;
-  ctx.beginPath();
-  ctx.moveTo(x2 + ox, y2 + oy);
-  ctx.lineTo(
-    x2 + ox - aLen * Math.cos(angle - aAngle),
-    y2 + oy - aLen * Math.sin(angle - aAngle)
-  );
-  ctx.moveTo(x2 + ox, y2 + oy);
-  ctx.lineTo(
-    x2 + ox - aLen * Math.cos(angle + aAngle),
-    y2 + oy - aLen * Math.sin(angle + aAngle)
-  );
-  ctx.strokeStyle = onPath ? '#666666' : '#222222';
-  ctx.lineWidth = onPath ? 1.5 : 0.8;
-  ctx.stroke();
+function mkState(title, changes, hlArcs, hlNodes, pathArcs, pathNodes, capLabels, bottleneck, cumFlow) {
+  return {title, changes:changes||[], hlArcs:hlArcs||[], hlNodes:hlNodes||[], pathArcs:pathArcs||[], pathNodes:pathNodes||[], capLabels:capLabels||null, bottleneck:bottleneck||0, cumFlow:cumFlow||0};
 }
 
 // ============================================================
-//  UTILS
+//  ITERATION UI
 // ============================================================
-function showNotice(msg) {
-  const el = document.getElementById('notice');
-  el.textContent = msg;
-  el.classList.add('show');
-  setTimeout(() => el.classList.remove('show'), 2500);
+function setupIterCtrl() {
+  const ctrl = document.getElementById('iterCtrl');
+  const pb = document.getElementById('playbackRow');
+  const dp = document.getElementById('iterDetailPanel');
+  if (iterStates.length <= 1) { ctrl.style.display='none'; pb.style.display='none'; dp.style.display='none'; return; }
+  ctrl.style.display='flex'; pb.style.display='flex'; dp.style.display='block';
+  updateIterUI();
 }
 
+function iterGo(idx) {
+  if (idx < 0) idx = 0;
+  if (idx >= iterStates.length) idx = iterStates.length-1;
+  curIter = idx; updateIterUI(); drawCurrent(); showIterChanges(); showIterDetail();
+  // Highlight timeline
+  document.querySelectorAll('.tl-item').forEach((el,i) => { el.classList.toggle('active', i===curIter); });
+}
+
+function updateIterUI() {
+  document.getElementById('iterBadge').textContent = (curIter+1)+'/'+iterStates.length;
+  const st = iterStates[curIter];
+  document.getElementById('iterLabel').textContent = st ? st.title : '';
+  document.getElementById('iterFirst').disabled = curIter===0;
+  document.getElementById('iterPrev').disabled = curIter===0;
+  document.getElementById('iterNext').disabled = curIter>=iterStates.length-1;
+  document.getElementById('iterLast').disabled = curIter>=iterStates.length-1;
+}
+
+function showIterChanges() {
+  const c = document.getElementById('iterChanges');
+  const st = iterStates[curIter];
+  if (!st || !st.changes || !st.changes.length) { c.innerHTML=''; return; }
+  let h = '<div class="iter-changes"><div class="change-title">Step Detail:</div>';
+  st.changes.forEach(ch => { h += `<div class="change-item">${ch}</div>`; });
+  h += '</div>'; c.innerHTML = h;
+}
+
+function showIterDetail() {
+  const panel = document.getElementById('iterDetailPanel');
+  const body = document.getElementById('iterDetailBody');
+  const title = document.getElementById('iterDetailTitle');
+  const sub = document.getElementById('iterDetailSub');
+  if (!iterStates.length || curIter < 0) { panel.style.display='none'; return; }
+  panel.style.display='block';
+  const st = iterStates[curIter];
+  title.textContent = st.title;
+  sub.textContent = (curIter+1)+'/'+iterStates.length;
+
+  const pathNodes = st.pathNodes || [];
+  const allNodes = Array.from({length:getN()},(_,i)=>i+1);
+  const otherNodes = allNodes.filter(n => !pathNodes.includes(n));
+  const pathArcs = st.pathArcs || [];
+
+  let h = '<div class="detail-grid">';
+  // On path
+  h += '<div class="detail-card"><div class="detail-card-title"><div class="dot" style="background:var(--text)"></div>On Path ('+pathNodes.length+')</div><div class="node-list">';
+  pathNodes.forEach(n => { h += `<span class="node-chip chip-path">Node ${n}</span>`; });
+  if (!pathNodes.length) h += '<span style="font-size:.7em;color:var(--text3)">--</span>';
+  h += '</div></div>';
+  // Other
+  h += '<div class="detail-card"><div class="detail-card-title"><div class="dot" style="background:var(--border2)"></div>Other Nodes ('+otherNodes.length+')</div><div class="node-list">';
+  otherNodes.forEach(n => { h += `<span class="node-chip chip-inactive">Node ${n}</span>`; });
+  if (!otherNodes.length) h += '<span style="font-size:.7em;color:var(--text3)">All on path</span>';
+  h += '</div></div>';
+  // Arcs used
+  h += '<div class="detail-card"><div class="detail-card-title"><div class="dot" style="background:var(--text3)"></div>Arcs Used ('+pathArcs.length+')</div><div class="node-list">';
+  pathArcs.forEach(a => { h += `<span class="node-chip chip-arc">${a.from}->${a.to}</span>`; });
+  if (!pathArcs.length) h += '<span style="font-size:.7em;color:var(--text3)">--</span>';
+  h += '</div></div></div>';
+
+  if (st.changes && st.changes.length) {
+    h += '<div class="verbal-box"><div class="vl">Explanation</div><p>' + st.changes.join('<br>') + '</p></div>';
+  }
+
+  if (st.bottleneck > 0) {
+    h += `<div style="margin-top:12px"><table class="detail-table"><thead><tr><th>Property</th><th>Value</th></tr></thead><tbody>
+      <tr><td>Bottleneck (pf)</td><td style="font-weight:700">${st.bottleneck}</td></tr>
+      <tr><td>Cumulative Flow</td><td style="font-weight:700">${st.cumFlow}</td></tr>
+      <tr><td>Path Length</td><td>${pathNodes.length} nodes, ${pathArcs.length} arcs</td></tr>
+    </tbody></table></div>`;
+  }
+
+  body.innerHTML = h;
+}
+
+function togglePlayback() {
+  if (playInterval) stopPlayback();
+  else {
+    if (curIter >= iterStates.length-1) curIter = 0;
+    document.getElementById('playIcon').innerHTML='&#9646;&#9646;';
+    document.getElementById('playText').textContent='Stop';
+    document.getElementById('playBtn').classList.add('playing');
+    playInterval = setInterval(() => {
+      if (curIter >= iterStates.length-1) { stopPlayback(); return; }
+      iterGo(curIter+1);
+    }, playSpeed);
+  }
+}
+function stopPlayback() {
+  if (playInterval) clearInterval(playInterval);
+  playInterval = null;
+  document.getElementById('playIcon').innerHTML='&#9654;';
+  document.getElementById('playText').textContent='Play';
+  document.getElementById('playBtn').classList.remove('playing');
+}
+
+// ============================================================
+//  RESULTS
+// ============================================================
+function showResults() {
+  document.getElementById('results').classList.add('vis');
+  setTimeout(() => document.getElementById('results').scrollIntoView({behavior:'smooth',block:'start'}), 150);
+  buildStats();
+  buildPath();
+  buildTimeline();
+  buildTable();
+  buildAllIter();
+  buildCapMatrix();
+  buildAnalysis();
+}
+
+function buildStats() {
+  const c = document.getElementById('sRow');
+  let h = '';
+  h += `<div class="stat"><div class="sv">${solution.maxFlow}</div><div class="sl">Max Flow</div></div>`;
+  h += `<div class="stat"><div class="sv">${solution.iterations}</div><div class="sl">Iterations</div></div>`;
+  h += `<div class="stat"><div class="sv">${solution.nodeCount}</div><div class="sl">Nodes</div></div>`;
+  h += `<div class="stat"><div class="sv">${solution.arcCount}</div><div class="sl">Arcs</div></div>`;
+  h += `<div class="stat"><div class="sv">${iterStates.length}</div><div class="sl">Steps</div></div>`;
+  c.innerHTML = h;
+}
+
+function buildPath() {
+  const c = document.getElementById('pDisp');
+  const fa = solution.flowArcs;
+  if (!fa.length) { c.innerHTML=''; return; }
+  let h = '<div class="lbl">Active Flow Arcs</div><div class="edge-pills">';
+  fa.forEach(a => { h += `<span class="epill">${a.from}->${a.to}: ${a.flow}/${a.cap}</span>`; });
+  h += '</div>';
+  // Show final path
+  if (solution.iterations > 0) {
+    const lastIter = iterStates[iterStates.length-2]; // second to last (last is final result)
+    if (lastIter && lastIter.pathArcs && lastIter.pathArcs.length) {
+      h += '<div class="lbl" style="margin-top:12px">Last Augmenting Path</div><div class="path-row">';
+      const pathNodes = (iterStates[iterStates.length-2]?.pathNodes)||[];
+      pathNodes.forEach((n,i) => { h+=`<span class="pnode">${n}</span>${i<pathNodes.length-1?'<span class="parrow">--></span>':''}`; });
+      h += '</div>';
+    }
+  }
+  c.innerHTML = h;
+}
+
+function buildTimeline() {
+  const el = document.getElementById('tline');
+  el.innerHTML = iterStates.map((st,i) => {
+    const isFin = i===iterStates.length-1;
+    return `<div class="tl-item${isFin?' fin':''}${i===curIter?' active':''}" onclick="iterGo(${i})">
+      <div class="tl-head"><span class="tl-tag">${i+1}</span>${isFin?'<span class="tl-fin">FINAL</span>':''}</div>
+      <div class="tl-title">${st.title}</div>
+      <div class="tl-desc">${(st.changes||[])[0]||''}</div>
+    </div>`;
+  }).join('');
+}
+
+function buildTable() {
+  const c = document.getElementById('rTbl');
+  let h = '<table class="rt"><thead><tr><th>#</th><th>Step</th><th>Path</th><th>pf</th><th>Cum.Flow</th></tr></thead><tbody>';
+  iterStates.forEach((st,i) => {
+    const isLast = i===iterStates.length-1;
+    const pathStr = st.pathNodes && st.pathNodes.length ? st.pathNodes.join('->') : '--';
+    h += `<tr${isLast?' class="hl"':''}><td>${i+1}</td><td>${st.title}</td><td><span style="font-family:'JetBrains Mono',monospace;font-size:.85em">${pathStr}</span></td><td>${st.bottleneck||'--'}</td><td>${st.cumFlow||'--'}</td></tr>`;
+  });
+  h += '</tbody></table>'; c.innerHTML = h;
+}
+
+function buildAllIter() {
+  const sec = document.getElementById('allIterSection');
+  let h = '';
+  iterStates.forEach((st,idx) => {
+    const isLast = idx===iterStates.length-1;
+    const pathNodes = st.pathNodes||[], pathArcs = st.pathArcs||[];
+    h += `<div class="all-iter-card${isLast?' expanded':''}" id="aic${idx}">
+      <div class="all-iter-head" onclick="document.getElementById('aic${idx}').classList.toggle('expanded')">
+        <div style="display:flex;align-items:center"><span class="iter-num">${idx+1}</span><span class="iter-title">${st.title}</span></div>
+        <span class="chevron">v</span>
+      </div>
+      <div class="all-iter-body">
+        <div class="detail-grid">
+          <div class="detail-card"><div class="detail-card-title"><div class="dot" style="background:var(--text)"></div>Path Nodes (${pathNodes.length})</div>
+            <div class="node-list">${pathNodes.map(n=>`<span class="node-chip chip-path">${n}</span>`).join('')||'<span style="font-size:.7em;color:var(--text3)">--</span>'}</div>
+          </div>
+          <div class="detail-card"><div class="detail-card-title"><div class="dot" style="background:var(--border2)"></div>Arcs Used (${pathArcs.length})</div>
+            <div class="node-list">${pathArcs.map(a=>`<span class="node-chip chip-arc">${a.from}->${a.to}</span>`).join('')||'<span style="font-size:.7em;color:var(--text3)">--</span>'}</div>
+          </div>
+          <div class="detail-card"><div class="detail-card-title"><div class="dot" style="background:var(--text3)"></div>Flow Info</div>
+            <div style="font-family:'JetBrains Mono',monospace;font-size:.8em;color:var(--text2)">
+              ${st.bottleneck ? `<div>pf = ${st.bottleneck}</div><div>cumulative = ${st.cumFlow}</div>` : '<div style="color:var(--text3)">--</div>'}
+            </div>
+          </div>
+        </div>
+        ${st.changes&&st.changes.length?`<div class="verbal-box" style="margin-top:12px"><div class="vl">Explanation</div><p style="font-size:.72em">${st.changes.slice(0,5).join('<br>')}</p></div>`:''}
+        <div style="margin-top:8px"><button class="btn btn-ghost btn-sm" onclick="iterGo(${idx})">View in Graph</button></div>
+      </div>
+    </div>`;
+  });
+  sec.innerHTML = h;
+}
+
+function buildCapMatrix() {
+  const cap = solution.finalCap;
+  const ns = solution.nodeSet;
+  let h = '<table class="cap-matrix"><thead><tr><th class="corner"></th>';
+  ns.forEach(v => { h += `<th>${v}</th>`; });
+  h += '</tr></thead><tbody>';
+  ns.forEach(u => {
+    h += `<tr><th class="rh">${u}</th>`;
+    ns.forEach(v => {
+      if (u===v) { h += '<td class="diag">-</td>'; return; }
+      const val = (cap[u]&&cap[u][v]!==undefined) ? cap[u][v] : 0;
+      h += `<td class="${val>0?'active':'zero'}">${val>0?val:0}</td>`;
+    });
+    h += '</tr>';
+  });
+  h += '</tbody></table>';
+  document.getElementById('capMatrixWrap').innerHTML = h;
+}
+
+function buildAnalysis() {
+  const c = document.getElementById('aiB');
+  const s = solution;
+  let h = '<h3>Complete Analysis</h3>';
+  h += `<p><strong>Algorithm:</strong> Ford-Fulkerson (Edmonds-Karp / BFS) | <strong>Nodes:</strong> ${s.nodeCount} | <strong>Arcs:</strong> ${s.arcCount} | <strong>Source:</strong> ${s.src} | <strong>Sink:</strong> ${s.sink}</p>`;
+  h += `<h3 style="margin-top:16px">Result Summary</h3>`;
+  h += `<p>The maximum flow from node <strong>${s.src}</strong> to node <strong>${s.sink}</strong> is <strong>${s.maxFlow} units</strong>, achieved in <strong>${s.iterations} augmenting path iterations</strong>.</p>`;
+  h += `<h3 style="margin-top:16px">Augmenting Paths Used</h3><ul>`;
+  s.states.filter(st=>st.bottleneck>0).forEach(st => {
+    h += `<li>Path ${st.pathNodes.join('->')}, bottleneck (pf) = ${st.bottleneck}, cumulative flow = ${st.cumFlow}</li>`;
+  });
+  h += '</ul>';
+  h += `<h3 style="margin-top:16px">Active Flow on Arcs</h3><ul>`;
+  s.flowArcs.forEach(a => { h += `<li>Arc ${a.from} -> ${a.to}: flow = ${a.flow} / capacity = ${a.cap}</li>`; });
+  if (!s.flowArcs.length) h += '<li>No active flow detected</li>';
+  h += '</ul>';
+  h += `<h3 style="margin-top:16px">Residual Capacities After Solution</h3>`;
+  h += `<p>The residual graph shows remaining capacity for potential further augmentation. All paths from source ${s.src} to sink ${s.sink} are saturated.</p>`;
+  h += `<h3 style="margin-top:16px">Algorithm Notes</h3><ul>`;
+  h += `<li>Ford-Fulkerson with BFS (Edmonds-Karp) guarantees O(VE^2) complexity.</li>`;
+  h += `<li>Each iteration finds the shortest augmenting path (fewest arcs) from source to sink.</li>`;
+  h += `<li>The bottleneck (pf) is the minimum residual capacity along the chosen path.</li>`;
+  h += `<li>Reverse arc capacities are increased by pf to allow future flow corrections.</li>`;
+  h += `<li>The algorithm terminates when no augmenting path exists in the residual graph.</li>`;
+  h += '</ul>';
+  c.innerHTML = h;
+}
+
+function sTab(n, btn) {
+  document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('on'));
+  document.querySelectorAll('.tp').forEach(p=>p.classList.remove('on'));
+  if (btn) btn.classList.add('on');
+  document.getElementById('tp-'+n).classList.add('on');
+  if (n==='matrix') buildCapMatrix();
+}
+
+// ============================================================
+//  RESET
+// ============================================================
 function resetAll() {
-  arcs = [];
-  solution = null;
-  currentIter = 0;
-  nodePositions = {};
+  arcs = []; solution = null; iterStates = []; curIter = 0; sc = 1;
+  stopPlayback();
   document.getElementById('inpNodes').value = 7;
   document.getElementById('inpSource').value = 1;
   document.getElementById('inpSink').value = 7;
-  renderArcList();
-  renderResults();
-  initNodePositions();
-  drawGraph();
-  document.getElementById('sbLeft').textContent = 'Ready';
-  showNotice('reset complete');
+  renderArcTable();
+  computeLayout('circle');
+  document.getElementById('results').classList.remove('vis');
+  document.getElementById('iterCtrl').style.display='none';
+  document.getElementById('playbackRow').style.display='none';
+  document.getElementById('iterDetailPanel').style.display='none';
+  document.getElementById('iterChanges').innerHTML='';
+  drawCurrent();
+  toast('Reset complete');
 }
 
 // ============================================================
-//  INPUT WATCHERS
+//  TOAST
 // ============================================================
-['inpNodes','inpSource','inpSink'].forEach(id => {
-  document.getElementById(id).addEventListener('change', () => {
-    initNodePositions();
-    drawGraph();
-  });
+function toast(msg, type) {
+  type = type||'info';
+  const e = document.getElementById('toast');
+  e.textContent = msg;
+  e.className = 'toast show toast-'+(type==='ok'?'ok':type==='err'?'err':'info');
+  setTimeout(() => e.classList.remove('show'), 2500);
+}
+
+// ============================================================
+//  KEYBOARD
+// ============================================================
+document.addEventListener('keydown', e => {
+  if (e.target.tagName==='INPUT'||e.target.tagName==='SELECT') return;
+  if (e.key==='ArrowRight') { e.preventDefault(); if(iterStates.length) iterGo(curIter+1); }
+  else if (e.key==='ArrowLeft') { e.preventDefault(); if(iterStates.length) iterGo(curIter-1); }
+  else if (e.key==='Home') { e.preventDefault(); iterGo(0); }
+  else if (e.key==='End') { e.preventDefault(); iterGo(iterStates.length-1); }
+  else if (e.key===' ') { e.preventDefault(); if(iterStates.length>1) togglePlayback(); }
+  else if ((e.key==='d'||e.key==='D') && !e.ctrlKey) toggleDark();
+  else if (e.key==='Enter' && (e.ctrlKey||e.metaKey)) { e.preventDefault(); runSolve(); }
 });
 
 // ============================================================
-//  BOOT SEQUENCE
+//  INIT
 // ============================================================
-window.addEventListener('load', () => {
-  runSplash(() => {
-    if (isAuthed()) {
-      showApp();
-    } else {
-      showLock();
-    }
-  });
-});
+window.addEventListener('resize', () => { if(document.getElementById('appShell').style.display!=='none') drawCurrent(); });
 </script>
 </body>
 </html>
