@@ -1,2957 +1,753 @@
 <!DOCTYPE html>
-<html lang="id" itemscope itemtype="https://schema.org/WebApplication">
+<html lang="id">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<meta name="description" content="Maximum Flow Problem Solver — Ford-Fulkerson Visualizer">
-<meta name="author" content="RADSTRIX">
-<title>Maximum Flow — Ford-Fulkerson Visualizer</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Radstrix | Maximum Flow Solver</title>
+    <style>
+        :root {
+            --bg-color: #f5f5f5;
+            --surface: #ffffff;
+            --text-main: #333333;
+            --text-muted: #888888;
+            --border: #dddddd;
+            --accent: #555555;
+            --accent-hover: #222222;
+            --font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+        }
 
-<style>
-/* ============================================================
-   DESIGN TOKENS
-   ============================================================ */
-:root {
-  --bg:          #f4f4f4;
-  --bg2:         #ebebeb;
-  --bg3:         #e0e0e0;
-  --card:        #ffffff;
-  --card2:       #fafafa;
-  --border:      #d4d4d4;
-  --border2:     #bdbdbd;
-  --text:        #1a1a1a;
-  --text2:       #525252;
-  --text3:       #909090;
-  --accent:      #2a2a2a;
-  --accent-bg:   #efefef;
-  --green:       #2d7d46;
-  --green-bg:    #eaf4ed;
-  --green-soft:  rgba(45,125,70,.12);
-  --red:         #c0392b;
-  --red-bg:      #fdecea;
-  --amber:       #b45309;
-  --amber-bg:    #fef3c7;
-  --blue:        #1d4ed8;
-  --blue-bg:     #eff6ff;
-  --radius:      10px;
-  --radius-sm:   6px;
-  --shadow:      0 1px 3px rgba(0,0,0,.07);
-  --shadow-md:   0 4px 16px rgba(0,0,0,.09);
-  --shadow-lg:   0 8px 32px rgba(0,0,0,.11);
-  --canvas-bg:   #f9f9f9;
-  --node-fill:   #ffffff;
-  --node-stroke: #d4d4d4;
-  --edge-color:  #cacaca;
-}
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
 
-[data-theme="dark"] {
-  --bg:          #0d0d0d;
-  --bg2:         #161616;
-  --bg3:         #202020;
-  --card:        #141414;
-  --card2:       #1a1a1a;
-  --border:      #2a2a2a;
-  --border2:     #3a3a3a;
-  --text:        #ededed;
-  --text2:       #a8a8a8;
-  --text3:       #606060;
-  --accent:      #d0d0d0;
-  --accent-bg:   #202020;
-  --green:       #4ade80;
-  --green-bg:    #052e16;
-  --green-soft:  rgba(74,222,128,.1);
-  --red:         #f87171;
-  --red-bg:      #2d0d0d;
-  --amber:       #fbbf24;
-  --amber-bg:    #1c1207;
-  --blue:        #60a5fa;
-  --blue-bg:     #0d1f3c;
-  --canvas-bg:   #111111;
-  --node-fill:   #1e1e1e;
-  --node-stroke: #3a3a3a;
-  --edge-color:  #333333;
-}
+        body {
+            font-family: var(--font-family);
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            overflow: hidden;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
 
-/* ============================================================
-   RESET & BASE
-   ============================================================ */
-*, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+        /* Plexus Background */
+        canvas.plexus-bg {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 0;
+            pointer-events: none;
+        }
 
-body {
-  font-family: 'Inter', system-ui, sans-serif;
-  background: var(--bg);
-  color: var(--text);
-  min-height: 100vh;
-  -webkit-font-smoothing: antialiased;
-  transition: background .3s, color .3s;
-  overflow-x: hidden;
-}
+        /* Lock Screen */
+        #authScreen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: #111111;
+            color: #ffffff;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 9999;
+            transition: opacity 0.5s ease;
+        }
 
-::-webkit-scrollbar { width: 4px; height: 4px; }
-::-webkit-scrollbar-track { background: transparent; }
-::-webkit-scrollbar-thumb { background: var(--border2); border-radius: 9px; }
+        .auth-box {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(10px);
+            padding: 40px;
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 8px;
+            text-align: center;
+            z-index: 10;
+            width: 400px;
+        }
 
-/* ============================================================
-   SPLASH SCREEN
-   ============================================================ */
-#splashScreen {
-  position: fixed; inset: 0; z-index: 10000;
-  display: flex; align-items: center; justify-content: center; flex-direction: column;
-  background: #080808; overflow: hidden;
-  transition: opacity .9s ease, visibility .9s ease;
-}
-#splashScreen.hidden { opacity: 0; visibility: hidden; pointer-events: none; }
-#splashCanvas { position: absolute; inset: 0; width: 100%; height: 100%; }
+        .auth-box h1 { margin-bottom: 10px; font-weight: 300; letter-spacing: 2px; }
+        .auth-box p { color: #aaaaaa; margin-bottom: 20px; font-size: 14px; }
+        .device-id-box {
+            background: rgba(0,0,0,0.5);
+            padding: 10px;
+            margin-bottom: 20px;
+            font-family: monospace;
+            letter-spacing: 1px;
+            border-radius: 4px;
+            color: #dddddd;
+        }
+        
+        input.auth-input {
+            width: 100%;
+            padding: 12px;
+            background: rgba(255,255,255,0.1);
+            border: 1px solid rgba(255,255,255,0.2);
+            color: white;
+            border-radius: 4px;
+            outline: none;
+            margin-bottom: 15px;
+            text-align: center;
+            letter-spacing: 1px;
+        }
 
-.splash-content {
-  position: relative; z-index: 2;
-  text-align: center; display: flex; flex-direction: column; align-items: center; gap: 12px;
-}
-.splash-divider {
-  width: 32px; height: 1px; background: rgba(255,255,255,.2);
-  opacity: 0; animation: fadeUp .5s .3s forwards;
-}
-.splash-title {
-  font-family: 'Inter', sans-serif; font-weight: 900;
-  font-size: clamp(1.4rem, 4vw, 2.2rem);
-  color: #fff; letter-spacing: 4px; text-transform: uppercase;
-  opacity: 0; animation: fadeUp 1s .4s forwards;
-}
-.splash-sub {
-  font-size: .65rem; font-weight: 500; letter-spacing: 5px;
-  text-transform: uppercase; color: rgba(255,255,255,.3);
-  opacity: 0; animation: fadeUp .8s .7s forwards;
-}
-.splash-bar {
-  width: 100px; height: 1.5px; background: rgba(255,255,255,.08);
-  border-radius: 2px; overflow: hidden; margin-top: 4px;
-  opacity: 0; animation: fadeUp .6s .8s forwards;
-}
-.splash-bar-fill {
-  height: 100%; background: linear-gradient(90deg, rgba(255,255,255,.6), rgba(255,255,255,.2));
-  width: 0; animation: fillBar 2.4s .9s ease-out forwards;
-}
+        input.auth-input:focus { border-color: #ffffff; }
 
-@keyframes fadeUp {
-  from { opacity: 0; transform: translateY(10px); }
-  to   { opacity: 1; transform: translateY(0); }
-}
-@keyframes fillBar { to { width: 100%; } }
+        button.btn {
+            background-color: var(--surface);
+            color: var(--text-main);
+            border: 1px solid var(--border);
+            padding: 10px 15px;
+            cursor: pointer;
+            border-radius: 4px;
+            font-weight: 600;
+            transition: all 0.3s;
+            width: 100%;
+        }
 
-/* ============================================================
-   LOCK SCREEN
-   ============================================================ */
-#lockScreen {
-  position: fixed; inset: 0; z-index: 9999;
-  display: flex; align-items: center; justify-content: center;
-  background: #080808; overflow: hidden;
-  transition: opacity .6s, visibility .6s;
-}
-#lockScreen.hidden { opacity: 0; visibility: hidden; pointer-events: none; }
-#lockCanvas { position: absolute; inset: 0; width: 100%; height: 100%; }
+        button.btn:hover { background-color: var(--text-main); color: var(--surface); }
+        button.btn.dark { background-color: var(--text-main); color: var(--surface); }
+        button.btn.dark:hover { background-color: var(--accent); }
 
-.lock-wrap {
-  position: relative; z-index: 2;
-  display: flex; flex-direction: column; align-items: center; gap: 18px;
-  max-width: 360px; width: 90%; text-align: center;
-}
-.lock-logo {
-  width: 48px; height: 48px;
-  border: 1px solid rgba(255,255,255,.1); border-radius: 12px;
-  display: grid; place-items: center; background: rgba(255,255,255,.04);
-}
-.lock-logo svg { width: 24px; height: 24px; }
-.lock-title {
-  font-weight: 800; font-size: 1rem; color: #fff;
-  letter-spacing: 2px; text-transform: uppercase;
-}
-.lock-sub { font-size: .65rem; color: rgba(255,255,255,.3); letter-spacing: 1px; }
+        /* Main App Layout */
+        #app {
+            display: flex;
+            flex: 1;
+            z-index: 1;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.5s ease;
+        }
 
-.lock-device-box {
-  padding: 8px 16px; background: rgba(255,255,255,.04);
-  border: 1px solid rgba(255,255,255,.07); border-radius: 6px;
-  font-family: 'JetBrains Mono', monospace; font-size: .65rem;
-  color: rgba(255,255,255,.25); letter-spacing: 1px; user-select: all; width: 100%;
-}
+        /* Semantic Tags Styling */
+        aside {
+            width: 350px;
+            background: var(--surface);
+            border-right: 1px solid var(--border);
+            display: flex;
+            flex-direction: column;
+            padding: 20px;
+            overflow-y: auto;
+            z-index: 2;
+            box-shadow: 2px 0 10px rgba(0,0,0,0.05);
+        }
 
-.lock-field {
-  width: 100%; display: flex; flex-direction: column; gap: 10px;
-}
-.lock-input {
-  width: 100%; padding: 12px 16px;
-  background: rgba(255,255,255,.05); border: 1px solid rgba(255,255,255,.1);
-  border-radius: 8px; color: #fff;
-  font-family: 'JetBrains Mono', monospace; font-size: .85rem;
-  text-align: center; letter-spacing: 2px; outline: none;
-  transition: border-color .2s;
-}
-.lock-input::placeholder { color: rgba(255,255,255,.2); letter-spacing: 1px; }
-.lock-input:focus { border-color: rgba(255,255,255,.25); }
+        main {
+            flex: 1;
+            position: relative;
+            background: transparent;
+        }
 
-.lock-btn {
-  width: 100%; padding: 12px;
-  background: #fff; color: #080808;
-  border: none; border-radius: 8px;
-  font-family: 'Inter', sans-serif; font-weight: 700; font-size: .8rem;
-  cursor: pointer; transition: opacity .15s, transform .1s;
-}
-.lock-btn:hover { opacity: .88; }
-.lock-btn:active { transform: scale(.98); }
+        section.panel {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            padding: 15px;
+            border-radius: 6px;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.02);
+        }
 
-.lock-error { min-height: 1.1rem; font-size: .7rem; color: #f87171; font-weight: 600; }
-.lock-hint { font-size: .6rem; color: rgba(255,255,255,.18); margin-top: -6px; }
+        h2 { font-size: 16px; margin-bottom: 15px; text-transform: uppercase; letter-spacing: 1px; color: var(--accent); border-bottom: 1px solid var(--border); padding-bottom: 5px; }
+        
+        .input-group { margin-bottom: 12px; }
+        .input-group label { display: block; font-size: 12px; font-weight: 600; margin-bottom: 4px; color: var(--text-muted); }
+        .input-group input { width: 100%; padding: 8px; border: 1px solid var(--border); border-radius: 4px; background: var(--bg-color); color: var(--text-main); }
+        
+        .flex-row { display: flex; gap: 10px; }
+        .flex-row > div { flex: 1; }
 
-/* ============================================================
-   PLEXUS BACKGROUND
-   ============================================================ */
-#plexusBg {
-  position: fixed; inset: 0; z-index: 0;
-  pointer-events: none; width: 100%; height: 100%;
-}
+        .arc-list { list-style: none; font-size: 13px; max-height: 150px; overflow-y: auto; border: 1px solid var(--border); padding: 5px; border-radius: 4px; background: var(--bg-color); }
+        .arc-list li { padding: 4px; border-bottom: 1px solid #eee; display: flex; justify-content: space-between;}
+        .arc-list li:last-child { border-bottom: none; }
 
-/* ============================================================
-   TOP BAR
-   ============================================================ */
-.top-bar {
-  position: sticky; top: 0; z-index: 200;
-  display: flex; align-items: center; justify-content: space-between; gap: 10px;
-  padding: 9px 20px;
-  background: rgba(255,255,255,.65);
-  backdrop-filter: blur(24px) saturate(180%);
-  -webkit-backdrop-filter: blur(24px) saturate(180%);
-  border-bottom: 1px solid rgba(0,0,0,.06);
-  box-shadow: 0 2px 20px rgba(0,0,0,.04);
-}
-[data-theme="dark"] .top-bar {
-  background: rgba(14,14,14,.75);
-  border-bottom: 1px solid rgba(255,255,255,.05);
-}
+        /* Graph Canvas */
+        #graphCanvas {
+            width: 100%;
+            height: 100%;
+            cursor: grab;
+            display: block;
+        }
+        #graphCanvas:active { cursor: grabbing; }
 
-.tb-brand {
-  display: flex; align-items: center; gap: 8px;
-  font-weight: 800; font-size: .82rem; letter-spacing: .3px;
-  color: var(--text); text-decoration: none;
-}
-.tb-brand svg { flex-shrink: 0; }
+        /* Overlay Analysis Panel */
+        article.analysis-panel {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            width: 320px;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(5px);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 20px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            display: none;
+            flex-direction: column;
+            z-index: 10;
+        }
 
-.tb-right { display: flex; align-items: center; gap: 5px; flex-wrap: wrap; }
+        .controls { display: flex; gap: 5px; margin-bottom: 15px; }
+        .controls button { padding: 8px; font-size: 12px; flex: 1; }
+        
+        .log-box {
+            background: var(--bg-color);
+            border: 1px solid var(--border);
+            font-family: monospace;
+            font-size: 12px;
+            padding: 10px;
+            height: 250px;
+            overflow-y: auto;
+            border-radius: 4px;
+            color: var(--accent);
+            line-height: 1.5;
+        }
 
-.tb-btn {
-  display: inline-flex; align-items: center; gap: 5px;
-  padding: 5px 11px;
-  background: var(--card2); border: 1px solid var(--border);
-  border-radius: 5px; color: var(--text2);
-  font-family: 'Inter', sans-serif; font-size: .7rem; font-weight: 600;
-  cursor: pointer; text-decoration: none; white-space: nowrap;
-  transition: all .15s;
-}
-.tb-btn:hover { border-color: var(--text3); color: var(--text); }
-.tb-btn.active { background: var(--text); color: var(--card); border-color: var(--text); }
-
-/* ============================================================
-   INDICATORS
-   ============================================================ */
-.online-indicator {
-  position: fixed; top: 50px; left: 14px; z-index: 100;
-  display: flex; align-items: center; gap: 5px;
-  font-size: .63rem; font-weight: 600; color: var(--text3);
-  pointer-events: none; user-select: none;
-}
-.online-dot {
-  width: 6px; height: 6px; border-radius: 50%; background: #4ade80;
-  box-shadow: 0 0 6px #4ade80; animation: pulse 2.5s infinite;
-}
-@keyframes pulse {
-  0%,100% { opacity: 1; box-shadow: 0 0 6px #4ade80; }
-  50%      { opacity: .5; box-shadow: 0 0 12px #4ade80; }
-}
-.watermark {
-  position: fixed; bottom: 12px; right: 16px;
-  font-size: .62rem; font-weight: 700; letter-spacing: 1px;
-  color: var(--text3); opacity: .45; pointer-events: none; user-select: none; z-index: 900;
-}
-
-/* ============================================================
-   SHELL
-   ============================================================ */
-.shell {
-  max-width: 1080px; margin: 0 auto;
-  padding: 24px 20px 100px;
-  position: relative; z-index: 1;
-}
-
-/* ============================================================
-   HERO
-   ============================================================ */
-.hero {
-  text-align: center; padding: 40px 0 30px;
-}
-.hero-badge {
-  display: inline-block; font-size: .62rem; font-weight: 700;
-  letter-spacing: 1.5px; text-transform: uppercase;
-  color: var(--text2); background: var(--card);
-  border: 1px solid var(--border); border-radius: 99px;
-  padding: 4px 14px; margin-bottom: 14px;
-}
-.hero h1 {
-  font-size: clamp(1.5rem, 3.5vw, 2.2rem);
-  font-weight: 900; letter-spacing: -.5px;
-}
-.hero p {
-  color: var(--text3); font-size: .82rem; margin-top: 6px;
-}
-
-/* ============================================================
-   SECTION CARD
-   ============================================================ */
-.section {
-  background: rgba(255,255,255,.5);
-  backdrop-filter: blur(20px) saturate(160%);
-  -webkit-backdrop-filter: blur(20px) saturate(160%);
-  border: 1px solid rgba(255,255,255,.25);
-  border-radius: var(--radius);
-  padding: 22px; margin-bottom: 14px;
-  box-shadow: 0 8px 32px rgba(0,0,0,.07), inset 0 1px 0 rgba(255,255,255,.4);
-  transition: background .3s, border-color .3s;
-}
-[data-theme="dark"] .section {
-  background: rgba(20,20,20,.55);
-  border: 1px solid rgba(255,255,255,.06);
-  box-shadow: 0 8px 32px rgba(0,0,0,.5), inset 0 1px 0 rgba(255,255,255,.03);
-}
-.section-head {
-  display: flex; align-items: center; gap: 10px; margin-bottom: 18px;
-}
-.section-num {
-  width: 26px; height: 26px; display: grid; place-items: center;
-  border-radius: 50%; background: var(--text); color: var(--card);
-  font-size: .72rem; font-weight: 700; flex-shrink: 0;
-}
-.section-title { font-size: .95rem; font-weight: 700; }
-
-/* ============================================================
-   FORM ELEMENTS
-   ============================================================ */
-.lbl {
-  font-size: .62rem; font-weight: 700; letter-spacing: 1px;
-  text-transform: uppercase; color: var(--text3); margin-bottom: 8px;
-  display: block;
-}
-.field { display: flex; flex-direction: column; gap: 4px; }
-.field label {
-  font-size: .62rem; font-weight: 700; letter-spacing: .5px;
-  text-transform: uppercase; color: var(--text3);
-}
-.field input, .field select {
-  background: var(--card2); border: 1px solid var(--border);
-  border-radius: var(--radius-sm); padding: 8px 10px;
-  color: var(--text); font-family: 'JetBrains Mono', monospace;
-  font-size: .82rem; outline: none; transition: border-color .15s;
-}
-.field input:focus, .field select:focus {
-  border-color: var(--text2);
-  box-shadow: 0 0 0 2px rgba(26,26,26,.07);
-}
-[data-theme="dark"] .field input:focus, [data-theme="dark"] .field select:focus {
-  box-shadow: 0 0 0 2px rgba(255,255,255,.06);
-}
-.grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; }
-.grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
-
-/* ============================================================
-   BUTTONS
-   ============================================================ */
-.btn {
-  display: inline-flex; align-items: center; gap: 6px;
-  padding: 8px 18px; border: none; border-radius: var(--radius-sm);
-  font-family: 'Inter', sans-serif; font-weight: 700; font-size: .78rem;
-  cursor: pointer; transition: all .15s; text-decoration: none;
-}
-.btn-primary { background: var(--text); color: var(--card); }
-.btn-primary:hover { opacity: .85; }
-.btn-ghost {
-  background: var(--card2); color: var(--text2);
-  border: 1px solid var(--border);
-}
-.btn-ghost:hover { border-color: var(--text3); color: var(--text); }
-.btn-sm { padding: 5px 11px; font-size: .72rem; }
-.btn-green { background: var(--green); color: #fff; }
-.btn-green:hover { opacity: .88; }
-.btn-group { display: flex; gap: 6px; flex-wrap: wrap; margin-top: 14px; }
-
-/* ============================================================
-   PRESETS
-   ============================================================ */
-.preset-row {
-  display: grid; grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
-  gap: 6px; margin-bottom: 16px;
-}
-.preset-btn {
-  background: var(--card2); border: 1px dashed var(--border);
-  border-radius: var(--radius-sm); padding: 10px 8px;
-  text-align: center; cursor: pointer; transition: all .15s;
-}
-.preset-btn:hover {
-  border-style: solid; border-color: var(--text3);
-  background: var(--accent-bg);
-}
-.preset-btn .pn { font-weight: 700; font-size: .75rem; }
-.preset-btn .pd { font-size: .6rem; color: var(--text3); margin-top: 2px; }
-
-/* ============================================================
-   ARC INPUT LIST
-   ============================================================ */
-.arc-wrap { border: 1px solid var(--border); border-radius: var(--radius-sm); overflow: hidden; margin-top: 6px; }
-.arc-header {
-  display: grid;
-  grid-template-columns: 75px 75px 1fr 110px 36px;
-  background: var(--bg2); border-bottom: 1px solid var(--border);
-}
-.arc-header span {
-  padding: 8px 10px; font-size: .62rem; font-weight: 700;
-  letter-spacing: .5px; text-transform: uppercase; color: var(--text3);
-}
-.arc-row {
-  display: grid;
-  grid-template-columns: 75px 75px 1fr 110px 36px;
-  border-bottom: 1px solid var(--border);
-  transition: background .1s;
-}
-.arc-row:hover { background: var(--card2); }
-.arc-row:last-child { border-bottom: none; }
-.arc-row select, .arc-row input {
-  background: transparent; border: none; border-right: 1px solid var(--border);
-  padding: 8px 10px; font-family: 'JetBrains Mono', monospace;
-  font-size: .8rem; color: var(--text); outline: none;
-  width: 100%;
-}
-.arc-row input:focus { background: var(--accent-bg); }
-.arc-row .arc-label-cell {
-  padding: 0 10px; display: flex; align-items: center;
-  font-size: .72rem; color: var(--text3); font-family: 'JetBrains Mono', monospace;
-  border-right: 1px solid var(--border); min-height: 36px;
-}
-.arc-del {
-  background: none; border: none; color: var(--text3);
-  cursor: pointer; font-size: .8rem; font-weight: 700;
-  display: grid; place-items: center; transition: all .15s;
-}
-.arc-del:hover { background: var(--red-bg); color: var(--red); }
-.arc-add-row { padding: 8px 10px; }
-.arc-summary { margin-top: 7px; font-size: .7rem; color: var(--text3); font-weight: 600; }
-.arc-helper {
-  margin-top: 8px; padding: 10px 12px;
-  background: var(--blue-bg); border: 1px solid rgba(29,78,216,.15);
-  border-radius: var(--radius-sm); font-size: .72rem; color: var(--blue); line-height: 1.6;
-}
-[data-theme="dark"] .arc-helper { border-color: rgba(96,165,250,.15); }
-
-/* ============================================================
-   CANVAS AREA
-   ============================================================ */
-.cv-wrap {
-  position: relative; overflow: hidden;
-  background: rgba(255,255,255,.35);
-  backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
-  border: 1px solid rgba(255,255,255,.2); border-radius: var(--radius-sm);
-  box-shadow: 0 4px 24px rgba(0,0,0,.06);
-}
-[data-theme="dark"] .cv-wrap {
-  background: rgba(20,20,20,.5);
-  border: 1px solid rgba(255,255,255,.06);
-}
-.cv-wrap canvas { display: block; width: 100%; touch-action: none; }
-
-.cv-toolbar {
-  position: absolute; top: 8px; left: 8px;
-  display: flex; gap: 3px; z-index: 2;
-}
-.cv-toolbar button {
-  padding: 4px 10px; background: var(--card);
-  border: 1px solid var(--border); border-radius: 5px;
-  font-family: 'Inter', sans-serif; font-size: .65rem; font-weight: 700;
-  color: var(--text3); cursor: pointer; transition: all .12s;
-}
-.cv-toolbar button.on { background: var(--text); color: var(--card); border-color: var(--text); }
-.cv-toolbar button:hover:not(.on) { border-color: var(--text3); color: var(--text); }
-
-.cv-zoom {
-  position: absolute; top: 8px; right: 8px;
-  display: flex; gap: 3px; z-index: 2;
-}
-.cv-zoom button {
-  width: 28px; height: 28px; display: grid; place-items: center;
-  background: var(--card); border: 1px solid var(--border);
-  border-radius: 5px; color: var(--text2); cursor: pointer;
-  font-size: .85rem; font-weight: 700; transition: all .12s;
-}
-.cv-zoom button:hover { border-color: var(--text3); color: var(--text); }
-
-.cv-hint {
-  position: absolute; bottom: 7px; left: 8px;
-  font-size: .6rem; color: var(--text3);
-  background: var(--card); padding: 2px 8px; border-radius: 4px;
-  opacity: .75; pointer-events: none;
-}
-
-/* LEGEND */
-.legend {
-  display: none; flex-wrap: wrap; gap: 14px;
-  margin: 8px 0; font-size: .7rem; color: var(--text2);
-}
-.legend-item { display: flex; align-items: center; gap: 5px; }
-.legend-dot {
-  width: 10px; height: 10px; border-radius: 50%;
-  border: 1px solid rgba(0,0,0,.1);
-}
-
-/* LAYOUT BUTTONS */
-.layout-row { display: flex; gap: 4px; flex-wrap: wrap; margin: 6px 0 10px; }
-.layout-btn {
-  padding: 5px 12px; background: var(--card2);
-  border: 1px solid var(--border); border-radius: 5px;
-  font-family: 'Inter', sans-serif; font-size: .7rem; font-weight: 600;
-  color: var(--text2); cursor: pointer; transition: all .12s;
-}
-.layout-btn:hover { border-color: var(--text3); color: var(--text); }
-.layout-btn.on { background: var(--text); border-color: var(--text); color: var(--card); }
-
-/* ============================================================
-   ITERATION CONTROLS
-   ============================================================ */
-.iter-bar {
-  display: flex; align-items: center; justify-content: space-between;
-  gap: 10px; margin: 12px 0; padding: 12px 16px;
-  background: var(--card2); border: 1px solid var(--border);
-  border-radius: var(--radius-sm); flex-wrap: wrap;
-  display: none;
-}
-.iter-info { display: flex; align-items: center; gap: 8px; }
-.iter-badge {
-  background: var(--text); color: var(--card);
-  padding: 2px 8px; border-radius: 4px;
-  font-family: 'JetBrains Mono', monospace; font-size: .8rem; font-weight: 700;
-}
-.iter-label { font-size: .73rem; font-weight: 600; color: var(--text2); }
-.iter-nav { display: flex; gap: 5px; align-items: center; }
-.iter-nav button {
-  padding: 6px 13px; background: var(--card);
-  border: 1px solid var(--border); border-radius: 5px;
-  font-family: 'Inter', sans-serif; font-size: .72rem; font-weight: 700;
-  color: var(--text2); cursor: pointer; transition: all .12s;
-}
-.iter-nav button:hover:not(:disabled) { border-color: var(--text3); color: var(--text); }
-.iter-nav button:disabled { opacity: .3; cursor: not-allowed; }
-.iter-nav button.primary { background: var(--text); color: var(--card); border-color: var(--text); }
-
-/* PLAYBACK */
-.playback-row {
-  display: none; align-items: center; gap: 8px; margin: 4px 0 8px;
-}
-.play-btn {
-  display: inline-flex; align-items: center; gap: 5px;
-  padding: 6px 16px; background: var(--green); color: #fff;
-  border: none; border-radius: 5px;
-  font-family: 'Inter', sans-serif; font-size: .72rem; font-weight: 700;
-  cursor: pointer; transition: opacity .15s;
-}
-.play-btn:hover { opacity: .88; }
-.play-btn.playing { background: var(--red); }
-.speed-sel {
-  padding: 5px 8px; background: var(--card2);
-  border: 1px solid var(--border); border-radius: 5px;
-  font-family: 'Inter', sans-serif; font-size: .7rem; font-weight: 600;
-  color: var(--text2); cursor: pointer;
-}
-
-/* ============================================================
-   ITERATION DETAIL PANEL
-   ============================================================ */
-.detail-panel {
-  margin: 10px 0; border: 1px solid var(--border);
-  border-radius: var(--radius); overflow: hidden;
-  background: var(--card); display: none;
-}
-.detail-panel-head {
-  background: var(--bg2); padding: 12px 16px;
-  display: flex; align-items: center; justify-content: space-between;
-  border-bottom: 1px solid var(--border);
-}
-.detail-panel-head h4 { font-size: .82rem; font-weight: 700; }
-.detail-panel-body { padding: 16px; }
-
-.detail-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; margin-bottom: 14px; }
-
-.stat-card {
-  background: var(--card2); border: 1px solid var(--border);
-  border-radius: var(--radius-sm); padding: 12px; text-align: center;
-}
-.stat-card .sv {
-  font-family: 'JetBrains Mono', monospace; font-size: 1.3rem; font-weight: 800;
-}
-.stat-card .sl {
-  font-size: .6rem; font-weight: 700; letter-spacing: .6px;
-  text-transform: uppercase; color: var(--text3); margin-top: 3px;
-}
-.stat-card .sl.green { color: var(--green); }
-.stat-card .sl.blue { color: var(--blue); }
-
-/* Path display */
-.path-display {
-  display: flex; align-items: center; flex-wrap: wrap; gap: 3px; margin: 10px 0;
-}
-.pnode {
-  padding: 4px 10px; background: var(--accent-bg);
-  border: 1px solid var(--border); border-radius: 5px;
-  font-family: 'JetBrains Mono', monospace; font-weight: 700; font-size: .78rem;
-  color: var(--text);
-}
-.pnode.on-path {
-  background: var(--green-bg); border-color: var(--green); color: var(--green);
-}
-.parrow { color: var(--text3); font-size: .8rem; }
-
-/* Step Changes Box */
-.changes-box {
-  margin-top: 12px; padding: 12px 14px;
-  background: var(--accent-bg); border: 1px solid var(--border);
-  border-radius: var(--radius-sm);
-}
-.changes-title { font-weight: 700; font-size: .8rem; margin-bottom: 8px; color: var(--text); }
-.change-item {
-  padding: 3px 0 3px 14px; position: relative;
-  font-size: .77rem; color: var(--text2); line-height: 1.6;
-}
-.change-item::before {
-  content: ''; position: absolute; left: 0; top: 10px;
-  width: 5px; height: 5px; background: var(--text3); border-radius: 50%;
-}
-
-/* Arc update highlight */
-.arc-update-item {
-  display: flex; align-items: center; gap: 6px;
-  padding: 5px 8px; margin: 3px 0;
-  background: var(--card); border: 1px solid var(--border);
-  border-radius: 4px; font-family: 'JetBrains Mono', monospace; font-size: .72rem;
-}
-.arc-update-item .dir { color: var(--text2); }
-.arc-update-item .val-old { color: var(--text3); text-decoration: line-through; }
-.arc-update-item .val-new { color: var(--green); font-weight: 700; }
-.arc-update-item .sign { color: var(--red); font-weight: 700; }
-.arc-update-item.reverse { background: var(--amber-bg); border-color: var(--amber); }
-.arc-update-item.reverse .val-new { color: var(--amber); }
-
-/* Residual matrix */
-.res-matrix-wrap { overflow-x: auto; margin-top: 10px; }
-.res-mtx {
-  border-collapse: collapse; font-family: 'JetBrains Mono', monospace;
-  font-size: .68rem; width: 100%; min-width: 300px;
-}
-.res-mtx th {
-  background: var(--bg2); padding: 5px 8px; text-align: center;
-  font-weight: 700; color: var(--text2); border: 1px solid var(--border);
-}
-.res-mtx td { padding: 5px 8px; text-align: center; border: 1px solid var(--border); }
-.res-mtx td.diag { background: var(--bg2); color: var(--text3); }
-.res-mtx td.changed { color: var(--green); font-weight: 700; background: var(--green-bg); }
-.res-mtx td.reduced { color: var(--red); font-weight: 700; background: var(--red-bg); }
-
-/* ============================================================
-   RESULTS SECTION
-   ============================================================ */
-.results-section { display: none; }
-
-.stats-grid {
-  display: grid; grid-template-columns: repeat(auto-fill, minmax(125px,1fr));
-  gap: 8px; margin-bottom: 18px;
-}
-.stat-box {
-  background: rgba(255,255,255,.45);
-  backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px);
-  border: 1px solid rgba(255,255,255,.2); border-radius: var(--radius-sm);
-  padding: 14px 12px; text-align: center;
-  box-shadow: 0 2px 12px rgba(0,0,0,.05);
-}
-[data-theme="dark"] .stat-box {
-  background: rgba(26,26,26,.5); border: 1px solid rgba(255,255,255,.06);
-}
-.stat-box .sv { font-family: 'JetBrains Mono', monospace; font-size: 1.2rem; font-weight: 800; }
-.stat-box .sl {
-  font-size: .6rem; font-weight: 700; letter-spacing: .5px;
-  text-transform: uppercase; color: var(--text3); margin-top: 3px;
-}
-
-/* TABS */
-.tabs-row {
-  display: flex; gap: 1px; background: var(--bg2);
-  padding: 3px; border-radius: var(--radius-sm);
-  border: 1px solid var(--border); margin-bottom: 16px;
-  overflow-x: auto;
-}
-.tab-btn {
-  padding: 7px 14px; border: none; background: transparent;
-  border-radius: 5px; font-family: 'Inter', sans-serif;
-  font-size: .74rem; font-weight: 600; color: var(--text3);
-  cursor: pointer; white-space: nowrap; transition: all .12s;
-}
-.tab-btn:hover { color: var(--text2); }
-.tab-btn.on {
-  background: var(--card); color: var(--text);
-  box-shadow: var(--shadow);
-}
-.tab-pane { display: none; }
-.tab-pane.on { display: block; }
-
-/* TIMELINE */
-.timeline { padding-left: 20px; position: relative; }
-.timeline::before {
-  content: ''; position: absolute; left: 6px; top: 0; bottom: 0;
-  width: 1.5px; background: var(--border);
-}
-.tl-item {
-  position: relative; margin-bottom: 8px;
-  background: var(--card2); border: 1px solid var(--border);
-  border-radius: var(--radius-sm); padding: 10px 14px;
-  cursor: pointer; transition: border-color .15s;
-}
-.tl-item::before {
-  content: ''; position: absolute; left: -18px; top: 14px;
-  width: 8px; height: 8px; border-radius: 50%;
-  background: var(--text3); border: 2px solid var(--card2); z-index: 1;
-}
-.tl-item.final::before { background: var(--green); }
-.tl-item.active { border-color: var(--text); box-shadow: 0 0 0 1px var(--text); }
-.tl-item.active::before { background: var(--text); }
-.tl-item:hover { border-color: var(--text3); }
-.tl-head { display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px; }
-.tl-tag {
-  font-family: 'JetBrains Mono', monospace; font-size: .62rem; font-weight: 700;
-  color: var(--text2); background: var(--bg2); padding: 2px 7px;
-  border-radius: 3px; border: 1px solid var(--border);
-}
-.tl-fin { font-size: .62rem; font-weight: 700; color: var(--green); }
-.tl-title { font-weight: 700; font-size: .82rem; margin-bottom: 2px; }
-.tl-desc { font-size: .75rem; color: var(--text2); line-height: 1.5; }
-
-/* FLOW TABLE */
-.table-wrap { border: 1px solid var(--border); border-radius: var(--radius-sm); overflow-x: auto; }
-.ft { width: 100%; border-collapse: collapse; font-size: .75rem; }
-.ft th {
-  background: var(--bg2); padding: 9px 10px; text-align: left;
-  font-weight: 700; color: var(--text2); font-size: .72rem;
-  text-transform: uppercase; border-bottom: 1.5px solid var(--border);
-}
-.ft td {
-  padding: 8px 10px; border-bottom: 1px solid var(--border);
-  font-family: 'JetBrains Mono', monospace; font-size: .82rem;
-}
-.ft tr:hover td { background: var(--card2); }
-.ft tr.has-flow td { background: var(--green-bg); }
-[data-theme="dark"] .ft tr.has-flow td { background: rgba(74,222,128,.06); }
-
-/* UTILIZATION BAR */
-.util-bar-bg {
-  width: 60px; height: 5px; background: var(--bg3);
-  border-radius: 3px; overflow: hidden; display: inline-block; vertical-align: middle;
-}
-.util-bar { height: 100%; background: var(--green); border-radius: 3px; transition: width .4s; }
-
-/* ALL ITERATIONS ACCORDION */
-.accordion-item {
-  background: var(--card2); border: 1px solid var(--border);
-  border-radius: var(--radius-sm); margin-bottom: 6px; overflow: hidden;
-}
-.accordion-item.expanded .accordion-body { display: block; }
-.accordion-head {
-  padding: 10px 14px; display: flex; align-items: center;
-  justify-content: space-between; cursor: pointer;
-}
-.accordion-head:hover { background: var(--bg2); }
-.acc-num {
-  display: inline-flex; align-items: center; justify-content: center;
-  width: 22px; height: 22px; border-radius: 50%;
-  background: var(--text); color: var(--card);
-  font-size: .65rem; font-weight: 700; margin-right: 8px; flex-shrink: 0;
-}
-.acc-title { font-weight: 700; font-size: .78rem; flex: 1; }
-.acc-chevron { color: var(--text3); font-size: .7rem; transition: transform .2s; }
-.accordion-item.expanded .acc-chevron { transform: rotate(180deg); }
-.accordion-body {
-  display: none; padding: 12px 14px;
-  border-top: 1px solid var(--border);
-}
-
-/* ANALYSIS BOX */
-.ai-box { background: var(--card2); border: 1px solid var(--border); border-radius: var(--radius); padding: 20px; }
-.ai-box h3 { font-size: .9rem; font-weight: 700; margin-bottom: 10px; }
-.ai-box h4 { font-size: .8rem; font-weight: 700; margin: 14px 0 6px; }
-.ai-box p { color: var(--text2); line-height: 1.7; font-size: .82rem; margin-bottom: 6px; }
-.ai-box ul { list-style: none; padding: 0; }
-.ai-box li {
-  padding: 4px 0 4px 14px; position: relative;
-  color: var(--text2); font-size: .8rem; line-height: 1.5;
-}
-.ai-box li::before {
-  content: ''; position: absolute; left: 0; top: 11px;
-  width: 4px; height: 4px; background: var(--text3); border-radius: 50%;
-}
-
-/* MIN-CUT highlight */
-.mincut-set {
-  display: inline-flex; flex-wrap: wrap; gap: 4px; margin: 6px 0;
-}
-.mincut-chip {
-  padding: 2px 8px; border-radius: 4px;
-  font-family: 'JetBrains Mono', monospace; font-size: .72rem; font-weight: 600;
-  border: 1px solid;
-}
-.chip-s { background: var(--green-bg); color: var(--green); border-color: var(--green); }
-.chip-t { background: var(--red-bg); color: var(--red); border-color: var(--red); }
-.chip-cut { background: var(--amber-bg); color: var(--amber); border-color: var(--amber); }
-
-/* ============================================================
-   TOAST
-   ============================================================ */
-#toast {
-  position: fixed; top: 14px; right: 14px; z-index: 9999;
-  padding: 9px 18px; border-radius: var(--radius-sm);
-  font-weight: 600; font-size: .78rem;
-  transform: translateX(140%); transition: transform .25s;
-  box-shadow: var(--shadow-md); pointer-events: none;
-}
-#toast.show { transform: translateX(0); }
-.toast-ok  { background: var(--green); color: #fff; }
-.toast-err { background: var(--red); color: #fff; }
-.toast-info{ background: var(--text); color: var(--card); }
-
-/* ============================================================
-   LOADING OVERLAY
-   ============================================================ */
-#overlay {
-  display: none; position: fixed; inset: 0; z-index: 998;
-  background: rgba(0,0,0,.35); backdrop-filter: blur(4px);
-  justify-content: center; align-items: center;
-}
-#overlay.show { display: flex; }
-.ov-card {
-  background: var(--card); border: 1px solid var(--border);
-  border-radius: var(--radius); padding: 28px 36px;
-  text-align: center; box-shadow: var(--shadow-lg);
-}
-.spinner {
-  width: 30px; height: 30px; border: 3px solid var(--border);
-  border-top-color: var(--text); border-radius: 50%;
-  animation: spin .55s linear infinite; margin: 0 auto 12px;
-}
-@keyframes spin { to { transform: rotate(360deg); } }
-.ov-text { font-size: .8rem; font-weight: 600; color: var(--text2); }
-
-/* ============================================================
-   MODAL
-   ============================================================ */
-.modal-bg {
-  display: none; position: fixed; inset: 0; z-index: 997;
-  background: rgba(0,0,0,.35); backdrop-filter: blur(4px);
-  align-items: center; justify-content: center;
-}
-.modal-bg.show { display: flex; }
-.modal {
-  background: var(--card); border: 1px solid var(--border);
-  border-radius: var(--radius); padding: 24px;
-  max-width: 480px; width: 90%; box-shadow: var(--shadow-lg);
-}
-.modal h3 { font-size: .9rem; font-weight: 700; margin-bottom: 12px; }
-.modal-close {
-  float: right; background: none; border: none;
-  font-size: 1.2rem; cursor: pointer; color: var(--text3); padding: 0 4px;
-}
-.share-row { display: flex; gap: 6px; margin-top: 8px; }
-.share-input {
-  flex: 1; padding: 8px 10px; background: var(--card2);
-  border: 1px solid var(--border); border-radius: var(--radius-sm);
-  font-family: 'JetBrains Mono', monospace; font-size: .72rem;
-  color: var(--text); outline: none;
-}
-
-/* ============================================================
-   SHORTCUTS PANEL
-   ============================================================ */
-.shortcuts-panel {
-  display: none; position: fixed; top: 50%; left: 50%;
-  transform: translate(-50%, -50%); z-index: 9998;
-  background: var(--card); border: 1px solid var(--border);
-  border-radius: var(--radius); padding: 24px;
-  box-shadow: var(--shadow-lg); min-width: 300px;
-}
-.shortcuts-panel.show { display: block; }
-.shortcuts-panel h3 { font-size: .9rem; font-weight: 700; margin-bottom: 14px; }
-.sc-row {
-  display: flex; justify-content: space-between; align-items: center;
-  padding: 5px 0; font-size: .78rem; color: var(--text2);
-}
-.kbd {
-  display: inline-block; padding: 2px 6px;
-  background: var(--bg2); border: 1px solid var(--border);
-  border-radius: 4px; font-family: 'JetBrains Mono', monospace;
-  font-size: .72rem; color: var(--text3);
-}
-
-/* ============================================================
-   RESPONSIVE
-   ============================================================ */
-@media (max-width: 720px) {
-  .shell { padding: 12px 12px 80px; }
-  .section { padding: 14px; }
-  .grid-3 { grid-template-columns: 1fr; }
-  .grid-2 { grid-template-columns: 1fr; }
-  .detail-grid { grid-template-columns: 1fr; }
-  .arc-header,
-  .arc-row {
-    grid-template-columns: 65px 65px 1fr 80px 32px;
-  }
-  .stats-grid { grid-template-columns: 1fr 1fr; }
-  .top-bar { padding: 7px 10px; }
-  .tb-btn { padding: 4px 8px; font-size: .65rem; }
-}
-</style>
+        .step-title { font-weight: bold; margin-bottom: 10px; text-align: center;}
+    </style>
 </head>
-
 <body>
 
-<!-- ============================================================
-     LOCK SCREEN
-     ============================================================ -->
-<div id="lockScreen">
-  <canvas id="lockCanvas"></canvas>
-  <div class="lock-wrap">
-    <div class="lock-logo">
-      <!-- SVG icon: network flow symbol -->
-      <svg viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,.7)" stroke-width="1.5"
-           stroke-linecap="round" stroke-linejoin="round">
-        <circle cx="5"  cy="12" r="2.5"/>
-        <circle cx="19" cy="5"  r="2.5"/>
-        <circle cx="19" cy="19" r="2.5"/>
-        <line x1="7.5"  y1="11" x2="16.5" y2="6.5"/>
-        <line x1="7.5"  y1="13" x2="16.5" y2="17.5"/>
-      </svg>
-    </div>
-    <div>
-      <div class="lock-title">Maximum Flow</div>
-      <div class="lock-sub">Ford-Fulkerson Visualizer &mdash; Riset Operasi</div>
-    </div>
-    <div class="lock-device-box" id="lockDeviceId">Loading device ID...</div>
-    <div class="lock-field">
-      <input class="lock-input" id="lockInput" type="text"
-             placeholder="Enter access key" autocomplete="off" spellcheck="false">
-      <div class="lock-error" id="lockError"></div>
-      <button class="lock-btn" onclick="tryUnlock()">Unlock</button>
-    </div>
-    <div class="lock-hint">Use your device key or master key to unlock</div>
-  </div>
-</div>
-
-<!-- ============================================================
-     SPLASH SCREEN
-     ============================================================ -->
-<div id="splashScreen" style="display:none">
-  <canvas id="splashCanvas"></canvas>
-  <div class="splash-content">
-    <div class="splash-divider"></div>
-    <div class="splash-title">RADSTRIX</div>
-    <div class="splash-sub">Maximum Flow Visualizer</div>
-    <div class="splash-bar"><div class="splash-bar-fill"></div></div>
-  </div>
-</div>
-
-<!-- ============================================================
-     PLEXUS BG
-     ============================================================ -->
-<canvas id="plexusBg"></canvas>
-
-<!-- INDICATORS -->
-<div class="online-indicator">
-  <div class="online-dot"></div>
-  <span id="onlineCount">-- online</span>
-</div>
-<div class="watermark">RADSTRIX</div>
-
-<!-- TOAST -->
-<div id="toast"></div>
-
-<!-- LOADING OVERLAY -->
-<div id="overlay">
-  <div class="ov-card">
-    <div class="spinner"></div>
-    <div class="ov-text" id="ovText">Running Ford-Fulkerson...</div>
-  </div>
-</div>
-
-<!-- SHARE MODAL -->
-<div class="modal-bg" id="shareModal">
-  <div class="modal">
-    <button class="modal-close" onclick="closeModal('shareModal')">&#x2715;</button>
-    <h3>Share & Export</h3>
-    <p style="font-size:.78rem;color:var(--text2);margin-bottom:10px">Share graph via URL or export as file.</p>
-    <div class="share-row">
-      <input class="share-input" id="shareUrl" readonly>
-      <button class="btn btn-primary btn-sm" onclick="copyShareUrl()">Copy</button>
-    </div>
-    <div style="margin-top:12px;display:flex;gap:6px;flex-wrap:wrap">
-      <button class="btn btn-ghost btn-sm" onclick="exportJSON()">Export JSON</button>
-      <button class="btn btn-ghost btn-sm"
-              onclick="document.getElementById('jsonImport').click()">Import JSON</button>
-      <input type="file" id="jsonImport" accept=".json" style="display:none" onchange="importJSON(event)">
-    </div>
-  </div>
-</div>
-
-<!-- SHORTCUTS PANEL -->
-<div class="shortcuts-panel" id="shortcutsPanel">
-  <button class="modal-close" style="float:right"
-          onclick="document.getElementById('shortcutsPanel').classList.remove('show')">&#x2715;</button>
-  <h3>Keyboard Shortcuts</h3>
-  <div class="sc-row"><span>Run Algorithm</span>     <span class="kbd">Ctrl + Enter</span></div>
-  <div class="sc-row"><span>Next Step</span>         <span class="kbd">&#x2192;</span></div>
-  <div class="sc-row"><span>Prev Step</span>         <span class="kbd">&#x2190;</span></div>
-  <div class="sc-row"><span>First / Last</span>      <span class="kbd">Home / End</span></div>
-  <div class="sc-row"><span>Play / Pause</span>      <span class="kbd">Space</span></div>
-  <div class="sc-row"><span>Dark Mode</span>         <span class="kbd">D</span></div>
-  <div class="sc-row"><span>Screenshot</span>        <span class="kbd">Ctrl + S</span></div>
-</div>
-
-<!-- ============================================================
-     TOP BAR
-     ============================================================ -->
-<div class="top-bar">
-  <a class="tb-brand" href="#">
-    <!-- SVG Brand icon -->
-    <svg width="18" height="18" viewBox="0 0 24 24" fill="none"
-         stroke="currentColor" stroke-width="2" stroke-linecap="round">
-      <circle cx="4"  cy="12" r="2.5"/>
-      <circle cx="20" cy="4"  r="2.5"/>
-      <circle cx="20" cy="20" r="2.5"/>
-      <line x1="6.5"  y1="11"  x2="17.5" y2="5.5"/>
-      <line x1="6.5"  y1="13"  x2="17.5" y2="18.5"/>
-    </svg>
-    Max Flow
-  </a>
-  <div class="tb-right">
-    <button class="tb-btn" onclick="toggleDark()" id="darkBtn">Dark</button>
-    <button class="tb-btn" onclick="document.getElementById('shortcutsPanel').classList.toggle('show')">Keys</button>
-    <button class="tb-btn" onclick="openShareModal()">Share</button>
-    <button class="tb-btn" onclick="screenshotCanvas()">Capture</button>
-    <button class="tb-btn" onclick="run()">&#9654; Run</button>
-  </div>
-</div>
-
-<!-- ============================================================
-     MAIN SHELL
-     ============================================================ -->
-<main class="shell" role="main">
-
-  <!-- HERO -->
-  <header class="hero">
-    <div class="hero-badge">Riset Operasi &mdash; Network Flow</div>
-    <h1>Maximum Flow Visualizer</h1>
-    <p>Ford-Fulkerson Method (Edmonds-Karp BFS) &mdash; Step-by-step, interactive, reversible</p>
-  </header>
-
-  <!-- ========================================================
-       SECTION 1 : INPUT
-       ======================================================== -->
-  <section class="section" aria-labelledby="sec1-title">
-    <div class="section-head">
-      <div class="section-num" aria-hidden="true">1</div>
-      <div class="section-title" id="sec1-title">Input Network</div>
+    <div id="authScreen">
+        <canvas class="plexus-bg" id="lockPlexus"></canvas>
+        <div class="auth-box">
+            <h1>SYSTEM LOCKED</h1>
+            <p>Authentication Required</p>
+            <div class="device-id-box" id="dispDeviceId">LOADING...</div>
+            <input type="password" id="keyInput" class="auth-input" placeholder="Enter Access Key" autocomplete="off">
+            <button class="btn" onclick="verifyKey()">AUTHENTICATE</button>
+        </div>
     </div>
 
-    <!-- Presets -->
-    <span class="lbl">Template Preset</span>
-    <div class="preset-row">
-      <div class="preset-btn" onclick="loadPreset('lecture')" role="button" tabindex="0">
-        <div class="pn">Lecture Example</div>
-        <div class="pd">7 nodes &mdash; dari materi PDF</div>
-      </div>
-      <div class="preset-btn" onclick="loadPreset('basic')" role="button" tabindex="0">
-        <div class="pn">Basic</div>
-        <div class="pd">4 nodes, sederhana</div>
-      </div>
-      <div class="preset-btn" onclick="loadPreset('medium')" role="button" tabindex="0">
-        <div class="pn">Medium</div>
-        <div class="pd">6 nodes</div>
-      </div>
-      <div class="preset-btn" onclick="loadPreset('complex')" role="button" tabindex="0">
-        <div class="pn">Complex</div>
-        <div class="pd">8 nodes</div>
-      </div>
+    <div id="app">
+        <canvas class="plexus-bg" id="mainPlexus"></canvas>
+        
+        <aside>
+            <section class="panel">
+                <h2>Parameter Node</h2>
+                <div class="flex-row">
+                    <div class="input-group">
+                        <label>Source Node</label>
+                        <input type="text" id="sourceInp" value="1">
+                    </div>
+                    <div class="input-group">
+                        <label>Sink Node</label>
+                        <input type="text" id="sinkInp" value="7">
+                    </div>
+                </div>
+            </section>
+
+            <section class="panel">
+                <h2>Tambah Arc</h2>
+                <div class="flex-row">
+                    <div class="input-group">
+                        <label>Dari (u)</label>
+                        <input type="text" id="arcFrom">
+                    </div>
+                    <div class="input-group">
+                        <label>Ke (v)</label>
+                        <input type="text" id="arcTo">
+                    </div>
+                </div>
+                <div class="flex-row">
+                    <div class="input-group">
+                        <label>Kapasitas (u&rarr;v)</label>
+                        <input type="number" id="capFwd" min="0">
+                    </div>
+                    <div class="input-group">
+                        <label>Kapasitas (v&rarr;u)</label>
+                        <input type="number" id="capRev" value="0" min="0">
+                    </div>
+                </div>
+                <button class="btn dark" onclick="addArc()">TAMBAH</button>
+            </section>
+
+            <section class="panel" style="flex:1; display:flex; flex-direction:column;">
+                <h2>Daftar Arc</h2>
+                <ul class="arc-list" id="arcList"></ul>
+                <div style="margin-top: auto; padding-top: 15px;">
+                    <button class="btn dark" onclick="startAnalysis()">ANALISIS MAXIMUM FLOW</button>
+                </div>
+            </section>
+        </aside>
+
+        <main>
+            <canvas id="graphCanvas"></canvas>
+            
+            <article class="analysis-panel" id="analysisPanel">
+                <div class="step-title" id="stepTitle">Iterasi: 0</div>
+                <div class="controls">
+                    <button class="btn" onclick="prevStep()">&larr; Prev</button>
+                    <button class="btn" onclick="nextStep()">Next &rarr;</button>
+                </div>
+                <div class="log-box" id="logBox"></div>
+            </article>
+        </main>
     </div>
 
-    <!-- Node config -->
-    <span class="lbl" style="margin-top:14px;display:block">Konfigurasi Node</span>
-    <div class="grid-3" style="margin-bottom:10px">
-      <div class="field">
-        <label for="inpN">Jumlah Nodes</label>
-        <input type="number" id="inpN" min="2" max="30" value="7" onchange="changeN()">
-      </div>
-      <div class="field">
-        <label for="selSrc">Source Node</label>
-        <select id="selSrc"></select>
-      </div>
-      <div class="field">
-        <label for="selSink">Sink Node</label>
-        <select id="selSink"></select>
-      </div>
-    </div>
-
-    <div class="field" style="margin-bottom:14px">
-      <label for="inpLabels">Custom Node Labels (pisahkan koma)</label>
-      <input id="inpLabels" placeholder="1,2,3,4,5,6,7" onchange="parseLabels()">
-    </div>
-
-    <!-- Arc list -->
-    <span class="lbl">Daftar Arc &amp; Kapasitas (Directed)</span>
-
-    <div class="arc-helper">
-      <strong>Cara input:</strong> Setiap baris = 1 arc dengan arah tertentu.<br>
-      Jika arc antara 2 node memiliki kapasitas berbeda di tiap arah (misal arc 4&#x2192;5 = 3 dan arc 5&#x2192;4 = 4),
-      masukkan sebagai <strong>2 baris terpisah</strong>. Tombol &ldquo;+ Bidirectional&rdquo; otomatis membuat keduanya.
-    </div>
-
-    <div class="arc-wrap" role="table" aria-label="Arc list">
-      <div class="arc-header" role="row">
-        <span role="columnheader">From</span>
-        <span role="columnheader">To</span>
-        <span role="columnheader">Keterangan</span>
-        <span role="columnheader">Capacity</span>
-        <span role="columnheader"></span>
-      </div>
-      <div id="arcListBody" role="rowgroup"></div>
-      <div class="arc-add-row">
-        <button class="btn btn-ghost btn-sm" onclick="addArc()">+ Arc</button>
-        <button class="btn btn-ghost btn-sm" onclick="addBidirectional()"
-                style="margin-left:4px">+ Bidirectional</button>
-      </div>
-    </div>
-    <div class="arc-summary" id="arcSummary">0 arc defined</div>
-
-    <div class="btn-group">
-      <button class="btn btn-primary" onclick="run()">
-        <!-- play SVG -->
-        <svg width="12" height="12" viewBox="0 0 12 12" fill="currentColor">
-          <polygon points="2,1 11,6 2,11"/>
-        </svg>
-        Jalankan Ford-Fulkerson
-      </button>
-      <button class="btn btn-ghost" onclick="resetAll()">Reset</button>
-    </div>
-  </section>
-
-  <!-- ========================================================
-       SECTION 2 : VISUALIZATION
-       ======================================================== -->
-  <section class="section" id="visSection" aria-labelledby="sec2-title">
-    <div class="section-head">
-      <div class="section-num" aria-hidden="true">2</div>
-      <div class="section-title" id="sec2-title">Visualisasi Network</div>
-    </div>
-
-    <span class="lbl">Layout</span>
-    <div class="layout-row">
-      <button class="layout-btn on" onclick="setLayout('circle',this)">Circle</button>
-      <button class="layout-btn"    onclick="setLayout('grid',this)">Grid</button>
-      <button class="layout-btn"    onclick="setLayout('spring',this)">Force</button>
-      <button class="layout-btn"    onclick="setLayout('random',this)">Random</button>
-    </div>
-
-    <div class="legend" id="legend">
-      <div class="legend-item">
-        <div class="legend-dot" style="background:var(--green)"></div>Augmenting Path
-      </div>
-      <div class="legend-item">
-        <div class="legend-dot" style="background:var(--blue)"></div>Has Flow
-      </div>
-      <div class="legend-item">
-        <div class="legend-dot" style="background:var(--edge-color)"></div>No Flow
-      </div>
-      <div class="legend-item">
-        <div class="legend-dot" style="background:var(--amber)"></div>Residual Reverse
-      </div>
-    </div>
-
-    <div class="cv-wrap" id="cvWrap">
-      <canvas id="cv" role="img" aria-label="Network flow graph"></canvas>
-
-      <!-- View toggle -->
-      <div class="cv-toolbar" id="cvToolbar">
-        <button class="on" onclick="setViewMode('original',this)">Original</button>
-        <button onclick="setViewMode('residual',this)">Residual</button>
-      </div>
-
-      <!-- Zoom -->
-      <div class="cv-zoom">
-        <button onclick="zoomIn()"    aria-label="Zoom in">+</button>
-        <button onclick="zoomOut()"   aria-label="Zoom out">&minus;</button>
-        <button onclick="zoomReset()" aria-label="Reset zoom">R</button>
-      </div>
-
-      <div class="cv-hint" id="cvHint">Drag nodes &middot; capacity on arcs</div>
-    </div>
-
-    <!-- Iteration bar -->
-    <div class="iter-bar" id="iterBar">
-      <div class="iter-info">
-        <span style="font-size:.73rem;font-weight:600;color:var(--text2)">Iterasi</span>
-        <span class="iter-badge" id="iterBadge">0/0</span>
-        <span class="iter-label" id="iterLabel"></span>
-      </div>
-      <div class="iter-nav">
-        <button id="btnFirst" onclick="goIter(0)"           title="First">&#x23EE;</button>
-        <button id="btnPrev"  onclick="goIter(curIter-1)"   title="Previous">&#x25C0;</button>
-        <button id="btnNext"  onclick="goIter(curIter+1)"   title="Next" class="primary">&#x25B6;</button>
-        <button id="btnLast"  onclick="goIter(states.length-1)" title="Last">&#x23ED;</button>
-      </div>
-    </div>
-
-    <!-- Playback -->
-    <div class="playback-row" id="playbackRow">
-      <button class="play-btn" id="playBtn" onclick="togglePlay()">
-        <span id="playIcon">&#x25B6;</span>
-        <span id="playText">Play</span>
-      </button>
-      <select class="speed-sel" id="speedSel" onchange="playSpd=+this.value">
-        <option value="2000">0.5x</option>
-        <option value="1200" selected>1x</option>
-        <option value="700">2x</option>
-        <option value="350">4x</option>
-      </select>
-    </div>
-
-    <!-- Detail panel -->
-    <div class="detail-panel" id="detailPanel">
-      <div class="detail-panel-head">
-        <h4 id="detailTitle">Detail</h4>
-        <span style="font-size:.65rem;color:var(--text3);font-weight:600" id="detailSub"></span>
-      </div>
-      <div class="detail-panel-body" id="detailBody"></div>
-    </div>
-
-    <!-- Changes box (below canvas) -->
-    <div id="changesBox"></div>
-  </section>
-
-  <!-- ========================================================
-       SECTION 3 : RESULTS
-       ======================================================== -->
-  <section class="section results-section" id="resultsSection" aria-labelledby="sec3-title">
-    <div class="section-head">
-      <div class="section-num" aria-hidden="true">3</div>
-      <div class="section-title" id="sec3-title">Hasil Analisis</div>
-    </div>
-
-    <div class="stats-grid" id="statsGrid"></div>
-    <div id="flowDisplay" style="margin-bottom:16px"></div>
-
-    <div class="tabs-row">
-      <button class="tab-btn on" onclick="switchTab('steps',this)">Steps</button>
-      <button class="tab-btn"    onclick="switchTab('table',this)">Flow Table</button>
-      <button class="tab-btn"    onclick="switchTab('detail',this)">All Iterations</button>
-      <button class="tab-btn"    onclick="switchTab('analysis',this)">Analysis</button>
-    </div>
-
-    <div class="tab-pane on" id="tp-steps">
-      <div class="timeline" id="timeline"></div>
-    </div>
-
-    <div class="tab-pane" id="tp-table">
-      <div class="table-wrap" id="flowTable"></div>
-    </div>
-
-    <div class="tab-pane" id="tp-detail" id="allIterDetail"></div>
-
-    <div class="tab-pane" id="tp-analysis">
-      <div class="ai-box" id="aiBox"></div>
-    </div>
-  </section>
-
-</main><!-- /shell -->
-
-<!-- ============================================================
-     SCRIPTS
-     ============================================================ -->
-<script>
-"use strict";
-
-/* ============================================================
-   LOCK SCREEN ENGINE
-   ============================================================ */
-(function initLockPlexus() {
-  var c  = document.getElementById('lockCanvas');
-  var cx = c.getContext('2d');
-  var pts = [];
-
-  function resize() {
-    c.width  = innerWidth;
-    c.height = innerHeight;
-  }
-  resize();
-  addEventListener('resize', resize);
-
-  var count = Math.max(50, Math.floor(innerWidth * innerHeight / 9000));
-  for (var i = 0; i < count; i++) {
-    pts.push({
-      x: Math.random() * c.width,
-      y: Math.random() * c.height,
-      vx: (Math.random() - .5) * .12,
-      vy: (Math.random() - .5) * .12,
-      r:  Math.random() * .5  + .2,
-      b:  Math.random() * .4  + .45
-    });
-  }
-
-  function frame() {
-    if (document.getElementById('lockScreen').classList.contains('hidden')) return;
-    var W = c.width, H = c.height;
-    cx.clearRect(0, 0, W, H);
-
-    for (var i = 0; i < pts.length; i++) {
-      var p = pts[i];
-      p.x += p.vx; p.y += p.vy;
-      if (p.x < 0 || p.x > W) p.vx *= -1;
-      if (p.y < 0 || p.y > H) p.vy *= -1;
-
-      for (var j = i + 1; j < pts.length; j++) {
-        var q = pts[j];
-        var dx = p.x - q.x, dy = p.y - q.y;
-        var d  = Math.sqrt(dx * dx + dy * dy);
-        if (d < 130) {
-          cx.beginPath();
-          cx.moveTo(p.x, p.y);
-          cx.lineTo(q.x, q.y);
-          cx.strokeStyle = 'rgba(255,255,255,' + ((1 - d / 130) * .09) + ')';
-          cx.lineWidth = .5;
-          cx.stroke();
+    <script>
+        /* =========================================
+           1. AUTHENTICATION & FINGERPRINT SYSTEM
+           ========================================= */
+        function simpleHash(str) {
+            let hash = 0;
+            for (let i = 0; i < str.length; i++) {
+                hash = ((hash << 5) - hash) + str.charCodeAt(i);
+                hash = hash & hash;
+            }
+            return Math.abs(hash).toString(16).padEnd(8, '0').toUpperCase();
         }
-      }
 
-      var g = cx.createRadialGradient(p.x, p.y, 0, p.x, p.y, p.r * 5);
-      g.addColorStop(0, 'rgba(255,255,255,' + (p.b * .65) + ')');
-      g.addColorStop(1, 'rgba(255,255,255,0)');
-      cx.beginPath(); cx.arc(p.x, p.y, p.r * 5, 0, 6.28);
-      cx.fillStyle = g; cx.fill();
-
-      cx.beginPath(); cx.arc(p.x, p.y, p.r * .38, 0, 6.28);
-      cx.fillStyle = 'rgba(255,255,255,' + (p.b * .8) + ')';
-      cx.fill();
-    }
-    requestAnimationFrame(frame);
-  }
-  frame();
-})();
-
-/* ---------- Device fingerprint & key generation ---------- */
-function getDeviceFingerprint() {
-  var nav = navigator, sc = screen;
-  var raw = nav.userAgent
-          + (nav.language || '')
-          + (nav.hardwareConcurrency || 0)
-          + sc.width + sc.height
-          + (sc.colorDepth || 0)
-          + (new Date().getTimezoneOffset());
-  var h = 0;
-  for (var i = 0; i < raw.length; i++) {
-    h = ((h << 5) - h) + raw.charCodeAt(i);
-    h |= 0;
-  }
-  return Math.abs(h).toString(16).padStart(8, '0');
-}
-
-function generateDeviceKey(fp) {
-  // Seed-based, alphanum without ambiguous chars (0,O,I,1,l)
-  var chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
-  var seed = 0;
-  for (var i = 0; i < fp.length; i++) {
-    seed = ((seed << 5) - seed) + fp.charCodeAt(i);
-    seed |= 0;
-  }
-  seed = Math.abs(seed);
-  var k = '';
-  for (var i = 0; i < 16; i++) {
-    k += chars[seed % chars.length];
-    seed = Math.floor(seed / chars.length) + seed % 97 + i * 13;
-    seed = Math.abs(seed);
-  }
-  return k.substr(0,4) + '-' + k.substr(4,4) + '-' + k.substr(8,4) + '-' + k.substr(12,4);
-}
-
-function getMasterKey(dk) {
-  var chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
-  var seed = 0;
-  for (var i = 0; i < dk.length; i++) {
-    seed = ((seed << 5) - seed) + dk.charCodeAt(i);
-    seed |= 0;
-  }
-  seed = Math.abs(seed);
-  var k = '';
-  for (var i = 0; i < 12; i++) {
-    k += chars[seed % chars.length];
-    seed = Math.floor(seed / chars.length) + seed % 71 + i * 7;
-    seed = Math.abs(seed);
-  }
-  return 'RS-' + k.substr(0,4) + '-' + k.substr(4,4) + '-' + k.substr(8,4);
-}
-
-/* ---------- Boot lock screen ---------- */
-(function bootLock() {
-  var fp = getDeviceFingerprint();
-  var dk = generateDeviceKey(fp);
-  var mk = getMasterKey(dk);
-
-  document.getElementById('lockDeviceId').textContent = 'Device: ' + dk;
-
-  if (localStorage.getItem('gv-authed') === '1') {
-    document.getElementById('lockScreen').classList.add('hidden');
-    showSplash();
-    return;
-  }
-
-  document.getElementById('lockInput')
-    .addEventListener('keydown', function(e){ if (e.key === 'Enter') tryUnlock(); });
-
-  window._MK = mk;
-  window._DK = dk;
-})();
-
-function tryUnlock() {
-  var val = document.getElementById('lockInput').value.trim().toUpperCase();
-  var err = document.getElementById('lockError');
-
-  // Accept: master key (device-derived), device key, or hardcoded bypass
-  if (val === window._MK || val === window._DK || val === 'RADSTRIX') {
-    localStorage.setItem('gv-authed', '1');
-    err.textContent = '';
-    document.getElementById('lockScreen').classList.add('hidden');
-    showSplash();
-  } else {
-    err.textContent = 'Invalid key. Try again.';
-    document.getElementById('lockInput').value = '';
-  }
-}
-
-/* ============================================================
-   SPLASH ENGINE
-   ============================================================ */
-function showSplash() {
-  var ss = document.getElementById('splashScreen');
-  ss.style.display = 'flex';
-
-  var c  = document.getElementById('splashCanvas');
-  var cx = c.getContext('2d');
-  c.width  = innerWidth;
-  c.height = innerHeight;
-
-  var pts = [];
-  var count = Math.max(60, Math.floor(c.width * c.height / 7000));
-  for (var i = 0; i < count; i++) {
-    pts.push({
-      x: Math.random() * c.width,
-      y: Math.random() * c.height,
-      vx: (Math.random() - .5) * .15,
-      vy: (Math.random() - .5) * .15,
-      r:  Math.random() * .6 + .2,
-      b:  Math.random() * .5 + .5
-    });
-  }
-
-  /* Subtle tone on splash (Web Audio API) */
-  try {
-    var ac = new (window.AudioContext || window.webkitAudioContext)();
-    var osc = ac.createOscillator();
-    var gain = ac.createGain();
-    osc.type = 'sine';
-    osc.frequency.setValueAtTime(220, ac.currentTime);
-    osc.frequency.exponentialRampToValueAtTime(440, ac.currentTime + 1.5);
-    gain.gain.setValueAtTime(0, ac.currentTime);
-    gain.gain.linearRampToValueAtTime(.025, ac.currentTime + .3);
-    gain.gain.linearRampToValueAtTime(0, ac.currentTime + 3);
-    osc.connect(gain); gain.connect(ac.destination);
-    osc.start(); osc.stop(ac.currentTime + 3);
-  } catch(e) {}
-
-  var running = true;
-  function frame() {
-    if (!running) return;
-    var W = c.width, H = c.height;
-    cx.clearRect(0, 0, W, H);
-
-    for (var i = 0; i < pts.length; i++) {
-      var p = pts[i];
-      p.x += p.vx; p.y += p.vy;
-      if (p.x < 0 || p.x > W) p.vx *= -1;
-      if (p.y < 0 || p.y > H) p.vy *= -1;
-
-      for (var j = i + 1; j < pts.length; j++) {
-        var q = pts[j];
-        var dx = p.x - q.x, dy = p.y - q.y;
-        var d  = Math.sqrt(dx*dx + dy*dy);
-        if (d < 120) {
-          cx.beginPath();
-          cx.moveTo(p.x, p.y); cx.lineTo(q.x, q.y);
-          cx.strokeStyle = 'rgba(255,255,255,' + ((1 - d/120) * .11) + ')';
-          cx.lineWidth = .5; cx.stroke();
+        function getDeviceFingerprint() {
+            return navigator.userAgent + navigator.language + navigator.hardwareConcurrency + 
+                   screen.width + screen.height + screen.colorDepth + new Date().getTimezoneOffset();
         }
-      }
 
-      var g = cx.createRadialGradient(p.x, p.y, 0, p.x, p.y, p.r * 4);
-      g.addColorStop(0, 'rgba(255,255,255,' + (p.b * .88) + ')');
-      g.addColorStop(1, 'rgba(255,255,255,0)');
-      cx.beginPath(); cx.arc(p.x, p.y, p.r*4, 0, 6.28);
-      cx.fillStyle = g; cx.fill();
-      cx.beginPath(); cx.arc(p.x, p.y, p.r*.4, 0, 6.28);
-      cx.fillStyle = 'rgba(255,255,255,' + (p.b * .95) + ')';
-      cx.fill();
-    }
-    requestAnimationFrame(frame);
-  }
-  frame();
-
-  setTimeout(function() {
-    ss.classList.add('hidden');
-    setTimeout(function() {
-      running = false;
-      initApp();
-    }, 900);
-  }, 3200);
-}
-
-/* ============================================================
-   PLEXUS BACKGROUND
-   ============================================================ */
-var plxC, plxX, plxP = [];
-
-function initPlexus() {
-  plxC = document.getElementById('plexusBg');
-  plxX = plxC.getContext('2d');
-  resizePlx();
-
-  var count = Math.max(55, Math.floor(innerWidth * innerHeight / 9000));
-  for (var i = 0; i < count; i++) {
-    plxP.push({
-      x: Math.random() * plxC.width,
-      y: Math.random() * plxC.height,
-      vx: (Math.random() - .5) * .1,
-      vy: (Math.random() - .5) * .1,
-      r:  Math.random() * .5 + .2,
-      b:  Math.random() * .35 + .4
-    });
-  }
-  animPlx();
-}
-
-function resizePlx() {
-  if (!plxC) return;
-  plxC.width  = innerWidth;
-  plxC.height = innerHeight;
-}
-
-function animPlx() {
-  if (!plxX) return;
-  var W  = plxC.width, H = plxC.height;
-  var dk = document.documentElement.getAttribute('data-theme') === 'dark';
-  plxX.clearRect(0, 0, W, H);
-
-  for (var i = 0; i < plxP.length; i++) {
-    var p = plxP[i];
-    p.x += p.vx; p.y += p.vy;
-    if (p.x < 0 || p.x > W) p.vx *= -1;
-    if (p.y < 0 || p.y > H) p.vy *= -1;
-
-    for (var j = i + 1; j < plxP.length; j++) {
-      var q  = plxP[j];
-      var dx = p.x - q.x, dy = p.y - q.y;
-      var d  = Math.sqrt(dx*dx + dy*dy);
-      if (d < 140) {
-        var a = (1 - d/140) * (dk ? .07 : .035);
-        plxX.beginPath();
-        plxX.moveTo(p.x, p.y); plxX.lineTo(q.x, q.y);
-        plxX.strokeStyle = dk
-          ? 'rgba(255,255,255,' + a + ')'
-          : 'rgba(26,26,26,'    + a + ')';
-        plxX.lineWidth = .5; plxX.stroke();
-      }
-    }
-
-    var bc = dk ? '255,255,255' : '26,26,26';
-    var g  = plxX.createRadialGradient(p.x, p.y, 0, p.x, p.y, p.r * 5);
-    g.addColorStop(0, 'rgba(' + bc + ',' + (p.b * .55) + ')');
-    g.addColorStop(1, 'rgba(' + bc + ',0)');
-    plxX.beginPath(); plxX.arc(p.x, p.y, p.r*5, 0, 6.28);
-    plxX.fillStyle = g; plxX.fill();
-    plxX.beginPath(); plxX.arc(p.x, p.y, p.r*.3, 0, 6.28);
-    plxX.fillStyle = 'rgba(' + bc + ',' + (p.b * .65) + ')';
-    plxX.fill();
-  }
-  requestAnimationFrame(animPlx);
-}
-
-/* ============================================================
-   ONLINE COUNTER (simulated)
-   ============================================================ */
-(function() {
-  var base = Math.floor(Math.random() * 8) + 3;
-  var el   = document.getElementById('onlineCount');
-  function update() {
-    el.textContent = Math.max(1, base + Math.floor(Math.random() * 5) - 2) + ' online';
-  }
-  update();
-  setInterval(update, 8000);
-})();
-
-/* ============================================================
-   GLOBAL STATE
-   ============================================================ */
-var N         = 7;
-var labels    = [];
-var pos       = [];
-var arcs      = [];
-var scale     = 1;
-var dragIdx   = -1;
-var dragOff   = {x:0, y:0};
-var curLayout = 'circle';
-var viewMode  = 'original';
-var isDark    = false;
-
-var result    = null;
-var states    = [];
-var curIter   = 0;
-var playTimer = null;
-var playSpd   = 1200;
-
-/* ============================================================
-   UTILITY
-   ============================================================ */
-function L(i) { return labels[i] !== undefined ? labels[i] : '' + (i + 1); }
-
-function toast(msg, type) {
-  var el = document.getElementById('toast');
-  el.textContent  = msg;
-  el.className    = 'toast show ' + (type === 'success' ? 'toast-ok' : type === 'error' ? 'toast-err' : 'toast-info');
-  setTimeout(function(){ el.classList.remove('show'); }, 2600);
-}
-
-function closeModal(id) { document.getElementById(id).classList.remove('show'); }
-
-function deepCopy(m) {
-  return m.map(function(r){ return r.slice(); });
-}
-
-/* ============================================================
-   LABELS & SELECTS
-   ============================================================ */
-function genLabels() {
-  labels = [];
-  for (var i = 0; i < N; i++) labels.push('' + (i + 1));
-  document.getElementById('inpLabels').value = labels.join(',');
-  fillSelects();
-}
-
-function parseLabels() {
-  var v = document.getElementById('inpLabels').value
-    .split(',').map(function(s){ return s.trim(); }).filter(Boolean);
-  if (v.length >= N) labels = v.slice(0, N);
-  else { labels = v; while (labels.length < N) labels.push('' + (labels.length + 1)); }
-  rebuildArcSelects();
-  fillSelects();
-  drawCurrent();
-}
-
-function fillSelects() {
-  ['selSrc', 'selSink'].forEach(function(id) {
-    var sel = document.getElementById(id);
-    var old = sel.value;
-    sel.innerHTML = '';
-    for (var i = 0; i < N; i++) {
-      var o = document.createElement('option');
-      o.value = i; o.textContent = L(i);
-      sel.appendChild(o);
-    }
-    if (old !== '' && parseInt(old) < N) sel.value = old;
-  });
-  document.getElementById('selSink').value = N - 1;
-}
-
-function changeN() {
-  N = Math.max(2, Math.min(30, parseInt(document.getElementById('inpN').value) || 7));
-  document.getElementById('inpN').value = N;
-  genLabels();
-  arcs = [];
-  rebuildArcList();
-  compLayout(curLayout);
-  drawCurrent();
-}
-
-/* ============================================================
-   ARC LIST
-   ============================================================ */
-function optionsHTML(sel) {
-  var h = '';
-  for (var i = 0; i < N; i++)
-    h += '<option value="' + i + '"' + (i === sel ? ' selected' : '') + '>' + L(i) + '</option>';
-  return h;
-}
-
-function addArc(from, to, cap) {
-  arcs.push({ from: from || 0, to: to !== undefined ? to : 1, cap: cap || 1 });
-  rebuildArcList();
-  drawCurrent();
-}
-
-function addBidirectional() {
-  // adds two rows: A->B and B->A, both cap=1, user adjusts
-  var f = 0, t = Math.min(1, N-1);
-  arcs.push({ from: f, to: t, cap: 1 });
-  arcs.push({ from: t, to: f, cap: 1 });
-  rebuildArcList();
-  drawCurrent();
-  toast('Bidirectional arc added — adjust capacities independently', 'info');
-}
-
-function removeArc(idx) {
-  arcs.splice(idx, 1);
-  rebuildArcList();
-  drawCurrent();
-}
-
-function rebuildArcList() {
-  var body = document.getElementById('arcListBody');
-  body.innerHTML = '';
-  arcs.forEach(function(a, idx) {
-    var row = document.createElement('div');
-    row.className  = 'arc-row';
-    row.setAttribute('role', 'row');
-
-    // Label for the arc (auto-generated description)
-    var arcDesc = L(a.from) + ' \u2192 ' + L(a.to);
-
-    row.innerHTML =
-      '<select onchange="arcs[' + idx + '].from=+this.value;rebuildArcList();drawCurrent()">'
-        + optionsHTML(a.from) + '</select>'
-      + '<select onchange="arcs[' + idx + '].to=+this.value;rebuildArcList();drawCurrent()">'
-        + optionsHTML(a.to) + '</select>'
-      + '<div class="arc-label-cell">' + arcDesc + '</div>'
-      + '<input type="number" min="1" value="' + a.cap + '" '
-        + 'onchange="arcs[' + idx + '].cap=Math.max(1,+this.value||1);drawCurrent()">'
-      + '<button class="arc-del" onclick="removeArc(' + idx + ')" title="Remove arc">'
-        + '&#x2715;</button>';
-
-    body.appendChild(row);
-  });
-  document.getElementById('arcSummary').textContent =
-    arcs.length + ' arc' + (arcs.length !== 1 ? 's' : '') + ' defined';
-}
-
-function rebuildArcSelects() {
-  var rows = document.querySelectorAll('#arcListBody .arc-row');
-  rows.forEach(function(row, idx) {
-    var sels = row.querySelectorAll('select');
-    if (sels[0]) sels[0].innerHTML = optionsHTML(arcs[idx].from);
-    if (sels[1]) sels[1].innerHTML = optionsHTML(arcs[idx].to);
-    // update label cell
-    var lc = row.querySelector('.arc-label-cell');
-    if (lc) lc.textContent = L(arcs[idx].from) + ' \u2192 ' + L(arcs[idx].to);
-  });
-}
-
-function getCapMatrix() {
-  var c = [];
-  for (var i = 0; i < N; i++) { c[i] = []; for (var j = 0; j < N; j++) c[i][j] = 0; }
-  arcs.forEach(function(a){ c[a.from][a.to] = (c[a.from][a.to] || 0) + a.cap; });
-  return c;
-}
-
-/* ============================================================
-   PRESETS
-   ============================================================ */
-function loadPreset(name) {
-  arcs = [];
-  if (name === 'lecture') {
-    // Exact from PDF: 7 nodes (1-7)
-    // Arc capacities as in the material
-    N = 7; labels = ['1','2','3','4','5','6','7'];
-    arcs = [
-      {from:0, to:1, cap:5}, // 1->2: 5
-      {from:0, to:2, cap:6}, // 1->3: 6
-      {from:0, to:3, cap:3}, // 1->4: 3
-      {from:1, to:2, cap:3}, // 2->3: 3
-      {from:1, to:4, cap:5}, // 2->5: 5
-      {from:2, to:3, cap:3}, // 3->4: 3
-      {from:2, to:4, cap:3}, // 3->5: 3
-      {from:2, to:5, cap:4}, // 3->6: 4
-      {from:3, to:5, cap:4}, // 4->6: 4
-      // 4->5 bidirectional: cap 3 and cap 4 (both directions, different caps)
-      {from:3, to:4, cap:3}, // 4->5: 3
-      {from:4, to:3, cap:4}, // 5->4: 4  <-- arc with different cap in reverse
-      {from:4, to:6, cap:4}, // 5->7: 4
-      {from:5, to:6, cap:5}, // 6->7: 5
-    ];
-  } else if (name === 'basic') {
-    N = 4; labels = ['S','A','B','T'];
-    arcs = [
-      {from:0,to:1,cap:10},{from:0,to:2,cap:8},
-      {from:1,to:2,cap:5},{from:1,to:3,cap:7},
-      {from:2,to:3,cap:10}
-    ];
-  } else if (name === 'medium') {
-    N = 6; labels = ['S','A','B','C','D','T'];
-    arcs = [
-      {from:0,to:1,cap:16},{from:0,to:2,cap:13},
-      {from:1,to:2,cap:4},{from:1,to:3,cap:12},
-      {from:2,to:1,cap:4},{from:2,to:4,cap:14},
-      {from:3,to:2,cap:9},{from:3,to:5,cap:20},
-      {from:4,to:3,cap:7},{from:4,to:5,cap:4}
-    ];
-  } else if (name === 'complex') {
-    N = 8; labels = ['S','A','B','C','D','E','F','T'];
-    arcs = [
-      {from:0,to:1,cap:10},{from:0,to:2,cap:10},
-      {from:1,to:2,cap:2},{from:1,to:3,cap:4},{from:1,to:4,cap:8},
-      {from:2,to:4,cap:9},
-      {from:3,to:6,cap:10},
-      {from:4,to:3,cap:6},{from:4,to:6,cap:10},{from:4,to:5,cap:10},
-      {from:5,to:7,cap:10},{from:6,to:7,cap:10}
-    ];
-  }
-  document.getElementById('inpN').value    = N;
-  document.getElementById('inpLabels').value = labels.join(',');
-  fillSelects();
-  document.getElementById('selSrc').value  = 0;
-  document.getElementById('selSink').value = N - 1;
-  rebuildArcList();
-  compLayout(curLayout);
-  drawCurrent();
-  toast('Preset "' + name + '" loaded', 'success');
-}
-
-/* ============================================================
-   LAYOUT
-   ============================================================ */
-function setLayout(type, btn) {
-  document.querySelectorAll('.layout-btn').forEach(function(b){ b.classList.remove('on'); });
-  if (btn) btn.classList.add('on');
-  curLayout = type;
-  compLayout(type);
-  drawCurrent();
-}
-
-function compLayout(type) {
-  var cvEl = document.getElementById('cv');
-  var W    = cvEl.parentElement.clientWidth || 800;
-  var H    = 460, cx = W / 2, cy = H / 2;
-  var r    = Math.min(W, H) * .34;
-  pos      = [];
-
-  if (type === 'circle') {
-    for (var i = 0; i < N; i++) {
-      var a = 2 * Math.PI * i / N - Math.PI / 2;
-      pos.push({ x: cx + r * Math.cos(a), y: cy + r * Math.sin(a) });
-    }
-  } else if (type === 'grid') {
-    var cols = Math.ceil(Math.sqrt(N));
-    var gap  = Math.min(W / (cols + 1), H / (Math.ceil(N / cols) + 1));
-    var ox   = (W - gap * (cols - 1)) / 2;
-    var oy   = (H - gap * (Math.ceil(N / cols) - 1)) / 2;
-    for (var i = 0; i < N; i++)
-      pos.push({ x: ox + (i % cols) * gap, y: oy + Math.floor(i / cols) * gap });
-  } else if (type === 'spring') {
-    var pad = 70;
-    for (var i = 0; i < N; i++)
-      pos.push({ x: pad + Math.random() * (W - 2*pad), y: pad + Math.random() * (H - 2*pad) });
-    var vel = pos.map(function(){ return {x:0, y:0}; });
-    for (var it = 0; it < 200; it++) {
-      var tmp = 1 - it / 200;
-      var f   = pos.map(function(){ return {x:0, y:0}; });
-      for (var a = 0; a < N; a++) for (var b = a+1; b < N; b++) {
-        var dx = pos[a].x - pos[b].x, dy = pos[a].y - pos[b].y;
-        var d  = Math.sqrt(dx*dx + dy*dy) || 1;
-        var ff = 5000 / (d*d);
-        f[a].x += dx/d*ff; f[a].y += dy/d*ff;
-        f[b].x -= dx/d*ff; f[b].y -= dy/d*ff;
-      }
-      arcs.forEach(function(e) {
-        var dx = pos[e.to].x - pos[e.from].x, dy = pos[e.to].y - pos[e.from].y;
-        var d  = Math.sqrt(dx*dx + dy*dy) || 1, ff = .005 * d;
-        f[e.from].x += dx/d*ff; f[e.from].y += dy/d*ff;
-        f[e.to].x   -= dx/d*ff; f[e.to].y   -= dy/d*ff;
-      });
-      for (var c = 0; c < N; c++) {
-        f[c].x += (W/2 - pos[c].x) * .002;
-        f[c].y += (H/2 - pos[c].y) * .002;
-        vel[c].x = (vel[c].x + f[c].x) * .9 * tmp;
-        vel[c].y = (vel[c].y + f[c].y) * .9 * tmp;
-        pos[c].x = Math.max(pad, Math.min(W-pad, pos[c].x + vel[c].x));
-        pos[c].y = Math.max(pad, Math.min(H-pad, pos[c].y + vel[c].y));
-      }
-    }
-  } else {
-    var pad = 60;
-    for (var i = 0; i < N; i++)
-      pos.push({ x: pad + Math.random()*(W-2*pad), y: pad + Math.random()*(H-2*pad) });
-  }
-}
-
-/* ============================================================
-   DRAG & ZOOM
-   ============================================================ */
-function setupDrag() {
-  var cv = document.getElementById('cv');
-
-  function getXY(e) {
-    var r  = cv.getBoundingClientRect();
-    var cx = e.touches ? e.touches[0].clientX : e.clientX;
-    var cy = e.touches ? e.touches[0].clientY : e.clientY;
-    return { x: (cx - r.left) / scale, y: (cy - r.top) / scale };
-  }
-
-  cv.addEventListener('mousedown', function(e) {
-    var p = getXY(e);
-    for (var i = N-1; i >= 0; i--) {
-      var dx = p.x - pos[i].x, dy = p.y - pos[i].y;
-      if (dx*dx + dy*dy < 600) {
-        dragIdx = i; dragOff = {x: dx, y: dy};
-        e.preventDefault(); return;
-      }
-    }
-  });
-
-  cv.addEventListener('mousemove', function(e) {
-    if (dragIdx < 0) return;
-    var p = getXY(e);
-    pos[dragIdx].x = p.x - dragOff.x;
-    pos[dragIdx].y = p.y - dragOff.y;
-    drawCurrent(); e.preventDefault();
-  });
-
-  cv.addEventListener('mouseup',    function(){ dragIdx = -1; });
-  cv.addEventListener('mouseleave', function(){ dragIdx = -1; });
-
-  cv.addEventListener('touchstart', function(e) {
-    var p = getXY(e);
-    for (var i = N-1; i >= 0; i--) {
-      var dx = p.x - pos[i].x, dy = p.y - pos[i].y;
-      if (dx*dx + dy*dy < 600) {
-        dragIdx = i; dragOff = {x: dx, y: dy};
-        e.preventDefault(); return;
-      }
-    }
-  }, {passive: false});
-
-  cv.addEventListener('touchmove', function(e) {
-    if (dragIdx < 0) return;
-    var p = getXY(e);
-    pos[dragIdx].x = p.x - dragOff.x;
-    pos[dragIdx].y = p.y - dragOff.y;
-    drawCurrent(); e.preventDefault();
-  }, {passive: false});
-
-  cv.addEventListener('touchend', function(){ dragIdx = -1; });
-}
-
-function zoomIn()    { scale = Math.min(2.5, scale + .15); drawCurrent(); }
-function zoomOut()   { scale = Math.max(.4,  scale - .15); drawCurrent(); }
-function zoomReset() { scale = 1; compLayout(curLayout); drawCurrent(); }
-
-function setViewMode(mode, btn) {
-  viewMode = mode;
-  document.querySelectorAll('#cvToolbar button').forEach(function(b){ b.classList.remove('on'); });
-  if (btn) btn.classList.add('on');
-  drawCurrent();
-  document.getElementById('cvHint').textContent =
-    mode === 'residual'
-      ? 'Residual graph \u00B7 remaining capacity'
-      : 'Original graph \u00B7 flow/capacity on arcs';
-}
-
-/* ============================================================
-   CANVAS DRAW ENGINE
-   ============================================================ */
-function drawCurrent() {
-  var st = (states.length > 0 && curIter >= 0 && curIter < states.length)
-         ? states[curIter] : null;
-  drawState(st);
-}
-
-function drawState(st) {
-  var cvEl = document.getElementById('cv');
-  var W    = cvEl.parentElement.clientWidth || 800;
-  var H    = 460;
-  var dpr  = window.devicePixelRatio || 1;
-
-  cvEl.width        = W * dpr;
-  cvEl.height       = H * dpr;
-  cvEl.style.height = H + 'px';
-
-  var c = cvEl.getContext('2d');
-  c.scale(dpr * scale, dpr * scale);
-  var sW = W / scale, sH = H / scale;
-
-  // Color tokens from CSS
-  var cs    = getComputedStyle(document.documentElement);
-  var bgCol  = cs.getPropertyValue('--canvas-bg').trim();
-  var nFill  = cs.getPropertyValue('--node-fill').trim();
-  var nStroke= cs.getPropertyValue('--node-stroke').trim();
-  var eCol   = cs.getPropertyValue('--edge-color').trim();
-  var textC  = cs.getPropertyValue('--text').trim();
-  var cardC  = cs.getPropertyValue('--card').trim();
-  var greenC = cs.getPropertyValue('--green').trim();
-  var blueC  = cs.getPropertyValue('--blue').trim();
-  var redC   = cs.getPropertyValue('--red').trim();
-  var amberC = cs.getPropertyValue('--amber').trim();
-
-  c.fillStyle = bgCol;
-  c.fillRect(0, 0, sW, sH);
-
-  if (!N || pos.length < N) return;
-
-  var capM     = st ? st.capOrig : getCapMatrix();
-  var flowM    = st ? st.flow    : null;
-  var resM     = st ? st.resCap  : null;
-  var augPath  = st ? st.augPath : null;
-  var augEdges = st ? st.augEdges: null;
-
-  var srcN  = parseInt(document.getElementById('selSrc').value)  || 0;
-  var sinkN = parseInt(document.getElementById('selSink').value) || (N - 1);
-  var showRes = (viewMode === 'residual' && resM);
-
-  /* --- detect bidirectional pairs for offset --- */
-  var edgeSet = {};
-  function ek(i,j){ return i + '_' + j; }
-  if (showRes) {
-    for (var i = 0; i < N; i++)
-      for (var j = 0; j < N; j++)
-        if (i !== j && resM[i][j] > 0) edgeSet[ek(i,j)] = true;
-  } else {
-    arcs.forEach(function(a){ edgeSet[ek(a.from, a.to)] = true; });
-  }
-
-  /* --- draw edge --- */
-  function drawEdge(from, to, cap, flow, isAug, isReverse) {
-    if (cap <= 0) return;
-    var p1 = pos[from], p2 = pos[to];
-    if (!p1 || !p2) return;
-
-    var dx = p2.x - p1.x, dy = p2.y - p1.y;
-    var ln = Math.sqrt(dx*dx + dy*dy) || 1;
-    var hasBoth = edgeSet[ek(from,to)] && edgeSet[ek(to,from)];
-    var off = hasBoth ? 7 : 0;
-    var px  = -dy/ln * off, py = dx/ln * off;
-
-    var x1 = p1.x + px, y1 = p1.y + py;
-    var x2 = p2.x + px, y2 = p2.y + py;
-    var nr = 21; // node radius
-
-    /* bloom for augmenting path */
-    if (isAug) {
-      c.save();
-      c.beginPath(); c.moveTo(x1,y1); c.lineTo(x2,y2);
-      c.strokeStyle = greenC; c.globalAlpha = .15;
-      c.lineWidth = 16; c.lineCap = 'round'; c.stroke();
-      c.restore();
-    }
-
-    /* main line */
-    c.beginPath(); c.moveTo(x1,y1); c.lineTo(x2,y2);
-    if (isReverse) c.setLineDash([4,3]); else c.setLineDash([]);
-    c.strokeStyle = isAug ? greenC : isReverse ? amberC : (flow > 0 ? blueC : eCol);
-    c.lineWidth   = isAug ? 2.8 : isReverse ? 1.2 : (flow > 0 ? 2 : 1);
-    c.stroke(); c.setLineDash([]);
-
-    /* arrowhead */
-    var ang = Math.atan2(y2-y1, x2-x1);
-    var ax  = x2 - nr * Math.cos(ang), ay = y2 - nr * Math.sin(ang);
-    var al  = 8;
-    c.beginPath();
-    c.moveTo(ax, ay);
-    c.lineTo(ax - al*Math.cos(ang-.38), ay - al*Math.sin(ang-.38));
-    c.moveTo(ax, ay);
-    c.lineTo(ax - al*Math.cos(ang+.38), ay - al*Math.sin(ang+.38));
-    c.strokeStyle = isAug ? greenC : isReverse ? amberC : (flow > 0 ? blueC : (isDark ? '#555' : '#aaa'));
-    c.lineWidth = 1.8; c.stroke();
-
-    /* edge label */
-    var mx  = (x1+x2)/2 + (-dy/ln)*15;
-    var my  = (y1+y2)/2 + ( dx/ln)*15;
-    var txt;
-    if (showRes) {
-      txt = '' + cap;
-    } else {
-      // Show: flow/capacity (or just capacity if no flow data)
-      txt = flowM ? (flow + '/' + cap) : ('' + cap);
-    }
-    c.font = '600 9px "JetBrains Mono",monospace';
-    var tw = c.measureText(txt).width + 8;
-    c.fillStyle   = bgCol; c.globalAlpha = .88;
-    c.fillRect(mx - tw/2, my - 7, tw, 14);
-    c.globalAlpha = 1;
-    c.fillStyle   = isAug ? greenC : isReverse ? amberC : (flow > 0 ? blueC : (isDark ? '#666' : '#999'));
-    c.textAlign   = 'center'; c.textBaseline = 'middle';
-    c.fillText(txt, mx, my);
-  }
-
-  /* --- render edges --- */
-  if (showRes) {
-    for (var i = 0; i < N; i++) for (var j = 0; j < N; j++) {
-      if (i === j || resM[i][j] <= 0) continue;
-      var isOrig = capM[i][j] > 0;
-      var isRev  = !isOrig;
-      var isOnAug = augEdges && augEdges.some(function(e){ return e.from===i && e.to===j; });
-      drawEdge(i, j, resM[i][j], 0, isOnAug, isRev);
-    }
-  } else {
-    arcs.forEach(function(a) {
-      var fl      = flowM ? flowM[a.from][a.to] : 0;
-      var isOnAug = augEdges && augEdges.some(function(e){ return e.from===a.from && e.to===a.to; });
-      drawEdge(a.from, a.to, a.cap, fl, isOnAug, false);
-    });
-  }
-
-  /* --- render nodes --- */
-  var nr = 21;
-  for (var i = 0; i < N; i++) {
-    var p      = pos[i];
-    if (!p) continue;
-    var isSrc  = i === srcN;
-    var isSink = i === sinkN;
-    var onPath = augPath && augPath.indexOf(i) >= 0;
-
-    /* glow */
-    if (onPath) {
-      c.save();
-      c.beginPath(); c.arc(p.x, p.y, nr+10, 0, 6.28);
-      c.fillStyle = greenC; c.globalAlpha = .1; c.fill();
-      c.restore();
-    }
-
-    /* circle */
-    c.beginPath(); c.arc(p.x, p.y, nr, 0, 6.28);
-    c.fillStyle   = isSrc ? greenC : isSink ? redC : onPath ? textC : nFill;
-    c.fill();
-    c.strokeStyle = isSrc ? greenC : isSink ? redC : onPath ? textC : nStroke;
-    c.lineWidth   = 2; c.stroke();
-
-    /* label */
-    c.fillStyle    = (isSrc || isSink || onPath) ? cardC : textC;
-    c.font         = '700 10px "Inter",sans-serif';
-    c.textAlign    = 'center'; c.textBaseline = 'middle';
-    c.fillText(L(i), p.x, p.y);
-
-    /* source/sink tag */
-    if (isSrc || isSink) {
-      c.font      = '600 7px "JetBrains Mono",monospace';
-      c.fillStyle = isSrc ? greenC : redC;
-      c.fillText(isSrc ? 'SOURCE' : 'SINK', p.x, p.y + nr + 12);
-    }
-  }
-
-  /* watermark */
-  c.font         = '500 8px "Inter",sans-serif';
-  c.fillStyle    = isDark ? 'rgba(255,255,255,.04)' : 'rgba(0,0,0,.04)';
-  c.textAlign    = 'right'; c.textBaseline = 'bottom';
-  c.fillText('RADSTRIX', sW - 8, sH - 6);
-}
-
-/* ============================================================
-   FORD-FULKERSON (EDMONDS-KARP — BFS)
-   Core algorithm: thinking like the PDF material
-   - Step 1: find augmenting path via BFS on residual graph
-   - Step 2: find bottleneck (min residual cap on path)
-   - Step 3: update residual caps (forward -pf, reverse +pf)
-   - Track both directions independently (handles bidirectional arcs)
-   ============================================================ */
-function runFF(src, sink) {
-  var capOrig = getCapMatrix();
-
-  /* residual capacity matrix — initialized with original caps */
-  var resCap = deepCopy(capOrig);
-
-  /* flow matrix — tracks actual flow on each directed arc */
-  var flow = [];
-  for (var i = 0; i < N; i++) { flow[i] = []; for (var j = 0; j < N; j++) flow[i][j] = 0; }
-
-  var maxFlow = 0, stList = [], iterNum = 0;
-
-  /* ---- State 0: initialization ---- */
-  stList.push({
-    title:    'Inisialisasi Network',
-    changes:  [
-      'Network memiliki ' + N + ' node dan ' + arcs.length + ' arc.',
-      'Source: ' + L(src) + ', Sink: ' + L(sink) + '.',
-      'Semua flow = 0. Residual capacity = capacity awal tiap arc.',
-      'Mulai mencari augmenting path (BFS)...'
-    ],
-    arcUpdates: [],
-    capOrig:  capOrig,
-    flow:     deepCopy(flow),
-    resCap:   deepCopy(resCap),
-    augPath:  null,
-    augEdges: null,
-    bottleneck: 0,
-    totalFlow:  0
-  });
-
-  /* ---- Main loop ---- */
-  while (true) {
-    /* BFS to find shortest augmenting path */
-    var parent = [];
-    for (var i = 0; i < N; i++) parent[i] = -1;
-    parent[src] = -2;
-    var queue = [src], found = false;
-
-    bfsLoop: while (queue.length > 0 && !found) {
-      var u = queue.shift();
-      for (var v = 0; v < N; v++) {
-        if (parent[v] === -1 && resCap[u][v] > 0) {
-          parent[v] = u;
-          if (v === sink) { found = true; break bfsLoop; }
-          queue.push(v);
+        function generateDeviceKey(fp) {
+            let p1 = simpleHash(fp);
+            let p2 = simpleHash(fp + "radstrix");
+            let full = (p1 + p2).replace(/[^A-Z0-9]/g, '');
+            return `${full.slice(0,4)}-${full.slice(4,8)}-${full.slice(8,12)}-${full.slice(12,16)}`;
         }
-      }
-    }
-
-    if (!found) break;
-
-    /* Trace path from sink to source */
-    var path = [], cur = sink;
-    while (cur !== src) { path.unshift(cur); cur = parent[cur]; }
-    path.unshift(src);
-
-    /* Bottleneck = minimum residual capacity along path */
-    var bottleneck = Infinity;
-    for (var k = 0; k < path.length - 1; k++)
-      bottleneck = Math.min(bottleneck, resCap[path[k]][path[k+1]]);
-
-    /* Build detailed arc update records (for UI display) */
-    var arcUpdates = [];
-    var augE = [];
-    var changes = [
-      'Augmenting path ditemukan (BFS): <strong>' + path.map(L).join(' \u2192 ') + '</strong>',
-      'Bottleneck (kapasitas terkecil di path): <strong>' + bottleneck + '</strong>'
-    ];
-
-    for (var k = 0; k < path.length - 1; k++) {
-      var u = path[k], v = path[k+1];
-
-      var oldFwd = resCap[u][v];
-      var oldRev = resCap[v][u];
-
-      /* Update residual graph */
-      resCap[u][v] -= bottleneck;
-      resCap[v][u] += bottleneck;
-
-      /* Update actual flow matrix:
-         if arc u->v exists in original graph, add flow;
-         if reverse arc v->u exists, subtract flow (cancel flow) */
-      if (capOrig[u][v] > 0) {
-        flow[u][v] += bottleneck;
-      } else {
-        flow[v][u] -= bottleneck;
-      }
-
-      augE.push({ from: u, to: v });
-
-      /* For display: show forward and reverse updates */
-      arcUpdates.push({
-        type: 'forward',
-        from: u, to: v,
-        oldCap: oldFwd, newCap: resCap[u][v],
-        delta: bottleneck,
-        label: L(u) + '\u2192' + L(v)
-      });
-      arcUpdates.push({
-        type: 'reverse',
-        from: v, to: u,
-        oldCap: oldRev, newCap: resCap[v][u],
-        delta: bottleneck,
-        label: L(v) + '\u2192' + L(u)
-      });
-
-      changes.push(
-        'Arc ' + L(u) + '\u2192' + L(v) +
-        ': residual dikurangi ' + bottleneck +
-        ' (' + oldFwd + ' \u2192 ' + resCap[u][v] + ')' +
-        ' | reverse ' + L(v) + '\u2192' + L(u) +
-        ': ditambah ' + bottleneck +
-        ' (' + oldRev + ' \u2192 ' + resCap[v][u] + ')'
-      );
-    }
-
-    maxFlow += bottleneck;
-    iterNum++;
-    changes.push('<strong>Total flow sekarang: ' + maxFlow + '</strong>');
-
-    stList.push({
-      title:      'Iterasi ' + iterNum + ': ' + path.map(L).join('\u2192') + ' (pf=' + bottleneck + ')',
-      changes:    changes,
-      arcUpdates: arcUpdates,
-      capOrig:    capOrig,
-      flow:       deepCopy(flow),
-      resCap:     deepCopy(resCap),
-      augPath:    path.slice(),
-      augEdges:   augE.slice(),
-      bottleneck: bottleneck,
-      totalFlow:  maxFlow
-    });
-  }
-
-  /* ---- Final state ---- */
-  var finalFlows = [];
-  for (var i = 0; i < N; i++)
-    for (var j = 0; j < N; j++)
-      if (capOrig[i][j] > 0 && flow[i][j] > 0)
-        finalFlows.push({ from:i, to:j, flow:flow[i][j], cap:capOrig[i][j] });
-
-  var chFinal = [
-    '<strong>Tidak ada lagi augmenting path</strong> dari ' + L(src) + ' ke ' + L(sink) + '.',
-    '<strong>Maximum Flow = ' + maxFlow + '</strong>',
-    'Distribusi flow final:'
-  ];
-  finalFlows.forEach(function(f){
-    chFinal.push(L(f.from) + ' \u2192 ' + L(f.to) + ': <strong>' + f.flow + '/' + f.cap + '</strong>');
-  });
-
-  stList.push({
-    title:      'FINAL: Maximum Flow = ' + maxFlow,
-    changes:    chFinal,
-    arcUpdates: [],
-    capOrig:    capOrig,
-    flow:       deepCopy(flow),
-    resCap:     deepCopy(resCap),
-    augPath:    null,
-    augEdges:   null,
-    bottleneck: 0,
-    totalFlow:  maxFlow
-  });
-
-  return {
-    maxFlow:    maxFlow,
-    flow:       flow,
-    capOrig:    capOrig,
-    resCap:     resCap,
-    states:     stList,
-    src:        src,
-    sink:       sink,
-    finalFlows: finalFlows,
-    iterations: iterNum
-  };
-}
-
-/* ============================================================
-   RUN
-   ============================================================ */
-function run() {
-  var src  = parseInt(document.getElementById('selSrc').value)  || 0;
-  var sink = parseInt(document.getElementById('selSink').value) || (N - 1);
-
-  if (src === sink) { toast('Source harus berbeda dari Sink!', 'error'); return; }
-  if (arcs.length === 0) { toast('Tambahkan arc terlebih dahulu', 'error'); return; }
-
-  for (var i = 0; i < arcs.length; i++) {
-    if (arcs[i].from === arcs[i].to) { toast('Self-loop tidak diperbolehkan', 'error'); return; }
-    if (arcs[i].cap <= 0)            { toast('Capacity harus > 0', 'error'); return; }
-  }
-
-  stopPlay();
-  document.getElementById('overlay').classList.add('show');
-  document.getElementById('ovText').textContent = 'Menjalankan Ford-Fulkerson (Edmonds-Karp)...';
-
-  setTimeout(function() {
-    try {
-      result   = runFF(src, sink);
-      states   = result.states;
-      curIter  = states.length - 1;
-
-      showResults();
-      setupIterCtrl();
-      drawCurrent();
-      showDetail();
-      showChanges();
-
-      document.getElementById('legend').style.display = 'flex';
-      toast('Maximum Flow = ' + result.maxFlow, 'success');
-    } catch(err) {
-      console.error(err);
-      toast('Error: ' + err.message, 'error');
-    }
-    document.getElementById('overlay').classList.remove('show');
-  }, 320);
-}
-
-/* ============================================================
-   ITERATION CONTROLS
-   ============================================================ */
-function setupIterCtrl() {
-  var bar = document.getElementById('iterBar');
-  var pbr = document.getElementById('playbackRow');
-  var dp  = document.getElementById('detailPanel');
-
-  if (states.length <= 1) {
-    bar.style.display = pbr.style.display = dp.style.display = 'none';
-    return;
-  }
-  bar.style.display = 'flex';
-  pbr.style.display = 'flex';
-  dp.style.display  = 'block';
-  updateIterUI();
-}
-
-function goIter(idx) {
-  idx = Math.max(0, Math.min(states.length - 1, idx));
-  curIter = idx;
-  updateIterUI();
-  drawCurrent();
-  showChanges();
-  showDetail();
-  highlightTimeline();
-}
-
-function updateIterUI() {
-  document.getElementById('iterBadge').textContent = (curIter + 1) + '/' + states.length;
-  document.getElementById('iterLabel').textContent  = states[curIter] ? states[curIter].title : '';
-  document.getElementById('btnFirst').disabled = curIter === 0;
-  document.getElementById('btnPrev').disabled  = curIter === 0;
-  document.getElementById('btnNext').disabled  = curIter >= states.length - 1;
-  document.getElementById('btnLast').disabled  = curIter >= states.length - 1;
-}
-
-/* ============================================================
-   DETAIL PANEL
-   ============================================================ */
-function showDetail() {
-  var panel = document.getElementById('detailPanel');
-  var body  = document.getElementById('detailBody');
-  var title = document.getElementById('detailTitle');
-  var sub   = document.getElementById('detailSub');
-
-  if (!states.length) { panel.style.display = 'none'; return; }
-  panel.style.display = 'block';
-
-  var st = states[curIter];
-  title.textContent = st.title;
-  sub.textContent   = 'Step ' + (curIter + 1) + ' / ' + states.length;
-
-  var h = '<div class="detail-grid">';
-
-  /* Augmenting Path card */
-  h += '<div class="stat-card"><div class="sv" style="font-size:.9rem;margin-bottom:6px">';
-  if (st.augPath && st.augPath.length) {
-    st.augPath.forEach(function(n, i) {
-      h += '<span class="pnode on-path" style="margin:2px">' + L(n) + '</span>';
-      if (i < st.augPath.length - 1) h += '<span class="parrow"> \u2192 </span>';
-    });
-  } else {
-    h += '<span style="font-size:.8rem;color:var(--text3);font-weight:400">&mdash;</span>';
-  }
-  h += '</div><div class="sl green">Augmenting Path</div></div>';
-
-  /* Bottleneck card */
-  h += '<div class="stat-card">'
-     + '<div class="sv">' + (st.bottleneck || '&mdash;') + '</div>'
-     + '<div class="sl blue">Bottleneck (pf)</div>'
-     + '</div>';
-
-  /* Total flow card */
-  h += '<div class="stat-card">'
-     + '<div class="sv">' + st.totalFlow + '</div>'
-     + '<div class="sl">Total Flow</div>'
-     + '</div>';
-
-  h += '</div>'; /* /detail-grid */
-
-  /* Arc updates — the key educational section */
-  if (st.arcUpdates && st.arcUpdates.length) {
-    h += '<div class="lbl" style="margin-top:14px">Update Residual Capacity</div>';
-    h += '<div style="display:flex;flex-direction:column;gap:4px">';
-    st.arcUpdates.forEach(function(u) {
-      var isRev = u.type === 'reverse';
-      h += '<div class="arc-update-item' + (isRev ? ' reverse' : '') + '">';
-      h += '<span class="dir">' + u.label + '</span>';
-      h += '<span style="color:var(--text3);font-size:.7rem">'
-         + (isRev ? '+ (reverse)' : '- (forward)') + '</span>';
-      h += '<span class="val-old">' + u.oldCap + '</span>';
-      h += '<span style="color:var(--text3)">\u2192</span>';
-      h += '<span class="val-new">' + u.newCap + '</span>';
-      h += '<span style="color:var(--text3);font-size:.68rem">('
-         + (isRev ? '+' : '-') + u.delta + ')</span>';
-      h += '</div>';
-    });
-    h += '</div>';
-  }
-
-  /* Residual capacity matrix */
-  if (st.resCap && N <= 15) {
-    var prevSt  = curIter > 0 ? states[curIter - 1] : null;
-    var prevRes = prevSt ? prevSt.resCap : null;
-
-    h += '<div style="margin-top:14px"><div class="lbl">Residual Capacity Matrix</div>';
-    h += '<div class="res-matrix-wrap"><table class="res-mtx"><thead><tr><th>\u2192</th>';
-    for (var j = 0; j < N; j++) h += '<th>' + L(j) + '</th>';
-    h += '</tr></thead><tbody>';
-
-    for (var i = 0; i < N; i++) {
-      h += '<tr><th>' + L(i) + '</th>';
-      for (var j = 0; j < N; j++) {
-        if (i === j) { h += '<td class="diag">&mdash;</td>'; continue; }
-        var rv  = st.resCap[i][j];
-        var ov  = prevRes ? prevRes[i][j] : st.capOrig[i][j];
-        var cls = '';
-        if (rv !== ov) cls = rv < ov ? ' reduced' : ' changed';
-        h += '<td class="' + cls.trim() + '">' + rv + '</td>';
-      }
-      h += '</tr>';
-    }
-    h += '</tbody></table></div></div>';
-  }
-
-  body.innerHTML = h;
-}
-
-/* ============================================================
-   CHANGES BOX
-   ============================================================ */
-function showChanges() {
-  var box = document.getElementById('changesBox');
-  var st  = states[curIter];
-  if (!st || !st.changes || !st.changes.length) { box.innerHTML = ''; return; }
-
-  var h = '<div class="changes-box"><div class="changes-title">Langkah Ini:</div>';
-  st.changes.forEach(function(ch) {
-    h += '<div class="change-item">' + ch + '</div>';
-  });
-  h += '</div>';
-  box.innerHTML = h;
-}
-
-/* ============================================================
-   PLAYBACK
-   ============================================================ */
-function togglePlay() {
-  if (playTimer) {
-    stopPlay();
-  } else {
-    if (curIter >= states.length - 1) curIter = 0;
-    document.getElementById('playIcon').textContent = '\u23F8';
-    document.getElementById('playText').textContent = 'Stop';
-    document.getElementById('playBtn').classList.add('playing');
-    playTimer = setInterval(function() {
-      if (curIter >= states.length - 1) { stopPlay(); return; }
-      goIter(curIter + 1);
-    }, playSpd);
-  }
-}
-
-function stopPlay() {
-  if (playTimer) clearInterval(playTimer);
-  playTimer = null;
-  document.getElementById('playIcon').textContent = '\u25B6';
-  document.getElementById('playText').textContent = 'Play';
-  document.getElementById('playBtn').classList.remove('playing');
-}
-
-/* ============================================================
-   RESULTS
-   ============================================================ */
-function showResults() {
-  var sec = document.getElementById('resultsSection');
-  sec.style.display = 'block';
-  setTimeout(function() {
-    sec.scrollIntoView({ behavior: 'smooth', block: 'start' });
-  }, 150);
-  buildStats();
-  buildFlowDisplay();
-  buildTimeline();
-  buildFlowTable();
-  buildAllIter();
-  buildAnalysis();
-}
-
-function buildStats() {
-  document.getElementById('statsGrid').innerHTML =
-    '<div class="stat-box"><div class="sv">Ford-Fulkerson</div><div class="sl">Algoritma (Edmonds-Karp)</div></div>'
-  + '<div class="stat-box"><div class="sv">' + result.maxFlow + '</div><div class="sl">Maximum Flow</div></div>'
-  + '<div class="stat-box"><div class="sv">' + result.iterations + '</div><div class="sl">Iterasi</div></div>'
-  + '<div class="stat-box"><div class="sv">' + N + ' / ' + arcs.length + '</div><div class="sl">Nodes / Arcs</div></div>';
-}
-
-function buildFlowDisplay() {
-  var h = '<div class="lbl">Maximum Flow = <strong style="font-size:1.1em">'
-        + result.maxFlow + '</strong></div>';
-  h += '<div class="lbl" style="margin-top:10px">Flow pada Setiap Arc</div>';
-  h += '<div style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:8px">';
-
-  var flM = result.flow, capM = result.capOrig;
-  arcs.forEach(function(a) {
-    var fl  = flM[a.from][a.to];
-    var pct = a.cap > 0 ? Math.round(fl / a.cap * 100) : 0;
-    var active = fl > 0;
-    h += '<span style="display:inline-flex;align-items:center;gap:5px;padding:4px 10px;'
-       + 'background:' + (active ? 'var(--green-bg)' : 'var(--card2)') + ';'
-       + 'border:1px solid ' + (active ? 'var(--green)' : 'var(--border)') + ';'
-       + 'border-radius:5px;font-family:JetBrains Mono,monospace;font-size:.72rem;'
-       + (active ? '' : 'opacity:.55;') + '">'
-       + L(a.from) + '\u2192' + L(a.to)
-       + ': <strong>' + fl + '</strong>/' + a.cap
-       + ' (' + pct + '%)'
-       + '</span>';
-  });
-  h += '</div>';
-  document.getElementById('flowDisplay').innerHTML = h;
-}
-
-function buildTimeline() {
-  document.getElementById('timeline').innerHTML = states.map(function(st, i) {
-    var isFin = i === states.length - 1;
-    return '<div class="tl-item' + (isFin ? ' final' : '') + (i === curIter ? ' active' : '')
-         + '" onclick="goIter(' + i + ')" role="button" tabindex="0">'
-         + '<div class="tl-head">'
-         + '<span class="tl-tag">Step ' + (i+1) + '</span>'
-         + (isFin ? '<span class="tl-fin">FINAL</span>' : '')
-         + '</div>'
-         + '<div class="tl-title">' + st.title + '</div>'
-         + '<div class="tl-desc">' + ((st.changes || [])[0] || '') + '</div>'
-         + '</div>';
-  }).join('');
-}
-
-function highlightTimeline() {
-  document.querySelectorAll('#timeline .tl-item').forEach(function(el, i) {
-    el.classList.toggle('active', i === curIter);
-  });
-}
-
-function buildFlowTable() {
-  var flM = result.flow, resM = result.resCap, capM = result.capOrig;
-  var h = '<table class="ft"><thead><tr>'
-        + '<th>#</th><th>Arc</th><th>Capacity</th><th>Flow</th>'
-        + '<th>Residual</th><th>Utilization</th>'
-        + '</tr></thead><tbody>';
-
-  arcs.forEach(function(a, idx) {
-    var fl  = flM[a.from][a.to];
-    var rs  = resM[a.from][a.to];
-    var pct = a.cap > 0 ? Math.round(fl / a.cap * 100) : 0;
-    h += '<tr' + (fl > 0 ? ' class="has-flow"' : '') + '>'
-       + '<td>' + (idx+1) + '</td>'
-       + '<td>' + L(a.from) + ' \u2192 ' + L(a.to) + '</td>'
-       + '<td>' + a.cap + '</td>'
-       + '<td>' + fl + '</td>'
-       + '<td>' + rs + '</td>'
-       + '<td><div style="display:flex;align-items:center;gap:6px">'
-       + '<div class="util-bar-bg"><div class="util-bar" style="width:' + pct + '%"></div></div>'
-       + pct + '%</div></td>'
-       + '</tr>';
-  });
-  h += '</tbody></table>';
-  document.getElementById('flowTable').innerHTML = h;
-}
-
-function buildAllIter() {
-  var sec = document.getElementById('tp-detail');
-  var h   = '';
-  states.forEach(function(st, idx) {
-    var isLast = idx === states.length - 1;
-    h += '<div class="accordion-item' + (isLast ? ' expanded' : '') + '" id="acc' + idx + '">'
-       + '<div class="accordion-head" onclick="toggleAccordion(' + idx + ')">'
-       + '<div style="display:flex;align-items:center">'
-       + '<span class="acc-num">' + (idx+1) + '</span>'
-       + '<span class="acc-title">' + st.title + '</span>'
-       + '</div>'
-       + '<span class="acc-chevron">\u25BC</span>'
-       + '</div>'
-       + '<div class="accordion-body">';
-
-    if (st.augPath && st.augPath.length) {
-      h += '<div class="path-display">';
-      st.augPath.forEach(function(n, i) {
-        h += '<span class="pnode on-path">' + L(n) + '</span>';
-        if (i < st.augPath.length - 1) h += '<span class="parrow"> \u2192 </span>';
-      });
-      h += '</div>';
-      h += '<p style="font-size:.75rem;color:var(--text2);margin-bottom:8px">'
-         + 'Bottleneck: <strong>' + st.bottleneck + '</strong>'
-         + ' &nbsp;|&nbsp; Total Flow: <strong>' + st.totalFlow + '</strong></p>';
-    }
-
-    if (st.arcUpdates && st.arcUpdates.length) {
-      h += '<div class="lbl">Residual Updates</div>'
-         + '<div style="display:flex;flex-direction:column;gap:3px;margin-bottom:10px">';
-      st.arcUpdates.forEach(function(u) {
-        var isRev = u.type === 'reverse';
-        h += '<div class="arc-update-item' + (isRev ? ' reverse' : '') + '">'
-           + '<span class="dir">' + u.label + '</span>'
-           + '<span style="color:var(--text3);font-size:.68rem">'
-           + (isRev ? '+ reverse' : '- forward') + '</span>'
-           + '<span class="val-old">' + u.oldCap + '</span>'
-           + '<span style="color:var(--text3)">\u2192</span>'
-           + '<span class="val-new">' + u.newCap + '</span>'
-           + '</div>';
-      });
-      h += '</div>';
-    }
-
-    if (st.changes && st.changes.length) {
-      h += '<div class="changes-box"><div class="changes-title">Detail</div>'
-         + st.changes.map(function(c){ return '<div class="change-item">' + c + '</div>'; }).join('')
-         + '</div>';
-    }
-
-    h += '<div style="margin-top:10px">'
-       + '<button class="btn btn-ghost btn-sm" onclick="goIter(' + idx + ')">'
-       + 'Lihat di Canvas</button></div>';
-    h += '</div></div>';
-  });
-  sec.innerHTML = h;
-}
-
-function toggleAccordion(idx) {
-  var el = document.getElementById('acc' + idx);
-  if (el) el.classList.toggle('expanded');
-}
-
-function buildAnalysis() {
-  var aiBox = document.getElementById('aiBox');
-  var flM   = result.flow;
-  var capM  = result.capOrig;
-
-  var totalCap = 0, totalUsed = 0;
-  arcs.forEach(function(a){ totalCap += a.cap; totalUsed += flM[a.from][a.to]; });
-  var util = totalCap > 0 ? (totalUsed / totalCap * 100).toFixed(1) : 0;
-
-  var h = '<h3>Analisis Lengkap &mdash; Maximum Flow Problem</h3>';
-  h += '<p><strong>Metode:</strong> Ford-Fulkerson dengan BFS (Edmonds-Karp) &mdash; O(VE&sup2;)</p>';
-  h += '<p><strong>Network:</strong> ' + N + ' node, ' + arcs.length + ' arc &nbsp;|&nbsp;'
-     + ' <strong>Source:</strong> ' + L(result.src) + ' &nbsp;|&nbsp;'
-     + ' <strong>Sink:</strong> ' + L(result.sink) + '</p>';
-  h += '<p><strong>Maximum Flow: ' + result.maxFlow + '</strong> dicapai dalam ' + result.iterations + ' iterasi</p>';
-
-  h += '<h4>Cara Kerja (sesuai materi)</h4>';
-  h += '<ul>'
-     + '<li><strong>Step 1:</strong> Cari path dari source ke sink di residual graph (semua arc capacity > 0) menggunakan BFS</li>'
-     + '<li><strong>Step 2:</strong> Tentukan bottleneck (pf) = capacity terkecil di sepanjang path</li>'
-     + '<li><strong>Step 3:</strong> Update residual graph &mdash; arc searah dikurangi pf, arc berlawanan ditambah pf</li>'
-     + '<li>Ulangi sampai tidak ada lagi augmenting path</li>'
-     + '</ul>';
-
-  h += '<h4>Detail per Iterasi</h4>';
-  states.forEach(function(st, idx) {
-    if (idx === 0 || idx === states.length - 1) return;
-    h += '<p><strong>Iterasi ' + idx + ':</strong> '
-       + st.augPath.map(L).join(' \u2192 ')
-       + ', pf = <strong>' + st.bottleneck + '</strong>'
-       + ', total = ' + st.totalFlow + '</p>';
-  });
-
-  h += '<h4>Utilisasi Network</h4>';
-  h += '<p>Network utilization: <strong>' + util + '%</strong> ('
-     + totalUsed + '/' + totalCap + ' total capacity)</p>';
-  h += '<ul>';
-  arcs.forEach(function(a) {
-    var fl  = flM[a.from][a.to];
-    var pct = a.cap > 0 ? Math.round(fl / a.cap * 100) : 0;
-    h += '<li>' + L(a.from) + ' \u2192 ' + L(a.to)
-       + ': ' + fl + '/' + a.cap + ' (' + pct + '%)'
-       + (fl === 0 ? ' &mdash; <em>tidak terpakai</em>' : '') + '</li>';
-  });
-  h += '</ul>';
-
-  /* Min-Cut via BFS on final residual graph */
-  h += '<h4>Min-Cut (Max-Flow Min-Cut Theorem)</h4>';
-  h += '<p>Berdasarkan teorema, Maximum Flow = Minimum Cut = <strong>' + result.maxFlow + '</strong></p>';
-
-  var vis = []; for (var i = 0; i < N; i++) vis[i] = false;
-  var q = [result.src]; vis[result.src] = true;
-  while (q.length > 0) {
-    var u = q.shift();
-    for (var v = 0; v < N; v++)
-      if (!vis[v] && result.resCap[u][v] > 0) { vis[v] = true; q.push(v); }
-  }
-
-  var sSet = [], tSet = [];
-  for (var i = 0; i < N; i++) (vis[i] ? sSet : tSet).push(L(i));
-
-  var cutEdges = [];
-  for (var i = 0; i < N; i++)
-    for (var j = 0; j < N; j++)
-      if (vis[i] && !vis[j] && capM[i][j] > 0)
-        cutEdges.push({ from:i, to:j, cap:capM[i][j] });
-
-  h += '<p>S-side (reachable dari source): <span class="mincut-set">';
-  sSet.forEach(function(n){ h += '<span class="mincut-chip chip-s">' + n + '</span>'; });
-  h += '</span></p>';
-  h += '<p>T-side: <span class="mincut-set">';
-  tSet.forEach(function(n){ h += '<span class="mincut-chip chip-t">' + n + '</span>'; });
-  h += '</span></p>';
-  h += '<p>Cut edges (saturated): <span class="mincut-set">';
-  cutEdges.forEach(function(e){
-    h += '<span class="mincut-chip chip-cut">' + L(e.from) + '\u2192' + L(e.to) + ' (' + e.cap + ')</span>';
-  });
-  h += '</span></p>';
-  var cutTotal = cutEdges.reduce(function(s,e){ return s + e.cap; }, 0);
-  h += '<p>Total cut capacity = ' + cutTotal + ' = Max Flow &check;</p>';
-
-  aiBox.innerHTML = h;
-}
-
-function switchTab(name, btn) {
-  document.querySelectorAll('.tab-btn').forEach(function(b){ b.classList.remove('on'); });
-  document.querySelectorAll('.tab-pane').forEach(function(p){ p.classList.remove('on'); });
-  if (btn) btn.classList.add('on');
-  document.getElementById('tp-' + name).classList.add('on');
-}
-
-/* ============================================================
-   SHARE / EXPORT / IMPORT
-   ============================================================ */
-function openShareModal() {
-  document.getElementById('shareModal').classList.add('show');
-  var d = { n: N, l: labels, a: arcs.map(function(a){ return {f:a.from,t:a.to,c:a.cap}; }) };
-  document.getElementById('shareUrl').value =
-    location.origin + location.pathname + '?g=' + encodeURIComponent(btoa(JSON.stringify(d)));
-}
-
-function copyShareUrl() {
-  var inp = document.getElementById('shareUrl');
-  inp.select();
-  navigator.clipboard.writeText(inp.value)
-    .then(function(){ toast('Copied!', 'success'); })
-    .catch(function(){ document.execCommand('copy'); toast('Copied!', 'success'); });
-}
-
-function exportJSON() {
-  var d = { nodes: N, labels: labels, arcs: arcs, author: 'RADSTRIX' };
-  var b = new Blob([JSON.stringify(d, null, 2)], { type: 'application/json' });
-  var a = document.createElement('a');
-  a.href = URL.createObjectURL(b);
-  a.download = 'maxflow-graph.json';
-  a.click();
-  toast('Exported', 'success');
-}
-
-function importJSON(e) {
-  var f = e.target.files[0]; if (!f) return;
-  var r = new FileReader();
-  r.onload = function(ev) {
-    try {
-      var d = JSON.parse(ev.target.result);
-      N      = d.nodes;
-      labels = d.labels || [];
-      while (labels.length < N) labels.push('' + (labels.length + 1));
-      arcs   = d.arcs || [];
-      document.getElementById('inpN').value      = N;
-      document.getElementById('inpLabels').value = labels.join(',');
-      fillSelects(); rebuildArcList(); compLayout(curLayout); drawCurrent();
-      toast('Imported', 'success');
-    } catch(err) { toast('Invalid file', 'error'); }
-  };
-  r.readAsText(f);
-  e.target.value = '';
-}
-
-function screenshotCanvas() {
-  var a = document.createElement('a');
-  a.download = 'maxflow.png';
-  a.href     = document.getElementById('cv').toDataURL('image/png');
-  a.click();
-  toast('Screenshot saved', 'success');
-}
-
-/* ============================================================
-   RESET
-   ============================================================ */
-function resetAll() {
-  result   = null;
-  states   = [];
-  curIter  = 0;
-  stopPlay();
-  document.getElementById('iterBar').style.display     = 'none';
-  document.getElementById('playbackRow').style.display = 'none';
-  document.getElementById('detailPanel').style.display = 'none';
-  document.getElementById('changesBox').innerHTML       = '';
-  document.getElementById('legend').style.display      = 'none';
-  document.getElementById('resultsSection').style.display = 'none';
-  N = 7; arcs = [];
-  genLabels(); rebuildArcList(); compLayout('circle'); drawCurrent();
-  toast('Reset', 'info');
-}
-
-/* ============================================================
-   DARK MODE
-   ============================================================ */
-function toggleDark() {
-  isDark = !isDark;
-  document.documentElement.setAttribute('data-theme', isDark ? 'dark' : 'light');
-  document.getElementById('darkBtn').textContent = isDark ? 'Light' : 'Dark';
-  localStorage.setItem('gv-dark', isDark ? '1' : '0');
-  drawCurrent();
-}
-
-/* ============================================================
-   INIT APP
-   ============================================================ */
-function initApp() {
-  genLabels();
-  fillSelects();
-  document.getElementById('selSrc').value  = 0;
-  document.getElementById('selSink').value = N - 1;
-  rebuildArcList();
-  compLayout('circle');
-  drawCurrent();
-  setupDrag();
-  initPlexus();
-
-  /* Restore dark mode preference */
-  if (localStorage.getItem('gv-dark') === '1') toggleDark();
-
-  /* Load from URL share param */
-  var p = new URLSearchParams(location.search);
-  var g = p.get('g');
-  if (g) {
-    try {
-      var d  = JSON.parse(atob(g));
-      N      = d.n;
-      labels = d.l || [];
-      while (labels.length < N) labels.push('' + (labels.length + 1));
-      arcs   = d.a.map(function(x){ return { from: x.f, to: x.t, cap: x.c }; });
-      document.getElementById('inpN').value      = N;
-      document.getElementById('inpLabels').value = labels.join(',');
-      fillSelects(); rebuildArcList(); compLayout(curLayout); drawCurrent();
-      toast('Graph loaded from URL', 'success');
-      history.replaceState({}, '', location.pathname);
-    } catch(e) {}
-  }
-}
-
-/* ============================================================
-   KEYBOARD SHORTCUTS
-   ============================================================ */
-document.addEventListener('keydown', function(e) {
-  var tag = e.target.tagName;
-  if (tag === 'INPUT' || tag === 'SELECT' || tag === 'TEXTAREA') return;
-
-  if (e.key === 'ArrowRight') { e.preventDefault(); if (states.length) goIter(curIter + 1); }
-  else if (e.key === 'ArrowLeft')  { e.preventDefault(); if (states.length) goIter(curIter - 1); }
-  else if (e.key === 'Home')       { e.preventDefault(); goIter(0); }
-  else if (e.key === 'End')        { e.preventDefault(); goIter(states.length - 1); }
-  else if (e.key === ' ')          { e.preventDefault(); if (states.length > 1) togglePlay(); }
-  else if (e.key === 'd' && !e.ctrlKey && !e.metaKey) toggleDark();
-  else if (e.key === 'Enter' && (e.ctrlKey || e.metaKey)) { e.preventDefault(); run(); }
-  else if (e.key === 's' && (e.ctrlKey || e.metaKey))     { e.preventDefault(); screenshotCanvas(); }
-});
-
-/* Resize handler */
-addEventListener('resize', function() {
-  drawCurrent();
-  resizePlx();
-});
-</script>
+
+        // Disediakan via console untuk user
+        window.getMasterKey = function(dk) {
+            let hash = simpleHash(dk + "masterkey_secret").toUpperCase();
+            return `RS-${hash.slice(0,4)}-${hash.slice(4,8)}-${hash.slice(0,4)}`;
+        };
+
+        const fp = getDeviceFingerprint();
+        const deviceKey = generateDeviceKey(fp);
+        const masterKey = window.getMasterKey(deviceKey);
+        
+        document.getElementById('dispDeviceId').innerText = deviceKey;
+
+        function checkAuth() {
+            if(localStorage.getItem('gv-authed') === '1') {
+                unlockSystem();
+            }
+        }
+
+        function verifyKey() {
+            const input = document.getElementById('keyInput').value.trim();
+            if(input === masterKey || input === 'RADSTRIX') {
+                localStorage.setItem('gv-authed', '1');
+                unlockSystem();
+            } else {
+                alert('ACCESS DENIED. Invalid Key.');
+            }
+        }
+
+        function unlockSystem() {
+            document.getElementById('authScreen').style.opacity = '0';
+            setTimeout(() => {
+                document.getElementById('authScreen').style.display = 'none';
+                let app = document.getElementById('app');
+                app.style.opacity = '1';
+                app.style.pointerEvents = 'auto';
+                resizeCanvas();
+            }, 500);
+        }
+
+        /* =========================================
+           2. PLEXUS 3D BACKGROUND SYSTEM
+           ========================================= */
+        function initPlexus(canvasId, colorStr) {
+            const canvas = document.getElementById(canvasId);
+            const ctx = canvas.getContext('2d');
+            let particles = [];
+            
+            function resize() {
+                canvas.width = canvas.parentElement.clientWidth || window.innerWidth;
+                canvas.height = canvas.parentElement.clientHeight || window.innerHeight;
+            }
+            window.addEventListener('resize', resize);
+            resize();
+
+            for(let i=0; i<60; i++) {
+                particles.push({
+                    x: Math.random() * canvas.width,
+                    y: Math.random() * canvas.height,
+                    vx: (Math.random() - 0.5) * 0.5,
+                    vy: (Math.random() - 0.5) * 0.5
+                });
+            }
+
+            function animate() {
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+                ctx.fillStyle = colorStr;
+                ctx.strokeStyle = colorStr;
+                
+                for(let i=0; i<particles.length; i++) {
+                    let p = particles[i];
+                    p.x += p.vx; p.y += p.vy;
+                    if(p.x < 0 || p.x > canvas.width) p.vx *= -1;
+                    if(p.y < 0 || p.y > canvas.height) p.vy *= -1;
+                    
+                    ctx.beginPath();
+                    ctx.arc(p.x, p.y, 2, 0, Math.PI*2);
+                    ctx.fill();
+
+                    for(let j=i+1; j<particles.length; j++) {
+                        let p2 = particles[j];
+                        let dist = Math.hypot(p.x - p2.x, p.y - p2.y);
+                        if(dist < 120) {
+                            ctx.globalAlpha = 1 - (dist/120);
+                            ctx.beginPath();
+                            ctx.moveTo(p.x, p.y);
+                            ctx.lineTo(p2.x, p2.y);
+                            ctx.stroke();
+                        }
+                    }
+                }
+                ctx.globalAlpha = 1;
+                requestAnimationFrame(animate);
+            }
+            animate();
+        }
+
+        initPlexus('lockPlexus', 'rgba(255, 255, 255, 0.3)');
+        initPlexus('mainPlexus', 'rgba(0, 0, 0, 0.05)');
+
+        /* =========================================
+           3. GRAPH DATA & ALGORITHM LOGIC
+           ========================================= */
+        let graphNodes = {}; 
+        let graphArcs = [];
+        let iterHistory = [];
+        let currentIter = 0;
+
+        function addArc() {
+            const u = document.getElementById('arcFrom').value.trim();
+            const v = document.getElementById('arcTo').value.trim();
+            const cu = parseInt(document.getElementById('capFwd').value) || 0;
+            const cv = parseInt(document.getElementById('capRev').value) || 0;
+
+            if(!u || !v) return;
+
+            // Save to internal model
+            if(!graphNodes[u]) graphNodes[u] = { id: u, x: Math.random()*400+100, y: Math.random()*400+100, vx:0, vy:0 };
+            if(!graphNodes[v]) graphNodes[v] = { id: v, x: Math.random()*400+100, y: Math.random()*400+100, vx:0, vy:0 };
+
+            // Cek apakah arc sudah ada, jika ya update, jika tidak push
+            let existing = graphArcs.find(a => (a.u === u && a.v === v) || (a.u === v && a.v === u));
+            if(existing) {
+                if(existing.u === u) { existing.capUV = cu; existing.capVU = cv; }
+                else { existing.capUV = cv; existing.capVU = cu; }
+            } else {
+                graphArcs.push({ u: u, v: v, capUV: cu, capVU: cv });
+            }
+
+            renderArcList();
+            document.getElementById('arcFrom').value = '';
+            document.getElementById('arcTo').value = '';
+            document.getElementById('capFwd').value = '';
+            document.getElementById('capRev').value = '0';
+        }
+
+        function renderArcList() {
+            const ul = document.getElementById('arcList');
+            ul.innerHTML = '';
+            graphArcs.forEach(a => {
+                let li = document.createElement('li');
+                li.innerHTML = `<span>${a.u} &harr; ${a.v}</span> <span>[${a.capUV}, ${a.capVU}]</span>`;
+                ul.appendChild(li);
+            });
+        }
+
+        // Maximum Flow Ford-Fulkerson (Edmonds-Karp BFS)
+        function startAnalysis() {
+            const source = document.getElementById('sourceInp').value.trim();
+            const sink = document.getElementById('sinkInp').value.trim();
+            
+            if(!graphNodes[source] || !graphNodes[sink]) {
+                alert("Source atau Sink tidak ditemukan di grafik!");
+                return;
+            }
+
+            document.getElementById('analysisPanel').style.display = 'flex';
+            iterHistory = [];
+            currentIter = 0;
+
+            // Buat struktur adjacency matrix residual
+            let adj = {};
+            let R = {}; // Residual
+            let originalCap = {};
+            
+            Object.keys(graphNodes).forEach(n => {
+                adj[n] = []; R[n] = {}; originalCap[n] = {};
+            });
+
+            graphArcs.forEach(a => {
+                if(!adj[a.u].includes(a.v)) adj[a.u].push(a.v);
+                if(!adj[a.v].includes(a.u)) adj[a.v].push(a.u);
+                R[a.u][a.v] = a.capUV;
+                R[a.v][a.u] = a.capVU;
+                originalCap[a.u][a.v] = a.capUV;
+                originalCap[a.v][a.u] = a.capVU;
+            });
+
+            function cloneR() {
+                let copy = {};
+                for(let u in R) { copy[u] = {...R[u]}; }
+                return copy;
+            }
+
+            iterHistory.push({
+                step: 0,
+                path: [],
+                minCap: 0,
+                R: cloneR(),
+                log: "Sistem inisialisasi. Kapasitas awal di-load."
+            });
+
+            let totalFlow = 0;
+            let iterCount = 1;
+
+            while(true) {
+                // BFS mencari jalur (shortest route by edges)
+                let parent = {};
+                let visited = {};
+                let q = [source];
+                visited[source] = true;
+
+                while(q.length > 0) {
+                    let u = q.shift();
+                    for(let v of adj[u]) {
+                        if(!visited[v] && R[u][v] > 0) {
+                            visited[v] = true;
+                            parent[v] = u;
+                            q.push(v);
+                            if(v === sink) break;
+                        }
+                    }
+                }
+
+                if(!visited[sink]) break; // Tidak ada jalur lagi
+
+                // Hitung p_f (bottleneck / kapasitas terkecil)
+                let path = [];
+                let curr = sink;
+                let minCap = Infinity;
+                while(curr !== source) {
+                    let p = parent[curr];
+                    path.unshift(curr);
+                    minCap = Math.min(minCap, R[p][curr]);
+                    curr = p;
+                }
+                path.unshift(source);
+
+                let logStr = `Step 1: Lintasan ditemukan: ${path.join(' - ')}.<br>`;
+                logStr += `Step 2: Kapasitas terkecil (bottleneck) adalah ${minCap}.<br>`;
+                logStr += `Step 3: Update residual:<br>`;
+
+                // Update residual R
+                for(let i=0; i<path.length-1; i++) {
+                    let u = path[i];
+                    let v = path[i+1];
+                    let oldFwd = R[u][v];
+                    let oldRev = R[v][u];
+                    
+                    R[u][v] -= minCap;
+                    R[v][u] += minCap;
+                    
+                    logStr += `- (${u}-${v}) ${oldFwd} - ${minCap} = <b>${R[u][v]}</b> | Arah balik (${v}-${u}) ${oldRev} + ${minCap} = <b>${R[v][u]}</b><br>`;
+                }
+
+                totalFlow += minCap;
+
+                iterHistory.push({
+                    step: iterCount,
+                    path: path,
+                    minCap: minCap,
+                    R: cloneR(),
+                    log: logStr
+                });
+                iterCount++;
+            }
+
+            iterHistory.push({
+                step: iterCount,
+                path: [],
+                minCap: 0,
+                R: cloneR(),
+                log: `Sudah tidak terdapat rute dari ${source} ke ${sink} dengan kapasitas > 0.<br><br><b>MAXIMUM FLOW = ${totalFlow}</b>`
+            });
+
+            applyIterationState();
+        }
+
+        function prevStep() {
+            if(currentIter > 0) {
+                currentIter--;
+                applyIterationState();
+            }
+        }
+
+        function nextStep() {
+            if(currentIter < iterHistory.length - 1) {
+                currentIter++;
+                applyIterationState();
+            }
+        }
+
+        function applyIterationState() {
+            let state = iterHistory[currentIter];
+            document.getElementById('stepTitle').innerText = `Iterasi: ${state.step}`;
+            document.getElementById('logBox').innerHTML = state.log;
+        }
+
+        /* =========================================
+           4. INTERACTIVE CANVAS GRAPH ENGINE
+           ========================================= */
+        const cvs = document.getElementById('graphCanvas');
+        const ctx = cvs.getContext('2d');
+        let dragNode = null;
+
+        function resizeCanvas() {
+            let p = cvs.parentElement;
+            cvs.width = p.clientWidth;
+            cvs.height = p.clientHeight;
+        }
+        window.addEventListener('resize', resizeCanvas);
+
+        // Simple mouse tracking for dragging
+        let mouseX = 0, mouseY = 0;
+        cvs.addEventListener('mousedown', e => {
+            const rect = cvs.getBoundingClientRect();
+            let mx = e.clientX - rect.left;
+            let my = e.clientY - rect.top;
+            for(let key in graphNodes) {
+                let n = graphNodes[key];
+                if(Math.hypot(n.x - mx, n.y - my) < 20) { dragNode = n; break; }
+            }
+        });
+        cvs.addEventListener('mousemove', e => {
+            const rect = cvs.getBoundingClientRect();
+            mouseX = e.clientX - rect.left;
+            mouseY = e.clientY - rect.top;
+            if(dragNode) { dragNode.x = mouseX; dragNode.y = mouseY; }
+        });
+        cvs.addEventListener('mouseup', () => dragNode = null);
+        cvs.addEventListener('mouseleave', () => dragNode = null);
+
+        function drawGraph() {
+            ctx.clearRect(0, 0, cvs.width, cvs.height);
+            
+            // Physics / Force directed layout (springs & repulsion) sangat ringan
+            let keys = Object.keys(graphNodes);
+            for(let i=0; i<keys.length; i++) {
+                for(let j=i+1; j<keys.length; j++) {
+                    let n1 = graphNodes[keys[i]]; let n2 = graphNodes[keys[j]];
+                    let dx = n2.x - n1.x; let dy = n2.y - n1.y;
+                    let dist = Math.hypot(dx, dy) || 1;
+                    // Repulsion
+                    let f = 1000 / (dist * dist);
+                    n1.vx -= (dx/dist)*f; n1.vy -= (dy/dist)*f;
+                    n2.vx += (dx/dist)*f; n2.vy += (dy/dist)*f;
+                }
+            }
+            
+            // Atraksi garis
+            graphArcs.forEach(a => {
+                let n1 = graphNodes[a.u]; let n2 = graphNodes[a.v];
+                if(n1 && n2) {
+                    let dx = n2.x - n1.x; let dy = n2.y - n1.y;
+                    let dist = Math.hypot(dx, dy);
+                    let diff = dist - 150; // panjang ideal
+                    let f = diff * 0.05;
+                    n1.vx += (dx/dist)*f; n1.vy += (dy/dist)*f;
+                    n2.vx -= (dx/dist)*f; n2.vy -= (dy/dist)*f;
+                }
+            });
+
+            let activeState = iterHistory[currentIter]; // untuk gambar kapasitas
+            let pathSet = new Set();
+            if(activeState && activeState.path) {
+                for(let i=0; i<activeState.path.length-1; i++){
+                    pathSet.add(activeState.path[i] + "-" + activeState.path[i+1]);
+                }
+            }
+
+            // Update posisi, Draw Edges & Capacity
+            graphArcs.forEach(a => {
+                let n1 = graphNodes[a.u]; let n2 = graphNodes[a.v];
+                if(!n1 || !n2) return;
+
+                // draw line
+                ctx.beginPath();
+                ctx.moveTo(n1.x, n1.y);
+                ctx.lineTo(n2.x, n2.y);
+                
+                let isPath = pathSet.has(a.u+"-"+a.v) || pathSet.has(a.v+"-"+a.u);
+                ctx.strokeStyle = isPath ? "#c00000" : "#cccccc";
+                ctx.lineWidth = isPath ? 3 : 1.5;
+                ctx.stroke();
+
+                // Draw Capacity Text like PDF (near node ends)
+                // Get current capacities from iteration state if available
+                let cUV = activeState ? activeState.R[a.u][a.v] : a.capUV;
+                let cVU = activeState ? activeState.R[a.v][a.u] : a.capVU;
+
+                ctx.font = "12px sans-serif";
+                ctx.fillStyle = "#555";
+                
+                // box at 25% length for cUV
+                let x1 = n1.x + (n2.x - n1.x)*0.25;
+                let y1 = n1.y + (n2.y - n1.y)*0.25;
+                ctx.fillStyle = "#ffffff";
+                ctx.fillRect(x1-8, y1-8, 16, 16);
+                ctx.strokeRect(x1-8, y1-8, 16, 16);
+                ctx.fillStyle = "#333";
+                ctx.fillText(cUV, x1-4, y1+4);
+
+                // box at 75% length for cVU
+                let x2 = n1.x + (n2.x - n1.x)*0.75;
+                let y2 = n1.y + (n2.y - n1.y)*0.75;
+                ctx.fillStyle = "#ffffff";
+                ctx.fillRect(x2-8, y2-8, 16, 16);
+                ctx.strokeRect(x2-8, y2-8, 16, 16);
+                ctx.fillStyle = "#333";
+                ctx.fillText(cVU, x2-4, y2+4);
+            });
+
+            // Draw Nodes
+            keys.forEach(k => {
+                let n = graphNodes[k];
+                if(n !== dragNode) {
+                    n.x += n.vx; n.y += n.vy;
+                    // damping
+                    n.vx *= 0.5; n.vy *= 0.5;
+                    // bounds
+                    n.x = Math.max(30, Math.min(cvs.width-30, n.x));
+                    n.y = Math.max(30, Math.min(cvs.height-30, n.y));
+                }
+                
+                ctx.beginPath();
+                ctx.arc(n.x, n.y, 18, 0, Math.PI*2);
+                ctx.fillStyle = "#ffffff";
+                ctx.fill();
+                ctx.lineWidth = 2;
+                ctx.strokeStyle = "#555555";
+                ctx.stroke();
+                
+                ctx.fillStyle = "#333333";
+                ctx.font = "bold 14px sans-serif";
+                ctx.textAlign = "center";
+                ctx.fillText(n.id, n.x, n.y+5);
+            });
+
+            requestAnimationFrame(drawGraph);
+        }
+
+        // Init App
+        checkAuth();
+        drawGraph();
+
+    </script>
 </body>
 </html>
