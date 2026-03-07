@@ -160,10 +160,11 @@ body{font-family:'DM Sans',-apple-system,sans-serif;background:var(--bg);color:v
 .ai-box li::before{content:'';position:absolute;left:0;top:10px;width:4px;height:4px;background:var(--text3);border-radius:50%}
 .saving-tbl{width:100%;border-collapse:collapse;font-family:'JetBrains Mono',monospace;font-size:.72em;margin-top:8px}
 .saving-tbl th{background:var(--bg2);padding:5px 6px;text-align:center;font-weight:700;color:var(--text2);border:1px solid var(--border);font-size:.85em}
-.saving-tbl td{padding:4px 6px;border:1px solid var(--border);text-align:center}
+.saving-tbl td{padding:4px 6px;border:1px solid var(--border);text-align:center;position:relative}
 .saving-tbl .hi{background:var(--green-bg);font-weight:700;color:var(--green)}
 .saving-tbl .used{background:var(--bg3);color:var(--text3);text-decoration:line-through}
 .saving-tbl .skipped{background:var(--red-bg);color:var(--red);text-decoration:line-through}
+.link-count{position:absolute;top:1px;right:2px;font-size:.65em;font-weight:700;color:var(--blue);min-width:10px;height:10px;line-height:10px;text-align:center}
 .pr-row{display:grid;grid-template-columns:repeat(auto-fill,minmax(130px,1fr));gap:5px;margin-bottom:14px}
 .pr-btn{background:var(--card2);border:1px dashed var(--border);border-radius:var(--radius-sm);padding:9px;text-align:center;cursor:pointer;transition:all .15s}
 .pr-btn:hover{border-color:var(--text);border-style:solid;background:var(--accent-bg)}
@@ -198,7 +199,6 @@ body{font-family:'DM Sans',-apple-system,sans-serif;background:var(--bg);color:v
 .cw-route-box{margin:8px 0;padding:8px 12px;background:var(--card);border:1px solid var(--border);border-radius:var(--radius-sm)}
 .cw-route-box .cw-route-label{font-size:.6em;font-weight:700;text-transform:uppercase;letter-spacing:.8px;color:var(--text3);margin-bottom:4px}
 .cw-route-box .cw-routes-list{font-size:.72em;color:var(--text2);line-height:1.7}
-.cw-link-count{display:inline-block;width:16px;height:16px;line-height:16px;text-align:center;border-radius:50%;background:var(--blue);color:#fff;font-size:.55em;font-weight:700;vertical-align:middle;margin:0 1px}
 .nn-candidates-tbl{width:100%;border-collapse:collapse;font-family:'JetBrains Mono',monospace;font-size:.7em;margin-top:6px}
 .nn-candidates-tbl th{background:var(--bg2);padding:4px 6px;text-align:center;font-weight:700;color:var(--text2);border:1px solid var(--border);font-size:.85em}
 .nn-candidates-tbl td{padding:3px 5px;border:1px solid var(--border);text-align:center}
@@ -212,6 +212,11 @@ body{font-family:'DM Sans',-apple-system,sans-serif;background:var(--bg);color:v
 .delta-tag.positive{background:var(--red-bg);color:var(--red)}
 .delta-tag.negative{background:var(--green-bg);color:var(--green)}
 .delta-tag.zero{background:var(--bg3);color:var(--text3)}
+.scan-box{margin:10px 0;padding:10px 14px;background:var(--card);border:1px solid var(--border);border-radius:var(--radius-sm)}
+.scan-box .scan-title{font-size:.65em;font-weight:700;text-transform:uppercase;letter-spacing:.8px;color:var(--text3);margin-bottom:6px}
+.scan-route{display:flex;align-items:center;gap:4px;margin:4px 0;padding:6px 10px;background:var(--bg2);border-radius:4px;font-family:'JetBrains Mono',monospace;font-size:.72em}
+.scan-route.merged{background:var(--green-bg);border:1px solid var(--green);font-weight:700}
+.scan-arrow{color:var(--text3);font-size:.8em}
 @media(max-width:768px){
 .shell{padding:10px}
 .section{padding:14px}
@@ -263,7 +268,6 @@ TSP Solver
 <h1>Traveling Salesman Problem</h1>
 <p>Nearest Neighbor, Insertion Heuristics, Clarke &amp; Wright Savings, dan 2-Opt -- Written by RADSTRIX</p>
 </section>
-<!-- SECTION 1: INPUT -->
 <section class="section">
 <div class="section-head">
 <div class="section-num">1</div>
@@ -275,6 +279,7 @@ TSP Solver
 <div class="pr-btn" onclick="loadPreset('cw5')"><div class="pn">Clarke Wright</div><div class="pd">5 Node + Depot</div></div>
 <div class="pr-btn" onclick="loadPreset('sym4')"><div class="pn">Simple 4</div><div class="pd">4 Node</div></div>
 <div class="pr-btn" onclick="loadPreset('asym6')"><div class="pn">6 Node</div><div class="pd">Asymmetric</div></div>
+<div class="pr-btn" onclick="loadPreset('lk5')"><div class="pn">Lembar Kerja</div><div class="pd">5 Node (G,A,B,C,D)</div></div>
 </div>
 <div class="row2" style="margin-bottom:14px">
 <div class="field"><label for="nNodes">Jumlah Node (termasuk depot)</label><input type="number" id="nNodes" min="3" max="15" value="5" onchange="buildMatrix()"></div>
@@ -293,7 +298,6 @@ TSP Solver
 <button class="btn btn-ghost" onclick="resetAll()">Reset</button>
 </div>
 </section>
-<!-- SECTION 2: VISUALIZATION -->
 <section class="section" id="visSection">
 <div class="section-head">
 <div class="section-num">2</div>
@@ -327,7 +331,6 @@ TSP Solver
 <div class="iter-detail-body" id="iterDetailBody"></div>
 </div>
 </section>
-<!-- SECTION 3: RESULTS -->
 <div id="results" style="display:none">
 <section class="section">
 <div class="section-head">
@@ -356,7 +359,7 @@ var nodeNames=[],distMatrix=[],pos={},sc=1,dragNode=null,dragOff={x:0,y:0},isDar
 var iterStates=[],curIter=0,playInterval=null,playSpeed=1200;
 var allResults={},bestResult=null,activeAlgo='nn',distM={};
 
-/* ═══ SPLASH ═══ */
+/* SPLASH */
 (function(){
 var cv=document.getElementById('splashCanvas'),cx=cv.getContext('2d'),pts=[];
 function rs(){cv.width=innerWidth;cv.height=innerHeight;}rs();addEventListener('resize',rs);
@@ -367,7 +370,7 @@ var run=true;
 setTimeout(function(){document.getElementById('splashScreen').classList.add('hidden');setTimeout(function(){run=false;},900);document.getElementById('lockScreen').classList.remove('hidden');document.getElementById('lockScreen').style.display='flex';checkAuth();},3200);
 })();
 
-/* ═══ AUTH ═══ */
+/* AUTH */
 function simpleHash(s){var h=0;for(var i=0;i<s.length;i++){h=((h<<5)-h)+s.charCodeAt(i);h=h&h;}return Math.abs(h).toString(16).padEnd(8,'0').toUpperCase();}
 function getDeviceFingerprint(){return navigator.userAgent+navigator.language+navigator.hardwareConcurrency+screen.width+screen.height+screen.colorDepth+new Date().getTimezoneOffset();}
 function generateDeviceKey(fp){var ch='ABCDEFGHJKLMNPQRSTUVWXYZ23456789',h1=simpleHash(fp),h2=simpleHash(fp+'radstrix_tsp'),sd=h1+h2,o='';for(var i=0;i<16;i++)o+=ch[parseInt(sd.charAt(i%sd.length),16)%ch.length];return o.slice(0,4)+'-'+o.slice(4,8)+'-'+o.slice(8,12)+'-'+o.slice(12,16);}
@@ -380,20 +383,20 @@ function verifyKey(){var inp=document.getElementById('keyInput').value.trim();if
 document.getElementById('keyInput').addEventListener('keydown',function(e){if(e.key==='Enter')verifyKey();});
 function unlockSystem(){var ls=document.getElementById('lockScreen');ls.style.opacity='0';setTimeout(function(){ls.style.display='none';ls.classList.add('hidden');initApp();},500);}
 
-/* ═══ LOCK PLEXUS ═══ */
+/* LOCK PLEXUS */
 (function(){var lc=document.getElementById('lockCanvas'),lx=lc.getContext('2d'),lp=[];function rs(){lc.width=innerWidth;lc.height=innerHeight;}rs();addEventListener('resize',rs);for(var i=0;i<55;i++)lp.push({x:Math.random()*lc.width,y:Math.random()*lc.height,vx:(Math.random()-.5)*.4,vy:(Math.random()-.5)*.4});(function a(){lx.clearRect(0,0,lc.width,lc.height);for(var i=0;i<lp.length;i++){var p=lp[i];p.x+=p.vx;p.y+=p.vy;if(p.x<0||p.x>lc.width)p.vx*=-1;if(p.y<0||p.y>lc.height)p.vy*=-1;lx.beginPath();lx.arc(p.x,p.y,1.5,0,6.28);lx.fillStyle='rgba(255,255,255,.25)';lx.fill();for(var j=i+1;j<lp.length;j++){var q=lp[j],d=Math.hypot(p.x-q.x,p.y-q.y);if(d<130){lx.globalAlpha=(1-d/130)*.08;lx.beginPath();lx.moveTo(p.x,p.y);lx.lineTo(q.x,q.y);lx.strokeStyle='rgba(255,255,255,1)';lx.lineWidth=.5;lx.stroke();}}lx.globalAlpha=1;}requestAnimationFrame(a);})();})();
 
-/* ═══ MAIN PLEXUS ═══ */
+/* MAIN PLEXUS */
 var plxCv,plxCtx,plxPts=[];
 function initPlexus(){plxCv=document.getElementById('plexusBg');plxCtx=plxCv.getContext('2d');resizePlx();for(var i=0;i<Math.max(60,Math.floor(innerWidth*innerHeight/8000));i++)plxPts.push({x:Math.random()*plxCv.width,y:Math.random()*plxCv.height,vx:(Math.random()-.5)*.12,vy:(Math.random()-.5)*.12,r:Math.random()*.5+.2,br:Math.random()*.4+.4,z:Math.random()});animPlx();}
 function resizePlx(){if(plxCv){plxCv.width=innerWidth;plxCv.height=innerHeight;}}
 function animPlx(){if(!plxCtx)return;var W=plxCv.width,H=plxCv.height;plxCtx.clearRect(0,0,W,H);var dk=document.documentElement.getAttribute('data-theme')==='dark';for(var i=0;i<plxPts.length;i++){var p=plxPts[i];p.x+=p.vx;p.y+=p.vy;if(p.x<0||p.x>W)p.vx*=-1;if(p.y<0||p.y>H)p.vy*=-1;for(var j=i+1;j<plxPts.length;j++){var q=plxPts[j],dx=p.x-q.x,dy=p.y-q.y,d=Math.sqrt(dx*dx+dy*dy);if(d<140){var a=(1-d/140)*(dk?.08:.04);plxCtx.beginPath();plxCtx.moveTo(p.x,p.y);plxCtx.lineTo(q.x,q.y);plxCtx.strokeStyle=dk?'rgba(255,255,255,'+a+')':'rgba(26,26,26,'+a+')';plxCtx.lineWidth=.5;plxCtx.stroke();}}var bc=dk?'255,255,255':'26,26,26';var gr=plxCtx.createRadialGradient(p.x,p.y,0,p.x,p.y,p.r*5);gr.addColorStop(0,'rgba('+bc+','+(p.br*.5)+')');gr.addColorStop(1,'rgba('+bc+',0)');plxCtx.beginPath();plxCtx.arc(p.x,p.y,p.r*5,0,6.28);plxCtx.fillStyle=gr;plxCtx.fill();plxCtx.beginPath();plxCtx.arc(p.x,p.y,p.r*.35,0,6.28);plxCtx.fillStyle='rgba('+bc+','+(p.br*.7)+')';plxCtx.fill();}requestAnimationFrame(animPlx);}
 
-/* ═══ UTIL ═══ */
+/* UTIL */
 function toast(m,t){t=t||'info';var e=document.getElementById('toast');e.textContent=m;e.className='toast show toast-'+(t==='success'?'ok':t==='error'?'err':'info');setTimeout(function(){e.classList.remove('show');},2500);}
 function toggleDark(){isDark=!isDark;document.documentElement.setAttribute('data-theme',isDark?'dark':'light');document.getElementById('darkBtn').textContent=isDark?'Light':'Dark';drawCurrent();}
 
-/* ═══ INIT APP ═══ */
+/* INIT APP */
 function initApp(){
 if(localStorage.getItem('gv-dark')==='1')toggleDark();
 initPlexus();buildMatrix();setupDrag();
@@ -406,7 +409,7 @@ else if(e.key===' '&&iterStates.length>1){e.preventDefault();togglePlayback();}
 });
 }
 
-/* ═══ MATRIX BUILD ═══ */
+/* MATRIX BUILD */
 function buildMatrix(){
 var n=parseInt(document.getElementById('nNodes').value)||5;
 if(n<3)n=3;if(n>15)n=15;
@@ -445,7 +448,7 @@ return distM;
 function getCost(u,v){return(distM[u]&&distM[u][v]!==undefined)?distM[u][v]:Infinity;}
 function tourCost(tour){var c=0;for(var i=0;i<tour.length-1;i++){var d=getCost(tour[i],tour[i+1]);if(d===Infinity)return Infinity;c+=d;}return c;}
 
-/* ═══ PRESETS ═══ */
+/* PRESETS */
 function loadPreset(name){
 if(name==='pdf5'){
 document.getElementById('nNodes').value=5;document.getElementById('depotInp').value='1';document.getElementById('symType').value='sym';
@@ -462,18 +465,22 @@ distMatrix=[[0,10,15,20],[10,0,35,25],[15,35,0,30],[20,25,30,0]];
 document.getElementById('nNodes').value=6;document.getElementById('depotInp').value='1';
 nodeNames=['1','2','3','4','5','6'];document.getElementById('symType').value='asym';
 distMatrix=[[0,10,8,9,7,12],[10,0,5,6,13,8],[8,5,0,4,9,7],[9,6,4,0,11,5],[7,13,9,11,0,10],[12,8,7,5,10,0]];
+}else if(name==='lk5'){
+document.getElementById('nNodes').value=5;document.getElementById('depotInp').value='G';
+nodeNames=['G','A','B','C','D'];document.getElementById('symType').value='sym';
+distMatrix=[[0,10,14,22,17],[10,0,20,12,11],[14,20,0,14,10],[22,12,14,0,15],[17,11,10,15,0]];
 }
 renderMatrix();computePositions();drawCurrent();toast('Preset loaded','success');
 }
 
-/* ═══ LAYOUT ═══ */
+/* LAYOUT */
 function computePositions(){
 var cv=document.getElementById('cv');var W=cv.parentElement.clientWidth||800,H=460;
 var cx2=W/2,cy2=H/2,r=Math.min(W,H)*.34;
 nodeNames.forEach(function(k,i){if(!pos[k]){var a=2*Math.PI*i/nodeNames.length-Math.PI/2;pos[k]={x:cx2+r*Math.cos(a),y:cy2+r*Math.sin(a)};}});
 }
 
-/* ═══ DRAG ═══ */
+/* DRAG */
 function setupDrag(){
 var cv=document.getElementById('cv');
 function xy(e){var r=cv.getBoundingClientRect();var x2=(e.touches?e.touches[0].clientX:e.clientX)-r.left,y2=(e.touches?e.touches[0].clientY:e.clientY)-r.top;return{x:x2/sc,y:y2/sc};}
@@ -489,7 +496,7 @@ function zI(){sc=Math.min(2,sc+.15);drawCurrent();}
 function zO(){sc=Math.max(.5,sc-.15);drawCurrent();}
 function zR(){sc=1;pos={};computePositions();drawCurrent();}
 
-/* ═══ DRAW ═══ */
+/* DRAW */
 function drawCurrent(){
 if(iterStates.length>0&&curIter>=0&&curIter<iterStates.length){
 var st=iterStates[curIter];
@@ -509,7 +516,6 @@ if(!nodeNames.length)return;
 readMatrix();
 var depot=document.getElementById('depotInp').value.trim();
 var routeColors=['#e74c3c','#3498db','#2ecc71','#9b59b6','#e67e22','#1abc9c','#f39c12','#e91e63'];
-// All edges faint
 for(var i=0;i<nodeNames.length;i++)for(var j=i+1;j<nodeNames.length;j++){
 var u=nodeNames[i],v=nodeNames[j],p1=pos[u],p2=pos[v];
 if(!p1||!p2)continue;var d=getCost(u,v);if(d===Infinity&&getCost(v,u)===Infinity)continue;
@@ -518,7 +524,6 @@ var mx=(p1.x+p2.x)/2,my=(p1.y+p2.y)/2;
 c.font='500 7px "JetBrains Mono",monospace';c.textAlign='center';c.textBaseline='middle';
 c.fillStyle=dk?'#555':'#bbb';if(d!==Infinity)c.fillText(''+d,mx,my-6);
 }
-// Draw multiple routes (CW initial routes)
 if(allRoutes&&allRoutes.length>0){
 allRoutes.forEach(function(route,ri){
 var rc=routeColors[ri%routeColors.length];
@@ -532,7 +537,6 @@ c.strokeStyle=rc;c.lineWidth=1.5;c.stroke();
 }
 });
 }
-// Tour edges
 if(tour.length>1&&!allRoutes){
 for(var i=0;i<tour.length-1;i++){
 var u=tour[i],v=tour[i+1],p1=pos[u],p2=pos[v];
@@ -547,7 +551,6 @@ var d2=getCost(u,v),lx2=(p1.x+p2.x)/2,ly2=(p1.y+p2.y)/2-8;
 if(d2!==Infinity){c.font='700 9px "JetBrains Mono",monospace';var tw=c.measureText(''+d2).width+6;c.fillStyle=bgC;c.fillRect(lx2-tw/2,ly2-6,tw,12);c.fillStyle=isHl?(dk?'#ff9800':'#e67e22'):tC;c.textAlign='center';c.textBaseline='middle';c.fillText(''+d2,lx2,ly2);}
 }
 }
-// Nodes
 var tourSet={};tour.forEach(function(n){tourSet[n]=1;});
 if(allRoutes)allRoutes.forEach(function(r){r.forEach(function(n){tourSet[n]=1;});});
 nodeNames.forEach(function(k){
@@ -565,28 +568,15 @@ if(isDepot){c.font='600 7px "JetBrains Mono",monospace';c.fillStyle=dk?'#888':'#
 c.font='500 8px "DM Sans",sans-serif';c.fillStyle=dk?'rgba(255,255,255,.04)':'rgba(0,0,0,.04)';c.textAlign='right';c.textBaseline='bottom';c.fillText('RADSTRIX',sW-8,sH-6);
 }
 
-/* ═══ ALGORITHMS ═══ */
-
-// Helper: build NN candidates table HTML
+/* ALGORITHMS */
 function buildNNCandidatesHTML(cur,nodes,visited){
 var h='<table class="nn-candidates-tbl"><thead><tr><th>Node</th><th>Jarak dari '+cur+'</th><th>Status</th></tr></thead><tbody>';
 var bestN=null,bestD=Infinity;
-nodes.forEach(function(n){
-if(n===cur)return;
-var d=getCost(cur,n);
-if(!visited[n]&&d<bestD){bestD=d;bestN=n;}
-});
-nodes.forEach(function(n){
-if(n===cur)return;
-var d=getCost(cur,n);
-var cls=visited[n]?'visited':(n===bestN?'chosen':'');
-h+='<tr class="'+cls+'"><td>'+n+'</td><td>'+(d===Infinity?'∞':d)+'</td><td>'+(visited[n]?'Sudah dikunjungi':(n===bestN?'✓ TERPILIH (terdekat)':'Kandidat'))+'</td></tr>';
-});
-h+='</tbody></table>';
-return h;
+nodes.forEach(function(n){if(n===cur)return;var d=getCost(cur,n);if(!visited[n]&&d<bestD){bestD=d;bestN=n;}});
+nodes.forEach(function(n){if(n===cur)return;var d=getCost(cur,n);var cls=visited[n]?'visited':(n===bestN?'chosen':'');h+='<tr class="'+cls+'"><td>'+n+'</td><td>'+(d===Infinity?'---':d)+'</td><td>'+(visited[n]?'Sudah dikunjungi':(n===bestN?'TERPILIH (terdekat)':'Kandidat'))+'</td></tr>';});
+h+='</tbody></table>';return h;
 }
 
-// Nearest Neighbor
 function solveNN(depot,nodes){
 var visited={},tour=[depot],cur=depot,steps=[];visited[depot]=true;
 var candidatesHTML=buildNNCandidatesHTML(depot,nodes,visited);
@@ -607,7 +597,7 @@ steps.push({step:stepN,title:'Step '+stepN+': Pilih '+best+' (jarak '+bestD+')',
 changes:['Dari node '+cur+', periksa semua node yang belum dikunjungi.',
 'Node terdekat: '+best+' dengan jarak = '+bestD+'.',
 'Tambahkan '+best+' ke tour.',
-'Tour saat ini: '+tour.join(' → '),
+'Tour saat ini: '+tour.join(' -> '),
 unvisited.length>0?'Node belum dikunjungi: '+unvisited.join(', '):'Semua node sudah dikunjungi.'],
 log:cur+' -> '+best+' ('+bestD+')',
 extraHTML:nextCandHTML?'<div class="lbl" style="margin-top:10px">Kandidat berikutnya dari '+best+'</div>'+nextCandHTML:''});
@@ -617,26 +607,23 @@ tour.push(depot);var tc=tourCost(tour);
 var returnDist=getCost(cur,depot);
 steps.push({step:stepN,title:'Kembali ke depot '+depot+' (total = '+tc+')',tour:tour.slice(),hlEdge:[cur,depot],
 changes:['Semua node sudah dikunjungi.','Kembali ke depot '+depot+'. Jarak: '+returnDist+'.',
-'Tour akhir: '+tour.join(' → '),'Total ongkos: '+tc],
+'Tour akhir: '+tour.join(' -> '),'Total ongkos: '+tc],
 log:'Return to '+depot+', Total='+tc});
 return{algo:'Nearest Neighbor',tour:tour,cost:tc,steps:steps};
 }
 
-// Helper: build insertion cost table
 function buildInsertionCostHTML(subtour,selK,bestPos){
-var h='<table class="ins-calc-tbl"><thead><tr><th>Posisi (i,j)</th><th>c(i,k)</th><th>c(k,j)</th><th>c(i,j)</th><th>Δ = c(i,k)+c(k,j)-c(i,j)</th></tr></thead><tbody>';
+var h='<table class="ins-calc-tbl"><thead><tr><th>Posisi (i,j)</th><th>c(i,k)</th><th>c(k,j)</th><th>c(i,j)</th><th>D = c(i,k)+c(k,j)-c(i,j)</th></tr></thead><tbody>';
 for(var si=0;si<subtour.length;si++){
 var sj=(si+1)%subtour.length;
 var ci=getCost(subtour[si],selK),ck=getCost(selK,subtour[sj]),co=getCost(subtour[si],subtour[sj]);
 var delta=ci+ck-co;
 var isBest=(si+1===bestPos);
-h+='<tr class="'+(isBest?'chosen':'')+'"><td>'+subtour[si]+' → '+subtour[sj]+'</td><td>'+(ci===Infinity?'∞':ci)+'</td><td>'+(ck===Infinity?'∞':ck)+'</td><td>'+(co===Infinity?'∞':co)+'</td><td><span class="delta-tag '+(delta<0?'negative':delta>0?'positive':'zero')+'">'+delta+'</span>'+(isBest?' ✓':'')+'</td></tr>';
+h+='<tr class="'+(isBest?'chosen':'')+'"><td>'+subtour[si]+' -> '+subtour[sj]+'</td><td>'+(ci===Infinity?'---':ci)+'</td><td>'+(ck===Infinity?'---':ck)+'</td><td>'+(co===Infinity?'---':co)+'</td><td><span class="delta-tag '+(delta<0?'negative':delta>0?'positive':'zero')+'">'+delta+'</span>'+(isBest?' [best]':'')+'</td></tr>';
 }
-h+='</tbody></table>';
-return h;
+h+='</tbody></table>';return h;
 }
 
-// Insertion algorithms
 function solveNI(depot,nodes){return solveInsertion(depot,nodes,'nearest');}
 function solveFI(depot,nodes){return solveInsertion(depot,nodes,'farthest');}
 function solveCI(depot,nodes){return solveInsertion(depot,nodes,'cheapest');}
@@ -647,63 +634,58 @@ var steps=[],stepN=0;
 var subtour=[depot];
 steps.push({step:stepN++,title:'Inisialisasi',tour:[depot,depot],hlEdge:null,
 changes:['Mulai dengan node '+depot+'.','Subtour awal: ['+depot+']'],log:'Init: '+depot});
-// Step 2: find initial partner
 var bestK=null,bestD=type==='farthest'?-Infinity:Infinity;
 var selectionHTML='<table class="ins-calc-tbl"><thead><tr><th>Node</th><th>Jarak dari '+depot+'</th></tr></thead><tbody>';
 for(var i=0;i<nodes.length;i++){
 if(nodes[i]===depot)continue;
 var d=getCost(depot,nodes[i]);
 if(type==='farthest'?d>bestD:d<bestD){bestD=d;bestK=nodes[i];}
-selectionHTML+='<tr><td>'+nodes[i]+'</td><td>'+(d===Infinity?'∞':d)+'</td></tr>';
+selectionHTML+='<tr><td>'+nodes[i]+'</td><td>'+(d===Infinity?'---':d)+'</td></tr>';
 }
 selectionHTML+='</tbody></table>';
 subtour=[depot,bestK];
 var stour=[depot,bestK,depot];
-steps.push({step:stepN++,title:'Subtour awal: '+depot+'→'+bestK+'→'+depot,tour:stour.slice(),hlEdge:[depot,bestK],
+steps.push({step:stepN++,title:'Subtour awal: '+depot+'->'+bestK+'->'+depot,tour:stour.slice(),hlEdge:[depot,bestK],
 changes:['Cari node '+(type==='farthest'?'terjauh':'terdekat')+' dari '+depot+'.',
 'Node terpilih: '+bestK+' (jarak = '+bestD+').',
-'Subtour: '+stour.join(' → ')],log:'Initial: '+stour.join('-'),
+'Subtour: '+stour.join(' -> ')],log:'Initial: '+stour.join('-'),
 extraHTML:'<div class="lbl" style="margin-top:10px">Jarak dari '+depot+' ke semua node</div>'+selectionHTML});
-
 while(subtour.length<nodes.length){
 var notIn=nodes.filter(function(n){return subtour.indexOf(n)<0;});
 if(!notIn.length)break;
 var selK=null,selD=type==='farthest'?-Infinity:Infinity;
 if(type==='cheapest'){
 var bestIns=Infinity,insK=null,insPos=-1;
-var cheapHTML='<table class="ins-calc-tbl"><thead><tr><th>Node k</th><th>Posisi (i,j)</th><th>Δ = c(i,k)+c(k,j)-c(i,j)</th></tr></thead><tbody>';
+var cheapHTML='<table class="ins-calc-tbl"><thead><tr><th>Node k</th><th>Posisi (i,j)</th><th>D = c(i,k)+c(k,j)-c(i,j)</th></tr></thead><tbody>';
 for(var ni=0;ni<notIn.length;ni++){
 var k=notIn[ni];
 for(var si=0;si<subtour.length;si++){
 var sj=(si+1)%subtour.length;
 var ci=getCost(subtour[si],k)+getCost(k,subtour[sj])-getCost(subtour[si],subtour[sj]);
-var isBest2=(ci<bestIns);
 if(ci<bestIns){bestIns=ci;insK=k;insPos=si+1;}
-cheapHTML+='<tr><td>'+k+'</td><td>'+subtour[si]+'→'+subtour[sj]+'</td><td>'+ci+'</td></tr>';
+cheapHTML+='<tr><td>'+k+'</td><td>'+subtour[si]+'->'+subtour[sj]+'</td><td>'+ci+'</td></tr>';
 }
 }
 selK=insK;
 subtour.splice(insPos,0,selK);
 stour=subtour.concat([subtour[0]]);
 var tc2=tourCost(stour);
-steps.push({step:stepN++,title:'Insert '+selK+' (cheapest, Δ='+bestIns+')',tour:stour.slice(),hlEdge:[subtour[insPos-1],selK],
+steps.push({step:stepN++,title:'Insert '+selK+' (cheapest, D='+bestIns+')',tour:stour.slice(),hlEdge:[subtour[insPos-1],selK],
 changes:['Cheapest Insertion: cari kombinasi node k dan posisi (i,j) dengan biaya tambahan minimum.',
 'Node terpilih: '+selK+', disisipkan antara '+subtour[insPos-1]+' dan '+subtour[(insPos+1)%subtour.length]+'.',
-'Biaya tambahan (Δ): '+bestIns,
-'Subtour: '+stour.join(' → ')+', total = '+tc2],log:'Insert '+selK,
+'Biaya tambahan (D): '+bestIns,
+'Subtour: '+stour.join(' -> ')+', total = '+tc2],log:'Insert '+selK,
 extraHTML:'<div class="lbl" style="margin-top:10px">Perhitungan Cheapest Insertion</div>'+cheapHTML});
 continue;
 }
-// Nearest/Farthest: selection
 var selHTML='<table class="ins-calc-tbl"><thead><tr><th>Node k (luar subtour)</th><th>Min jarak ke subtour</th></tr></thead><tbody>';
 for(var ni=0;ni<notIn.length;ni++){
 var k=notIn[ni],minD=Infinity;
 for(var si=0;si<subtour.length;si++){var d=getCost(subtour[si],k);if(d<minD)minD=d;}
 if(type==='farthest'?minD>selD:minD<selD){selD=minD;selK=k;}
-selHTML+='<tr><td>'+k+'</td><td>'+(minD===Infinity?'∞':minD)+'</td></tr>';
+selHTML+='<tr><td>'+k+'</td><td>'+(minD===Infinity?'---':minD)+'</td></tr>';
 }
 selHTML+='</tbody></table>';
-// Find best insertion position
 var bestIns2=Infinity,insPos2=-1;
 for(var si=0;si<subtour.length;si++){
 var sj=(si+1)%subtour.length;
@@ -714,56 +696,53 @@ var insertHTML=buildInsertionCostHTML(subtour,selK,insPos2);
 subtour.splice(insPos2,0,selK);
 stour=subtour.concat([subtour[0]]);
 var tc3=tourCost(stour);
-steps.push({step:stepN++,title:'Insert '+selK+' ('+type+', Δ='+bestIns2+')',tour:stour.slice(),hlEdge:[subtour[insPos2-1],selK],
+steps.push({step:stepN++,title:'Insert '+selK+' ('+type+', D='+bestIns2+')',tour:stour.slice(),hlEdge:[subtour[insPos2-1],selK],
 changes:['Selection: Pilih node '+selK+' ('+(type==='farthest'?'terjauh':'terdekat')+' dari subtour, jarak = '+selD+').',
 'Insertion: Cari posisi terbaik untuk menyisipkan '+selK+'.',
-'Posisi terbaik: antara '+subtour[insPos2-1]+' dan '+subtour[(insPos2+1)%subtour.length]+' (Δ = '+bestIns2+').',
-'Subtour: '+stour.join(' → ')+', total = '+tc3],log:'Insert '+selK,
+'Posisi terbaik: antara '+subtour[insPos2-1]+' dan '+subtour[(insPos2+1)%subtour.length]+' (D = '+bestIns2+').',
+'Subtour: '+stour.join(' -> ')+', total = '+tc3],log:'Insert '+selK,
 extraHTML:'<div class="lbl" style="margin-top:10px">Selection: Jarak node ke subtour</div>'+selHTML+'<div class="lbl" style="margin-top:10px">Insertion: Biaya penyisipan '+selK+'</div>'+insertHTML});
 }
 stour=subtour.concat([subtour[0]]);var tc=tourCost(stour);
 steps.push({step:stepN,title:'Hasil '+name+': total = '+tc,tour:stour.slice(),hlEdge:null,
-changes:['Tour akhir: '+stour.join(' → '),'Total ongkos: '+tc],log:'Total='+tc});
+changes:['Tour akhir: '+stour.join(' -> '),'Total ongkos: '+tc],log:'Total='+tc});
 return{algo:name,tour:stour,cost:tc,steps:steps};
 }
 
-// Clarke & Wright Savings -- ENHANCED
+/* CLARKE & WRIGHT - ENHANCED with route scanning and saving matrix per iteration */
 function solveCW(depot,nodes){
 var customers=nodes.filter(function(n){return n!==depot;});
 var steps=[],stepN=0;
-// Savings
 var savings=[];
 for(var i=0;i<customers.length;i++)for(var j=i+1;j<customers.length;j++){
 var s=getCost(depot,customers[i])+getCost(depot,customers[j])-getCost(customers[i],customers[j]);
 savings.push({i:customers[i],j:customers[j],s:s});
 }
 savings.sort(function(a,b){return b.s-a.s;});
-// Initial routes
 var routes={};customers.forEach(function(c){routes[c]=[depot,c,depot];});
 var totalInit=0;customers.forEach(function(c){totalInit+=getCost(depot,c)*2;});
 var routeOf={};customers.forEach(function(c){routeOf[c]=c;});
 var routeMap={};customers.forEach(function(c){routeMap[c]=[c];});
-// Build link counts for visualization
-function buildLinkCounts(){
-var lc={};
-customers.forEach(function(c){
-if(!lc[depot])lc[depot]={};
-if(!lc[depot][c])lc[depot][c]=0;
-lc[depot][c]+=2; // depot-c and c-depot
-});
-// count inter-customer links from current routes
-Object.keys(routeMap).forEach(function(k){
-var rm=routeMap[k];
-for(var i=0;i<rm.length-1;i++){
-var a=rm[i],b=rm[i+1];
-var ka=a<b?a:b,kb=a<b?b:a;
-if(!lc[ka])lc[ka]={};
-if(!lc[ka][kb])lc[ka][kb]=0;
-lc[ka][kb]++;
+
+// Link counts: how many direct paths between depot and each customer
+var linkCounts={};
+customers.forEach(function(c){linkCounts[c]=2;}); // initially each customer has 2 links to depot (back and forth)
+
+// Track inter-customer links
+var interLinks={};
+
+function getLinkCount(a,b){
+var ka=a<b?a+','+b:b+','+a;
+if(a===depot)return linkCounts[b]||0;
+if(b===depot)return linkCounts[a]||0;
+return interLinks[ka]||0;
 }
-});
-return lc;
+
+function setInterLink(a,b,v){
+var ka=a<b?a+','+b:b+','+a;
+interLinks[ka]=v;
 }
+
 function buildCurrentRoutes(){
 var rts=[];
 Object.keys(routeMap).forEach(function(k){
@@ -771,10 +750,18 @@ rts.push([depot].concat(routeMap[k]).concat([depot]));
 });
 return rts;
 }
-function buildSavingMatrixHTML(usedSet,currentHighlight,skippedSet){
+
+function buildSavingMatrixWithLinks(usedSet,currentHighlight,skippedSet){
 var h='<table class="saving-tbl"><thead><tr><th></th>';
 customers.forEach(function(c){h+='<th>'+c+'</th>';});
 h+='</tr></thead><tbody>';
+// Depot row with link counts
+h+='<tr><th>'+depot+'</th>';
+customers.forEach(function(c){
+var lc=linkCounts[c]||0;
+h+='<td>-'+(lc>0?'<span class="link-count">'+lc+'</span>':'')+'</td>';
+});
+h+='</tr>';
 for(var i=0;i<customers.length;i++){
 h+='<tr><th>'+customers[i]+'</th>';
 for(var j=0;j<customers.length;j++){
@@ -785,77 +772,103 @@ var cls='';
 if(sv&&currentHighlight&&sv.i===currentHighlight.i&&sv.j===currentHighlight.j)cls='hi';
 else if(usedSet[svIdx])cls='used';
 else if(skippedSet&&skippedSet[svIdx])cls='skipped';
-h+='<td class="'+cls+'">'+(sv?sv.s:'-')+'</td>';
+var il=getLinkCount(customers[i],customers[j]);
+h+='<td class="'+cls+'">'+(sv?sv.s:'-')+(il>0?'<span class="link-count">'+il+'</span>':'')+'</td>';
 }
 h+='</tr>';
 }
 h+='</tbody></table>';
 return h;
 }
+
 function buildRoutesListHTML(){
 var h='<div class="cw-route-box"><div class="cw-route-label">Rute Saat Ini</div><div class="cw-routes-list">';
 var rts=buildCurrentRoutes();
 rts.forEach(function(r,i){
-h+='<div>Rute '+(i+1)+': '+r.join(' → ')+' (jarak: '+tourCost(r)+')</div>';
+h+='<div>Rute '+(i+1)+': '+r.join(' -> ')+' (jarak: '+tourCost(r)+')</div>';
 });
 h+='</div></div>';
 return h;
 }
+
+// Build scan visualization: show the 3 separate routes becoming 1
+function buildScanHTML(depot,ni,nj,routeA,routeB,mergedRoute){
+var h='<div class="scan-box"><div class="scan-title">Proses Penggabungan Rute (Scan 3 jalur menjadi 1)</div>';
+// Route containing ni
+var rA=[depot].concat(routeA).concat([depot]);
+var rB=[depot].concat(routeB).concat([depot]);
+var rM=[depot].concat(mergedRoute).concat([depot]);
+h+='<div style="font-size:.68em;color:var(--text3);margin-bottom:6px">Jalur sebelum penggabungan:</div>';
+h+='<div class="scan-route">Rute ('+ni+'): '+rA.join(' -> ')+' | jarak: '+tourCost(rA)+'</div>';
+h+='<div class="scan-route">Rute ('+nj+'): '+rB.join(' -> ')+' | jarak: '+tourCost(rB)+'</div>';
+h+='<div style="font-size:.68em;color:var(--text3);margin:6px 0 4px">Hapus jalur '+depot+'->'+ni+' dan '+nj+'->'+depot+', tambahkan jalur '+ni+'->'+nj+':</div>';
+h+='<div class="scan-route merged">Rute gabungan: '+rM.join(' -> ')+' | jarak: '+tourCost(rM)+'</div>';
+h+='</div>';
+return h;
+}
+
 // Initial step
 var allInitRoutes=buildCurrentRoutes();
-var initSavHTML=buildSavingMatrixHTML({},null,{});
+var initSavHTML=buildSavingMatrixWithLinks({},null,{});
 steps.push({step:stepN++,title:'Inisialisasi: rute terpisah tiap customer',
 tour:[depot],hlEdge:null,
 allRoutes:allInitRoutes,
-changes:['Setiap customer dilayani oleh rute terpisah: '+customers.map(function(c){return depot+'→'+c+'→'+depot;}).join(', '),
+changes:['Setiap customer dilayani oleh rute terpisah: '+customers.map(function(c){return depot+'->'+c+'->'+depot;}).join(', '),
 'Total jarak awal: '+totalInit,
 'Hitung saving untuk setiap pasangan (i,j):','s(i,j) = c('+depot+',i) + c('+depot+',j) - c(i,j)'],
 log:'Init, savings computed',
 savingsData:{savings:savings.slice(),usedSet:{},skippedSet:{}},
-extraHTML:'<div class="lbl" style="margin-top:10px">Saving Matrix</div>'+initSavHTML+
+extraHTML:'<div class="lbl" style="margin-top:10px">Saving Matrix (dengan jumlah jalur)</div>'+initSavHTML+
 '<div class="lbl" style="margin-top:10px">Savings Diurutkan (Descending)</div>'+
-'<table class="ins-calc-tbl"><thead><tr><th>#</th><th>Pasangan</th><th>Saving</th></tr></thead><tbody>'+
-savings.map(function(sv,i){return'<tr><td>'+(i+1)+'</td><td>'+sv.i+' - '+sv.j+'</td><td>'+sv.s+'</td></tr>';}).join('')+
+'<table class="ins-calc-tbl"><thead><tr><th>#</th><th>Pasangan</th><th>Saving</th><th>Perhitungan</th></tr></thead><tbody>'+
+savings.map(function(sv,i){return'<tr><td>'+(i+1)+'</td><td>'+sv.i+' - '+sv.j+'</td><td>'+sv.s+'</td><td>c('+depot+','+sv.i+') + c('+depot+','+sv.j+') - c('+sv.i+','+sv.j+') = '+getCost(depot,sv.i)+' + '+getCost(depot,sv.j)+' - '+getCost(sv.i,sv.j)+' = '+sv.s+'</td></tr>';}).join('')+
 '</tbody></table>'+buildRoutesListHTML()});
+
 var usedSet={},skippedSet={};
 for(var si=0;si<savings.length;si++){
 var sv=savings[si],ni=sv.i,nj=sv.j;
 var ri=routeOf[ni],rj=routeOf[nj];
 if(ri===rj){
 skippedSet[si]=true;
-// Log skip: same route
 var skipRoutes=buildCurrentRoutes();
 steps.push({step:stepN++,title:'Skip '+ni+'-'+nj+' (saving='+sv.s+', sudah satu rute)',
 tour:[depot],hlEdge:null,allRoutes:skipRoutes,
-changes:['Saving tertinggi berikutnya: s('+ni+','+nj+') = '+sv.s+'.',
-'❌ TIDAK DAPAT DIGABUNG: Node '+ni+' dan '+nj+' sudah berada dalam satu rute.',
+changes:['Saving berikutnya: s('+ni+','+nj+') = '+sv.s+'.',
+'TIDAK DAPAT DIGABUNG: Node '+ni+' dan '+nj+' sudah berada dalam satu rute (loop).',
 'Lanjut ke saving berikutnya.'],
 log:'Skip '+ni+'-'+nj+' (same route)',
 savingsData:{savings:savings,usedSet:Object.assign({},usedSet),skippedSet:Object.assign({},skippedSet)},
-extraHTML:'<div class="lbl" style="margin-top:10px">Saving Matrix (Updated)</div>'+buildSavingMatrixHTML(usedSet,null,skippedSet)+buildRoutesListHTML()});
+extraHTML:'<div class="lbl" style="margin-top:10px">Saving Matrix (Updated)</div>'+buildSavingMatrixWithLinks(usedSet,null,skippedSet)+buildRoutesListHTML()});
 continue;
 }
 var rA=routeMap[ri],rB=routeMap[rj];
 var endA=rA[rA.length-1],startA=rA[0];
 var endB=rB[rB.length-1],startB=rB[0];
 var canLink=false,merged=null;
-// Check endpoint conditions
 var endpointCheckA=(endA===ni||startA===ni);
 var endpointCheckB=(endB===nj||startB===nj);
 if(!endpointCheckA||!endpointCheckB){
-// Not accessible from depot endpoint
 skippedSet[si]=true;
 var skipRoutes2=buildCurrentRoutes();
+// Check which node is not endpoint
+var reason='';
+if(!endpointCheckA&&!endpointCheckB)reason='Node '+ni+' dan '+nj+' bukan endpoint dari rutenya.';
+else if(!endpointCheckA)reason='Node '+ni+' bukan endpoint dari rutenya (tidak langsung terhubung ke depot). Tidak ada jalur '+depot+'-'+ni+' yang dapat diputus.';
+else reason='Node '+nj+' bukan endpoint dari rutenya (tidak langsung terhubung ke depot). Tidak ada jalur '+depot+'-'+nj+' yang dapat diputus.';
 steps.push({step:stepN++,title:'Skip '+ni+'-'+nj+' (saving='+sv.s+', bukan endpoint)',
 tour:[depot],hlEdge:null,allRoutes:skipRoutes2,
 changes:['Saving berikutnya: s('+ni+','+nj+') = '+sv.s+'.',
-'❌ TIDAK DAPAT DIGABUNG: Node '+ni+' atau '+nj+' bukan endpoint dari rutenya (tidak langsung terhubung ke depot).',
+'TIDAK DAPAT DIGABUNG: '+reason,
 'Syarat: kedua node harus langsung accessible dari depot (endpoint rute).'],
 log:'Skip '+ni+'-'+nj+' (not endpoint)',
 savingsData:{savings:savings,usedSet:Object.assign({},usedSet),skippedSet:Object.assign({},skippedSet)},
-extraHTML:'<div class="lbl" style="margin-top:10px">Saving Matrix (Updated)</div>'+buildSavingMatrixHTML(usedSet,null,skippedSet)+buildRoutesListHTML()});
+extraHTML:'<div class="lbl" style="margin-top:10px">Saving Matrix (Updated)</div>'+buildSavingMatrixWithLinks(usedSet,null,skippedSet)+buildRoutesListHTML()});
 continue;
 }
+// Save pre-merge routes for scan visualization
+var preRouteA=rA.slice();
+var preRouteB=rB.slice();
+
 if(endA===ni&&startB===nj){merged=rA.concat(rB);canLink=true;}
 else if(endA===ni&&endB===nj){merged=rA.concat(rB.slice().reverse());canLink=true;}
 else if(startA===ni&&startB===nj){merged=rA.slice().reverse().concat(rB);canLink=true;}
@@ -869,39 +882,47 @@ var newKey=ri;
 merged.forEach(function(c){routeOf[c]=newKey;});
 routeMap[newKey]=merged;
 if(rj!==newKey)delete routeMap[rj];
+
+// Update link counts
+linkCounts[ni]=(linkCounts[ni]||2)-1;
+linkCounts[nj]=(linkCounts[nj]||2)-1;
+setInterLink(ni,nj,(getLinkCount(ni,nj)||0)+1);
+
 var fullTour=[depot].concat(merged).concat([depot]);
 var tc=tourCost(fullTour);
 var currentRoutes=buildCurrentRoutes();
-var savHTML=buildSavingMatrixHTML(usedSet,sv,skippedSet);
-steps.push({step:stepN++,title:'Gabung '+ni+'↔'+nj+' (saving = '+sv.s+')',
+var savHTML=buildSavingMatrixWithLinks(usedSet,sv,skippedSet);
+var scanHTML=buildScanHTML(depot,ni,nj,preRouteA,preRouteB,merged);
+
+steps.push({step:stepN++,title:'Gabung '+ni+' <-> '+nj+' (saving = '+sv.s+')',
 tour:fullTour.slice(),hlEdge:[ni,nj],
 allRoutes:currentRoutes.length>1?currentRoutes:null,
-changes:['✅ Saving tertinggi yang valid: s('+ni+','+nj+') = '+sv.s+'.',
+changes:['Saving tertinggi yang valid: s('+ni+','+nj+') = '+sv.s+'.',
 'Perhitungan: s = c('+depot+','+ni+') + c('+depot+','+nj+') - c('+ni+','+nj+') = '+getCost(depot,ni)+' + '+getCost(depot,nj)+' - '+getCost(ni,nj)+' = '+sv.s,
 'Syarat terpenuhi: (a) '+ni+' dan '+nj+' keduanya endpoint rute, (b) berbeda rute.',
-'Hapus jalur '+depot+'→'+ni+' dan '+nj+'→'+depot+', tambahkan jalur '+ni+'→'+nj+'.',
-'Tour gabungan: '+fullTour.join(' → ')+', total = '+tc,
+'Hapus jalur '+depot+'->'+ni+' dan '+nj+'->'+depot+', tambahkan jalur '+ni+'->'+nj+'.',
+'Jumlah jalur '+depot+'-'+ni+' semula '+(linkCounts[ni]+1)+' berubah menjadi '+linkCounts[ni]+', jumlah jalur '+depot+'-'+nj+' semula '+(linkCounts[nj]+1)+' berubah menjadi '+linkCounts[nj]+'.',
+'Tour gabungan: '+fullTour.join(' -> ')+', total = '+tc,
 'Jumlah rute tersisa: '+Object.keys(routeMap).length],
 log:'Merge '+ni+'-'+nj+', saving='+sv.s,
 savingsData:{savings:savings,usedSet:Object.assign({},usedSet),skippedSet:Object.assign({},skippedSet)},
-extraHTML:'<div class="lbl" style="margin-top:10px">Saving Matrix (Updated)</div>'+savHTML+buildRoutesListHTML()});
+extraHTML:scanHTML+'<div class="lbl" style="margin-top:10px">Saving Matrix (Updated)</div>'+savHTML+buildRoutesListHTML()});
 if(Object.keys(routeMap).length<=1)break;
 }
-// Final
+
 var finalRoute=Object.values(routeMap)[0]||customers;
 var finalTour=[depot].concat(finalRoute).concat([depot]);
 var fc=tourCost(finalTour);
-var finalSavHTML=buildSavingMatrixHTML(usedSet,null,skippedSet);
+var finalSavHTML=buildSavingMatrixWithLinks(usedSet,null,skippedSet);
 steps.push({step:stepN,title:'Hasil Clarke & Wright: total = '+fc,tour:finalTour.slice(),hlEdge:null,
 changes:['Semua customer sudah tergabung dalam satu rute.',
-'Tour akhir: '+finalTour.join(' → '),'Total ongkos: '+fc],
+'Tour akhir: '+finalTour.join(' -> '),'Total ongkos: '+fc],
 log:'CW Total='+fc,
 savingsData:{savings:savings,usedSet:usedSet,skippedSet:skippedSet},
 extraHTML:'<div class="lbl" style="margin-top:10px">Saving Matrix (Final)</div>'+finalSavHTML});
 return{algo:'Clarke & Wright',tour:finalTour,cost:fc,steps:steps,savings:savings};
 }
 
-// Brute Force
 function solveBF(depot,nodes){
 var customers=nodes.filter(function(n){return n!==depot;});
 if(customers.length>9){return{algo:'Brute Force',tour:[],cost:Infinity,steps:[{step:0,title:'Terlalu banyak node (maks 10)',tour:[],hlEdge:null,changes:['Brute force hanya mendukung maksimal 10 node.'],log:'Too many'}]};}
@@ -911,21 +932,19 @@ if(l===r){var t=[depot].concat(arr).concat([depot]);var c=tourCost(t);perms.push
 for(var i=l;i<=r;i++){var tmp=arr[l];arr[l]=arr[i];arr[i]=tmp;permute(arr.slice(),l+1,r);arr[i]=arr[l];arr[l]=tmp;}
 }
 permute(customers.slice(),0,customers.length-1);
-// Show top 10 permutations
 var sorted=perms.slice().sort(function(a,b){return a.cost-b.cost;});
 var topHTML='<table class="ins-calc-tbl"><thead><tr><th>#</th><th>Tour</th><th>Cost</th></tr></thead><tbody>';
 sorted.slice(0,Math.min(10,sorted.length)).forEach(function(p,i){
-topHTML+='<tr class="'+(i===0?'chosen':'')+'"><td>'+(i+1)+'</td><td>'+p.tour.join('→')+'</td><td>'+p.cost+'</td></tr>';
+topHTML+='<tr class="'+(i===0?'chosen':'')+'"><td>'+(i+1)+'</td><td>'+p.tour.join('->')+'</td><td>'+p.cost+'</td></tr>';
 });
 topHTML+='</tbody></table>';
 var steps=[{step:0,title:'Brute Force: '+perms.length+' permutasi diperiksa',tour:bestTour||[],hlEdge:null,
-changes:['Total permutasi: '+perms.length,'Tour optimal: '+(bestTour?bestTour.join(' → '):'N/A'),'Ongkos optimal: '+bestCost],
+changes:['Total permutasi: '+perms.length,'Tour optimal: '+(bestTour?bestTour.join(' -> '):'N/A'),'Ongkos optimal: '+bestCost],
 log:'BF checked '+perms.length+' perms',
 extraHTML:'<div class="lbl" style="margin-top:10px">Top 10 Tour Terbaik</div>'+topHTML}];
 return{algo:'Brute Force (Exact)',tour:bestTour||[],cost:bestCost,steps:steps,permCount:perms.length};
 }
 
-// 2-Opt
 function improve2Opt(tour){
 if(!tour||tour.length<4)return{tour:tour,cost:tourCost(tour),improved:false,steps:[]};
 var best=tour.slice(),bestCost=tourCost(best),improved=true,steps=[];
@@ -946,7 +965,7 @@ bestCost=nc;best=newTour;improved=true;
 return{tour:best,cost:bestCost,improved:steps.length>0,steps:steps};
 }
 
-/* ═══ RUN ═══ */
+/* RUN */
 function run(){
 readMatrix();
 var depot=document.getElementById('depotInp').value.trim();
@@ -977,15 +996,15 @@ var opt=improve2Opt(allResults[bestAlgo].tour);
 if(opt.improved){
 var optSteps=[];
 optSteps.push({step:0,title:'2-Opt: Mulai dari '+allResults[bestAlgo].algo,tour:allResults[bestAlgo].tour.slice(),hlEdge:null,
-changes:['Tour awal dari '+allResults[bestAlgo].algo+': '+allResults[bestAlgo].tour.join(' → '),'Cost awal: '+allResults[bestAlgo].cost],log:'2-opt start'});
+changes:['Tour awal dari '+allResults[bestAlgo].algo+': '+allResults[bestAlgo].tour.join(' -> '),'Cost awal: '+allResults[bestAlgo].cost],log:'2-opt start'});
 opt.steps.forEach(function(s,idx){
-optSteps.push({step:idx+1,title:'2-Opt Swap: posisi '+s.swap[0]+'-'+s.swap[1]+' ('+s.oldCost+'→'+s.newCost+')',tour:s.to.slice(),hlEdge:null,
+optSteps.push({step:idx+1,title:'2-Opt Swap: posisi '+s.swap[0]+'-'+s.swap[1]+' ('+s.oldCost+'->'+s.newCost+')',tour:s.to.slice(),hlEdge:null,
 changes:['Tukar edge di posisi '+s.swap[0]+' dan '+s.swap[1]+'.',
-'Tour lama: '+s.from.join(' → ')+' (cost='+s.oldCost+')','Tour baru: '+s.to.join(' → ')+' (cost='+s.newCost+')',
+'Tour lama: '+s.from.join(' -> ')+' (cost='+s.oldCost+')','Tour baru: '+s.to.join(' -> ')+' (cost='+s.newCost+')',
 'Penghematan: '+(s.oldCost-s.newCost)],log:'2-opt swap'});
 });
 optSteps.push({step:opt.steps.length+1,title:'2-Opt Selesai: total = '+opt.cost,tour:opt.tour.slice(),hlEdge:null,
-changes:['Tidak ada improvement lagi.','Tour akhir: '+opt.tour.join(' → '),'Total ongkos: '+opt.cost],log:'2-opt done'});
+changes:['Tidak ada improvement lagi.','Tour akhir: '+opt.tour.join(' -> '),'Total ongkos: '+opt.cost],log:'2-opt done'});
 allResults['2opt']={algo:'2-Opt (dari '+allResults[bestAlgo].algo+')',tour:opt.tour,cost:opt.cost,steps:optSteps};
 }
 }
@@ -1005,7 +1024,7 @@ iterStates=r.steps||[];curIter=iterStates.length-1;
 setupIterCtrl();drawCurrent();showIterDetail();
 }
 
-/* ═══ ITER CONTROLS ═══ */
+/* ITER CONTROLS */
 function setupIterCtrl(){
 var c=document.getElementById('iterCtrl'),pb=document.getElementById('playbackRow'),dp=document.getElementById('iterDetailPanel');
 if(iterStates.length<=1){c.style.display='none';pb.style.display='none';dp.style.display=iterStates.length?'block':'none';if(iterStates.length)showIterDetail();return;}
@@ -1038,8 +1057,8 @@ if(st.allRoutes&&st.allRoutes.length>0){
 h+='<div class="lbl">Rute Aktif</div>';
 st.allRoutes.forEach(function(r,i){
 h+='<div class="path-row" style="margin:2px 0">';
-r.forEach(function(n,ni){h+='<span class="pnode" style="font-size:.7em;padding:2px 6px">'+n+'</span>';if(ni<r.length-1)h+='<span class="parrow" style="font-size:.7em">→</span>';});
-h+=' <span style="font-size:.65em;color:var(--text3)">(jarak: '+tourCost(r)+')</span></div>';
+r.forEach(function(n,ni){h+='<span class="pnode" style="font-size:.7em;padding:2px 6px">'+n+'</span>';if(ni<r.length-1)h+='<span class="parrow" style="font-size:.7em">-></span>';});
+h+='<span style="font-size:.65em;color:var(--text3)">(jarak: '+tourCost(r)+')</span></div>';
 });
 var totalAll=0;st.allRoutes.forEach(function(r){totalAll+=tourCost(r);});
 h+='<div style="font-size:.75em;color:var(--text2);margin:4px 0">Total semua rute: <strong>'+totalAll+'</strong></div>';
@@ -1047,9 +1066,7 @@ h+='<div style="font-size:.75em;color:var(--text2);margin:4px 0">Total semua rut
 if(st.changes&&st.changes.length){
 h+='<div class="verbal-box"><div class="vl">PENJELASAN</div><p>'+st.changes.join('<br>')+'</p></div>';
 }
-if(st.extraHTML){
-h+=st.extraHTML;
-}
+if(st.extraHTML){h+=st.extraHTML;}
 body.innerHTML=h;
 }
 function togglePlayback(){
@@ -1058,7 +1075,7 @@ else{if(curIter>=iterStates.length-1)curIter=0;document.getElementById('playIcon
 }
 function stopPlayback(){if(playInterval)clearInterval(playInterval);playInterval=null;document.getElementById('playIcon').innerHTML='&#9654;';document.getElementById('playText').textContent='Play';document.getElementById('playBtn').classList.remove('playing');}
 
-/* ═══ RESULTS ═══ */
+/* RESULTS */
 function showResults(){
 document.getElementById('results').style.display='block';
 setTimeout(function(){document.getElementById('results').scrollIntoView({behavior:'smooth',block:'start'});},150);
@@ -1105,7 +1122,7 @@ iterStates.forEach(function(st,i){
 var isLast=i===iterStates.length-1;
 var tourStr='-';
 if(st.tour&&st.tour.length>1)tourStr=st.tour.join(' &#8594; ');
-else if(st.allRoutes&&st.allRoutes.length>0)tourStr=st.allRoutes.map(function(r){return r.join('→');}).join(' | ');
+else if(st.allRoutes&&st.allRoutes.length>0)tourStr=st.allRoutes.map(function(r){return r.join('->');}).join(' | ');
 var costStr='-';
 if(st.tour&&st.tour.length>1&&!st.allRoutes)costStr=''+tourCost(st.tour);
 else if(st.allRoutes){var t=0;st.allRoutes.forEach(function(r){t+=tourCost(r);});costStr=''+t;}
@@ -1127,7 +1144,7 @@ h+='</div><div style="font-size:.72em;color:var(--text2);margin:4px 0">Total: <s
 if(st.allRoutes&&st.allRoutes.length>0){
 h+='<div class="lbl">Rute Aktif</div>';
 st.allRoutes.forEach(function(r,i){
-h+='<div style="font-size:.72em;color:var(--text2);margin:2px 0">Rute '+(i+1)+': '+r.join(' → ')+' ('+tourCost(r)+')</div>';
+h+='<div style="font-size:.72em;color:var(--text2);margin:2px 0">Rute '+(i+1)+': '+r.join(' -> ')+' ('+tourCost(r)+')</div>';
 });
 }
 if(st.changes){h+='<div class="verbal-box"><div class="vl">PENJELASAN</div><p style="font-size:.72em">'+st.changes.join('<br>')+'</p></div>';}
@@ -1143,7 +1160,6 @@ if(!allResults.cw||!allResults.cw.savings){sec.innerHTML='<p style="font-size:.7
 var savings=allResults.cw.savings;
 var depot=document.getElementById('depotInp').value.trim();
 var custs=nodeNames.filter(function(n){return n!==depot;});
-// Static saving matrix
 var h='<div class="lbl">Saving Matrix (s_ij = c('+depot+',i) + c('+depot+',j) - c(i,j))</div>';
 h+='<table class="saving-tbl"><thead><tr><th></th>';
 custs.forEach(function(c){h+='<th>'+c+'</th>';});
@@ -1164,13 +1180,11 @@ savings.forEach(function(sv,idx){
 h+='<tr><td>'+(idx+1)+'</td><td>'+sv.i+' - '+sv.j+'</td><td>'+sv.s+'</td><td>c('+depot+','+sv.i+') + c('+depot+','+sv.j+') - c('+sv.i+','+sv.j+') = '+getCost(depot,sv.i)+' + '+getCost(depot,sv.j)+' - '+getCost(sv.i,sv.j)+' = '+sv.s+'</td></tr>';
 });
 h+='</tbody></table>';
-// Per-iteration saving matrices from CW steps
 h+='<div class="lbl" style="margin-top:20px">Saving Matrix Per Iterasi</div>';
 var cwSteps=allResults.cw.steps;
 cwSteps.forEach(function(st,idx){
 if(!st.savingsData)return;
 h+='<div class="all-iter-card" id="smic'+idx+'"><div class="all-iter-head" onclick="document.getElementById(\'smic'+idx+'\').classList.toggle(\'expanded\')"><div style="display:flex;align-items:center"><span class="iter-num">'+(idx+1)+'</span><span class="iter-title">'+st.title+'</span></div><span class="chevron">&#9660;</span></div><div class="all-iter-body">';
-// Build saving matrix for this iteration
 var sav=st.savingsData.savings;
 var usedS=st.savingsData.usedSet||{};
 var skipS=st.savingsData.skippedSet||{};
@@ -1204,9 +1218,9 @@ h+='<p><strong>Depot:</strong> '+depot+' | <strong>Nodes:</strong> '+nodeNames.l
 h+='<h3 style="margin-top:16px">Penjelasan Masalah</h3>';
 h+='<p>Traveling Salesman Problem (TSP) mencari rute dengan ongkos perjalanan minimal yang mengunjungi setiap node tepat satu kali dan kembali ke titik awal (depot). Jumlah solusi yang mungkin adalah (n-1)!/2 untuk jarak simetris.</p>';
 h+='<h3 style="margin-top:16px">Formulasi Matematika</h3>';
-h+='<p>min Σ Σ c<sub>ij</sub> · x<sub>ij</sub></p>';
-h+='<p>s.t. Σ x<sub>ij</sub> = 1 ∀j (setiap node didatangi tepat 1×)</p>';
-h+='<p>Σ x<sub>ij</sub> = 1 ∀i (setiap node ditinggalkan tepat 1×)</p>';
+h+='<p>min SUM SUM c_ij * x_ij</p>';
+h+='<p>s.t. SUM x_ij = 1 untuk semua j (setiap node didatangi tepat 1x)</p>';
+h+='<p>SUM x_ij = 1 untuk semua i (setiap node ditinggalkan tepat 1x)</p>';
 h+='<p>+ Subtour elimination constraints</p>';
 h+='<h3 style="margin-top:16px">Hasil Per Algoritma</h3><ul>';
 Object.keys(allResults).forEach(function(k){
@@ -1215,7 +1229,7 @@ h+='<li><strong>'+r.algo+':</strong> Tour = '+r.tour.join(' &#8594; ')+', Ongkos
 });
 h+='</ul>';
 h+='<h3 style="margin-top:16px">Penjelasan Algoritma</h3>';
-h+='<p><strong>Nearest Neighbor:</strong> Mulai dari depot, selalu pilih node terdekat yang belum dikunjungi. Greedy, cepat (O(n²)), tapi tidak menjamin optimal.</p>';
+h+='<p><strong>Nearest Neighbor:</strong> Mulai dari depot, selalu pilih node terdekat yang belum dikunjungi. Greedy, cepat (O(n^2)), tapi tidak menjamin optimal.</p>';
 h+='<p><strong>Nearest/Farthest/Cheapest Insertion:</strong> Bangun subtour secara bertahap dengan menyisipkan node baru pada posisi yang meminimalkan penambahan ongkos. Pada setiap langkah: (1) Selection - pilih node, (2) Insertion - cari posisi terbaik di subtour.</p>';
 h+='<p><strong>Clarke & Wright Savings:</strong> Mulai dengan rute terpisah untuk setiap customer (depot-i-depot). Hitung savings s(i,j) = c(0,i) + c(0,j) - c(i,j). Gabungkan rute berdasarkan savings terbesar, dengan syarat: (a) kedua node harus endpoint rute (langsung terhubung depot), (b) kedua node belum dalam satu rute.</p>';
 h+='<p><strong>2-Opt:</strong> Improvement heuristic yang menukar dua edge untuk mengurangi total ongkos, diulang sampai tidak ada perbaikan.</p>';
@@ -1234,7 +1248,7 @@ if(btn)btn.classList.add('on');
 document.getElementById('tp-'+n).classList.add('on');
 }
 
-/* ═══ SCREENSHOT & PDF ═══ */
+/* SCREENSHOT & PDF */
 function screenshotCanvas(){var cv=document.getElementById('cv'),a=document.createElement('a');a.download='tsp-graph.png';a.href=cv.toDataURL('image/png');a.click();toast('Saved','success');}
 async function printPDF(){
 if(!bestResult){toast('Jalankan analisis dulu','error');return;}
@@ -1257,7 +1271,7 @@ need(iH+6);pdf.addImage(img,'PNG',mg,y,iW,iH);y+=iH+8;
 Object.keys(allResults).forEach(function(k){
 var r=allResults[k];need(12);
 pdf.setFontSize(8);pdf.setFont(undefined,'bold');pdf.setTextColor(40);
-pdf.text(r.algo+' : '+r.cost+(k===bestResult?' [BEST]':''),mg,y);y+=4;
+pdf.text(r.algo+': '+r.cost+(k===bestResult?' [BEST]':''),mg,y);y+=4;
 pdf.setFont(undefined,'normal');pdf.setFontSize(7);pdf.setTextColor(80);
 pdf.text(r.tour.join(' > '),mg+2,y);y+=6;
 });
