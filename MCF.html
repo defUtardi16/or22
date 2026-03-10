@@ -7,8 +7,8 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&family=Inter:wght@400;500;600;700;800;900&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>
-:root{--bg:#f5f5f5;--bg2:#ebebeb;--bg3:#e0e0e0;--bg4:#d5d5d5;--card:rgba(255,255,255,.45);--card2:#fafafa;--border:#d0d0d0;--border2:#c0c0c0;--text:#1a1a1a;--text2:#4a4a4a;--text3:#888;--accent:#333;--accent2:#111;--accent-bg:#e8e8e8;--green:#2e7d32;--red:#c62828;--amber:#f57f17;--blue:#1565c0;--green-bg:rgba(46,125,50,.08);--red-bg:rgba(198,40,40,.08);--amber-bg:rgba(245,127,23,.08);--blue-bg:rgba(21,101,192,.08);--purple:#7b1fa2;--purple-bg:rgba(123,31,162,.08);--highlight:#333;--highlight-soft:rgba(0,0,0,.06);--radius:10px;--radius-sm:6px;--shadow:0 1px 3px rgba(0,0,0,.06);--shadow-lg:0 8px 30px rgba(0,0,0,.12);--canvas-bg:#fafafa;--node-fill:#fff;--node-stroke:#333;--edge-color:#bbb;--glass-bg:rgba(255,255,255,.45);--glass-border:rgba(255,255,255,.2);--glass-shadow:0 8px 32px rgba(0,0,0,.08)}
-[data-theme="dark"]{--bg:#0f0f0f;--bg2:#181818;--bg3:#222;--bg4:#2a2a2a;--card:rgba(22,22,22,.65);--card2:#1a1a1a;--border:#2a2a2a;--border2:#333;--text:#e8e8e8;--text2:#aaa;--text3:#666;--accent:#e0e0e0;--accent2:#fff;--accent-bg:#1a1a1a;--green:#4caf50;--red:#ef5350;--amber:#ffb300;--blue:#42a5f5;--green-bg:rgba(76,175,80,.1);--red-bg:rgba(239,83,80,.1);--amber-bg:rgba(255,179,0,.1);--blue-bg:rgba(66,165,245,.1);--purple:#ce93d8;--purple-bg:rgba(206,147,216,.1);--highlight:#fff;--highlight-soft:rgba(255,255,255,.04);--radius:10px;--radius-sm:6px;--shadow:0 1px 3px rgba(0,0,0,.3);--shadow-lg:0 8px 30px rgba(0,0,0,.5);--canvas-bg:#141414;--node-fill:#1a1a1a;--node-stroke:#e0e0e0;--edge-color:#444;--glass-bg:rgba(22,22,22,.65);--glass-border:rgba(255,255,255,.06);--glass-shadow:0 8px 32px rgba(0,0,0,.4)}
+:root{--bg:#f5f5f5;--bg2:#ebebeb;--bg3:#e0e0e0;--bg4:#d5d5d5;--card:rgba(255,255,255,.45);--card2:#fafafa;--border:#d0d0d0;--border2:#c0c0c0;--text:#1a1a1a;--text2:#4a4a4a;--text3:#888;--accent:#333;--accent2:#111;--accent-bg:#e8e8e8;--green:#2e7d32;--red:#c62828;--amber:#f57f17;--blue:#1565c0;--green-bg:rgba(46,125,50,.08);--red-bg:rgba(198,40,40,.08);--amber-bg:rgba(245,127,23,.08);--blue-bg:rgba(21,101,192,.08);--purple:#7b1fa2;--purple-bg:rgba(123,31,162,.08);--highlight:#333;--highlight-soft:rgba(0,0,0,.06);--radius:10px;--radius-sm:6px;--shadow:0 1px 3px rgba(0,0,0,.06);--shadow-lg:0 8px 30px rgba(0,0,0,.12);--canvas-bg:#fafafa;--node-fill:#fff;--node-stroke:#333;--edge-color:#bbb;--plexus-dot:rgba(0,0,0,.35);--plexus-line:rgba(0,0,0,.1);--glass-bg:rgba(255,255,255,.45);--glass-border:rgba(255,255,255,.2);--glass-shadow:0 8px 32px rgba(0,0,0,.08)}
+[data-theme="dark"]{--bg:#0f0f0f;--bg2:#181818;--bg3:#222;--bg4:#2a2a2a;--card:rgba(22,22,22,.65);--card2:#1a1a1a;--border:#2a2a2a;--border2:#333;--text:#e8e8e8;--text2:#aaa;--text3:#666;--accent:#e0e0e0;--accent2:#fff;--accent-bg:#1a1a1a;--green:#4caf50;--red:#ef5350;--amber:#ffb300;--blue:#42a5f5;--green-bg:rgba(76,175,80,.1);--red-bg:rgba(239,83,80,.1);--amber-bg:rgba(255,179,0,.1);--blue-bg:rgba(66,165,245,.1);--purple:#ce93d8;--purple-bg:rgba(206,147,216,.1);--highlight:#fff;--highlight-soft:rgba(255,255,255,.04);--radius:10px;--radius-sm:6px;--shadow:0 1px 3px rgba(0,0,0,.3);--shadow-lg:0 8px 30px rgba(0,0,0,.5);--canvas-bg:#141414;--node-fill:#1a1a1a;--node-stroke:#e0e0e0;--edge-color:#444;--plexus-dot:rgba(255,255,255,.3);--plexus-line:rgba(255,255,255,.08);--glass-bg:rgba(22,22,22,.65);--glass-border:rgba(255,255,255,.06);--glass-shadow:0 8px 32px rgba(0,0,0,.4)}
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
 body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);line-height:1.6;overflow-x:hidden;min-height:100vh}
 ::-webkit-scrollbar{width:5px}::-webkit-scrollbar-thumb{background:var(--border2);border-radius:9px}
@@ -36,6 +36,7 @@ canvas#plexusBg{position:fixed;top:0;left:0;width:100%;height:100%;z-index:0;poi
 .badge-g{background:var(--green-bg);color:var(--green)}.badge-r{background:var(--red-bg);color:var(--red)}.badge-b{background:var(--blue-bg);color:var(--blue)}.badge-a{background:var(--amber-bg);color:var(--amber)}.badge-p{background:var(--purple-bg);color:var(--purple)}
 input[type="text"],input[type="number"],select,textarea{font-family:'JetBrains Mono',monospace;font-size:12px;padding:7px 10px;border:1px solid var(--border);border-radius:var(--radius-sm);background:var(--card2);color:var(--text);outline:none;transition:border-color .2s;width:100%}
 input:focus,select:focus,textarea:focus{border-color:var(--accent)}
+textarea{font-size:11px;resize:vertical;min-height:40px}
 .btn{font-family:'DM Sans',sans-serif;font-weight:600;font-size:12px;padding:8px 20px;border-radius:var(--radius-sm);border:1px solid var(--border);cursor:pointer;transition:all .2s;display:inline-flex;align-items:center;gap:6px}
 .btn-p{background:var(--accent);color:#fff;border-color:var(--accent)}.btn-p:hover{background:var(--accent2)}
 .btn-s{background:var(--card2);color:var(--text)}.btn-s:hover{background:var(--bg3)}
@@ -94,13 +95,15 @@ input:focus,select:focus,textarea:focus{border-color:var(--accent)}
 .ab{background:var(--highlight-soft);border:1px solid var(--border);border-radius:var(--radius-sm);padding:16px;margin:10px 0;font-size:12px;line-height:1.8;color:var(--text2)}
 .ab h4{font-size:12px;font-weight:700;color:var(--text);margin:12px 0 4px;text-transform:uppercase;letter-spacing:.5px}
 .toast{position:fixed;top:16px;right:16px;z-index:200;padding:10px 18px;border-radius:var(--radius-sm);font-size:12px;font-weight:600;transform:translateX(140%);transition:transform .3s;font-family:'DM Sans',sans-serif}
-.toast.show{transform:translateX(0)}.toast-s{background:var(--green);color:#fff}.toast-e{background:var(--red);color:#fff}.toast-i{background:var(--accent);color:#fff}
+.toast.show{transform:translateX(0)}
+.toast-s{background:var(--green);color:#fff}.toast-e{background:var(--red);color:#fff}.toast-i{background:var(--accent);color:#fff}
 .wb{background:linear-gradient(135deg,var(--green-bg),var(--blue-bg));border:2px solid var(--green);border-radius:var(--radius);padding:16px;margin:16px 0;text-align:center}
 .wb h3{font-size:16px;font-weight:800;color:var(--green);margin-bottom:4px;display:flex;align-items:center;justify-content:center;gap:8px}
 .wb p{font-size:12px;color:var(--text2)}
 .ico{display:inline-flex;align-items:center;justify-content:center;vertical-align:middle;flex-shrink:0}
 .ico svg{width:14px;height:14px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
-.ico-sm svg{width:11px;height:11px}.ico-lg svg{width:18px;height:18px}
+.ico-sm svg{width:11px;height:11px}
+.ico-lg svg{width:18px;height:18px}
 .g-legend{display:flex;gap:14px;flex-wrap:wrap;margin:8px 0;padding:8px 12px;background:var(--highlight-soft);border:1px solid var(--border);border-radius:var(--radius-sm);font-size:10px;color:var(--text2);font-family:'JetBrains Mono',monospace;align-items:center}
 .g-legend-item{display:flex;align-items:center;gap:5px}
 .g-legend-dot{width:8px;height:8px;border-radius:50%;display:inline-block}
@@ -121,7 +124,7 @@ input:focus,select:focus,textarea:focus{border-color:var(--accent)}
 .cost-card .cc-info{font-size:10px;color:var(--text3);margin-bottom:6px}
 .cost-card .cc-result{font-family:'JetBrains Mono',monospace;font-size:12px;font-weight:600;color:var(--green);margin-top:4px;min-height:18px}
 @media(max-width:768px){.shell{padding:0 12px}.section{padding:16px}.hero{padding:24px 0 18px}.stat-row{grid-template-columns:1fr 1fr}.nim-grid{font-size:9px}.cost-grid{grid-template-columns:1fr}.matrix-table{font-size:9px}.matrix-table th,.matrix-table td{padding:4px 5px}}
-#splashScreen{position:fixed;inset:0;z-index:9999;background:#040406;display:flex;align-items:center;justify-content:center;flex-direction:column;transition:opacity .8s,visibility .8s;overflow:hidden}
+#splashScreen{position:fixed;inset:0;z-index:9999;background:#050508;display:flex;align-items:center;justify-content:center;flex-direction:column;transition:opacity .8s,visibility .8s;overflow:hidden}
 #splashScreen.hidden{opacity:0;visibility:hidden}
 #splashScreen canvas{position:absolute;inset:0;z-index:0}
 .sp-c{position:relative;z-index:1;text-align:center;color:#fff}
@@ -137,168 +140,475 @@ input:focus,select:focus,textarea:focus{border-color:var(--accent)}
 </style>
 </head>
 <body>
-<div id="splashScreen"><canvas id="splashCanvas"></canvas><div class="sp-c"><h1>R A D S T R I X</h1><p>Minimum Cost Flow</p><div class="sp-bar"><div class="sp-bar-i"></div></div><div class="sp-menu" id="splashMenu"><button onclick="launchApp()">M U L A I</button></div></div></div>
+<div id="splashScreen">
+<canvas id="splashCanvas"></canvas>
+<div class="sp-c">
+<h1>R A D S T R I X</h1>
+<p>Minimum Cost Flow</p>
+<div class="sp-bar"><div class="sp-bar-i"></div></div>
+<div class="sp-menu" id="splashMenu"><button onclick="launchApp()">M U L A I</button></div>
+</div>
+</div>
 <canvas id="plexusBg"></canvas>
-<div class="oi" id="onlineInd">1 online</div><div class="wm">RADSTRIX</div><div class="toast" id="toast"></div>
+<div class="oi" id="onlineInd">1 online</div>
+<div class="wm">RADSTRIX</div>
+<div class="toast" id="toast"></div>
 <div id="mainApp" style="display:none">
-<div class="top-bar"><div class="top-bar-inner"><div class="top-bar-logo">MCF Solver — Catering Bandung</div><div class="top-bar-right"><button class="tb" onclick="toggleDark()" id="darkBtn">Dark</button><button class="tb" onclick="exportPDF()">PDF</button><button class="tb" onclick="window.print()">Print</button></div></div></div>
-<div class="shell">
-<div class="hero"><div class="hero-sub">BAK2NAB3 — Penelitian Operasional 2 — Masalah Jaringan (Bagian 3)</div><div class="hero-title">Minimum Cost Flow Solver</div><div class="hero-desc">Usaha Catering Bandung — Meminimumkan biaya pengiriman porsi makan siang dari dapur ke kantor melalui jaringan distribusi</div></div>
-<div class="section" id="sec1"><div class="s-title">Input Data Mahasiswa</div><div class="fg" style="margin-bottom:14px"><div class="fc" style="flex:1;min-width:200px"><label>Nama Lengkap</label><input type="text" id="inpNama" placeholder="Nama lengkap"></div><div class="fc" style="flex:1;min-width:200px"><label>NIM</label><input type="text" id="inpNIM" placeholder="Masukkan NIM lengkap" oninput="parseNIM()"></div><div class="fc" style="flex:1;min-width:140px"><label>Kelas</label><input type="text" id="inpKelas" placeholder="TI-07-0X"></div></div><div class="fg" style="margin-bottom:14px"><div class="fc"><label>Kampus & Angkatan</label><select id="inpKampus" onchange="parseNIM()"><option value="bandung22">Bandung (s/d 2022)</option><option value="bandung23">Bandung (2023)</option><option value="surabaya23" selected>Surabaya (s/d 2023)</option><option value="purwokerto21">Purwokerto (s/d 2021)</option><option value="purwokerto2223">Purwokerto (2022-2023)</option></select></div></div><div id="nimResult" style="display:none"></div></div>
-<div class="section" id="sec2" style="display:none"><div class="s-title">Data Jarak & Biaya Pengiriman (CLO 2a)</div><div style="font-size:12px;color:var(--text2);margin-bottom:6px">Masukkan <strong>jarak tempuh (km)</strong> dari Google Maps untuk setiap jalur. Biaya otomatis dihitung: <strong>Rp 100 × jarak (km)</strong>.</div><div style="font-size:11px;color:var(--text3);margin-bottom:14px">Gunakan Google Maps: pilih moda mobil, atur "depart at" sekitar waktu makan siang pada hari kerja.</div><div class="cost-grid" id="costGrid"></div><div class="cbox" style="margin-top:14px"><strong>Constraint Kapasitas:</strong> Jumlah porsi dari Dapur A ke Dapur B (U<sub>AB</sub>) ≤ 20 porsi. Jalur lainnya tidak dibatasi (∞).</div><div style="margin-top:16px;display:flex;gap:8px;flex-wrap:wrap"><button class="btn btn-p" onclick="generateAll()">Generate Formulasi & Model Jaringan</button><button class="btn btn-d" onclick="solveAndShow()">Solve (Network Simplex)</button><button class="btn btn-s" onclick="resetAll()">Reset</button></div></div>
-<div class="section" id="sec3" style="display:none"><div class="s-title">CLO 1 — Definisi Elemen & Notasi Matematis</div><div class="tabs"><button class="on" onclick="sTab('clo1t1',this)">Tahap 1: Definisi</button><button onclick="sTab('clo1t2',this)">Tahap 2: Notasi Matematis</button></div><div class="tp on" id="tp-clo1t1"><div id="clo1t1Content"></div></div><div class="tp" id="tp-clo1t2"><div id="clo1t2Content"></div></div></div>
-<div class="section" id="sec4" style="display:none"><div class="s-title">CLO 2 — Biaya per Porsi & Model Jaringan</div><div class="tabs"><button class="on" onclick="sTab('clo2cost',this)">Tabel Biaya (CLO 2a)</button><button onclick="sTab('clo2matrix',this)">Matriks Dari-Ke</button><button onclick="sTab('clo2net',this)">Model Jaringan (CLO 2b)</button><button onclick="sTab('clo2math',this)">Model Matematis (Bonus)</button></div><div class="tp on" id="tp-clo2cost"><div id="clo2costContent"></div></div><div class="tp" id="tp-clo2matrix"><div id="clo2matrixContent"></div></div><div class="tp" id="tp-clo2net"><div class="layout-btns"><button class="on" onclick="setLayout('mcf',this)">MCF Layout</button><button onclick="setLayout('lr',this)">Left→Right</button><button onclick="setLayout('circle',this)">Circle</button><button onclick="setLayout('diamond',this)">Diamond</button><button onclick="setLayout('force',this)">Force</button></div><div class="theme-btns"><span class="theme-label">Theme:</span><button class="on" onclick="setGraphTheme('default',this)">Default</button><button onclick="setGraphTheme('neon',this)">Neon</button><button onclick="setGraphTheme('blueprint',this)">Blueprint</button><button onclick="setGraphTheme('sunset',this)">Sunset</button><button onclick="setGraphTheme('forest',this)">Forest</button><button onclick="setGraphTheme('cyber',this)">Cyber</button><button onclick="setGraphTheme('mono',this)">Mono</button><button onclick="setGraphTheme('ocean',this)">Ocean</button></div><div class="view-btns"><span class="theme-label">View:</span><button class="on" onclick="setGraphView('standard',this)">Standard</button><button onclick="setGraphView('detailed',this)">Detailed</button><button onclick="setGraphView('compact',this)">Compact</button></div><div id="gLegend" class="g-legend"></div><div class="cv-wrap"><canvas id="cv" width="800" height="580"></canvas><div class="zoom-ctrl"><button onclick="zoomIn()">+</button><button onclick="zoomOut()">−</button><button onclick="zoomReset()">R</button></div></div></div><div class="tp" id="tp-clo2math"><div id="clo2mathContent"></div></div></div>
-<div class="section" id="sec5" style="display:none"><div class="s-title">Network Simplex — Solusi Optimal (Bonus)</div><div class="iter-controls" id="iterCtrl"><button onclick="iterGo(0)" id="iterFirst">|&lt;</button><button onclick="iterGo(curIter-1)" id="iterPrev">&lt;</button><span class="iter-badge" id="iterBadge">0/0</span><button onclick="iterGo(curIter+1)" id="iterNext">&gt;</button><button onclick="iterGo(iterStates.length-1)" id="iterLast">&gt;|</button></div><div class="play-ctrl"><button class="btn btn-sm btn-s" id="playBtn" onclick="togglePlay()">Play</button><select class="btn btn-sm btn-s" onchange="playSpd=+this.value"><option value="2000">0.5x</option><option value="1200" selected>1x</option><option value="600">2x</option></select></div><div class="iter-detail" id="iterDetail"></div><ul class="iter-changes" id="iterChanges"></ul><div id="solBanner"></div><div class="stat-row" id="solStats"></div><div id="solTable"></div></div>
+<div class="top-bar"><div class="top-bar-inner">
+<div class="top-bar-logo">MCF Solver — Catering Bandung</div>
+<div class="top-bar-right">
+<button class="tb" onclick="toggleDark()" id="darkBtn">Dark</button>
+<button class="tb" onclick="exportPDF()">PDF</button>
+<button class="tb" onclick="window.print()">Print</button>
+</div>
 </div></div>
+<div class="shell">
+<div class="hero">
+<div class="hero-sub">BAK2NAB3 — Penelitian Operasional 2 — Masalah Jaringan (Bagian 3)</div>
+<div class="hero-title">Minimum Cost Flow Solver</div>
+<div class="hero-desc">Usaha Catering Bandung — Meminimumkan biaya pengiriman porsi makan siang dari dapur ke kantor melalui jaringan distribusi</div>
+</div>
+<div class="section" id="sec1">
+<div class="s-title">Input Data Mahasiswa</div>
+<div class="fg" style="margin-bottom:14px">
+<div class="fc" style="flex:1;min-width:200px"><label>Nama Lengkap</label><input type="text" id="inpNama" placeholder="Nama lengkap"></div>
+<div class="fc" style="flex:1;min-width:200px"><label>NIM</label><input type="text" id="inpNIM" placeholder="Masukkan NIM lengkap" oninput="parseNIM()"></div>
+<div class="fc" style="flex:1;min-width:140px"><label>Kelas</label><input type="text" id="inpKelas" placeholder="TI-07-XX"></div>
+</div>
+<div class="fg" style="margin-bottom:14px">
+<div class="fc"><label>Kampus & Angkatan</label>
+<select id="inpKampus" onchange="parseNIM()">
+<option value="bandung22">Bandung (s/d 2022)</option>
+<option value="bandung23">Bandung (2023)</option>
+<option value="surabaya23" selected>Surabaya (s/d 2023)</option>
+<option value="purwokerto21">Purwokerto (s/d 2021)</option>
+<option value="purwokerto2223">Purwokerto (2022-2023)</option>
+</select></div>
+</div>
+<div id="nimResult" style="display:none"></div>
+</div>
+<div class="section" id="sec2" style="display:none">
+<div class="s-title">Data Jarak & Biaya Pengiriman (CLO 2a)</div>
+<div style="font-size:12px;color:var(--text2);margin-bottom:6px">Masukkan <strong>jarak tempuh (km)</strong> dari Google Maps untuk setiap jalur. Biaya otomatis dihitung: <strong>Rp 100 × jarak (km)</strong>.</div>
+<div style="font-size:11px;color:var(--text3);margin-bottom:14px">Gunakan Google Maps: pilih moda mobil, atur "depart at" sekitar waktu makan siang pada hari kerja.</div>
+<div class="cost-grid" id="costGrid"></div>
+<div class="cbox" style="margin-top:14px">
+<strong>Constraint Kapasitas:</strong> Jumlah porsi dari Dapur A ke Dapur B (U<sub>AB</sub>) ≤ 20 porsi. Jalur lainnya tidak dibatasi (∞).
+</div>
+<div style="margin-top:16px;display:flex;gap:8px;flex-wrap:wrap">
+<button class="btn btn-p" onclick="generateAll()">Generate Formulasi & Model Jaringan</button>
+<button class="btn btn-d" onclick="solveAndShow()">Solve (Network Simplex)</button>
+<button class="btn btn-s" onclick="resetAll()">Reset</button>
+</div>
+</div>
+<div class="section" id="sec3" style="display:none">
+<div class="s-title">CLO 1 — Definisi Elemen & Notasi Matematis</div>
+<div class="tabs" id="tabs3">
+<button class="on" onclick="sTab('clo1t1',this)">Tahap 1: Definisi</button>
+<button onclick="sTab('clo1t2',this)">Tahap 2: Notasi Matematis</button>
+</div>
+<div class="tp on" id="tp-clo1t1"><div id="clo1t1Content"></div></div>
+<div class="tp" id="tp-clo1t2"><div id="clo1t2Content"></div></div>
+</div>
+<div class="section" id="sec4" style="display:none">
+<div class="s-title">CLO 2 — Biaya per Porsi & Model Jaringan</div>
+<div class="tabs" id="tabs4">
+<button class="on" onclick="sTab('clo2cost',this)">Tabel Biaya (CLO 2a)</button>
+<button onclick="sTab('clo2matrix',this)">Matriks Dari-Ke</button>
+<button onclick="sTab('clo2net',this)">Model Jaringan (CLO 2b)</button>
+<button onclick="sTab('clo2math',this)">Model Matematis (Bonus)</button>
+</div>
+<div class="tp on" id="tp-clo2cost"><div id="clo2costContent"></div></div>
+<div class="tp" id="tp-clo2matrix"><div id="clo2matrixContent"></div></div>
+<div class="tp" id="tp-clo2net">
+<div class="layout-btns"><button class="on" onclick="setLayout('mcf',this)">MCF Layout</button><button onclick="setLayout('lr',this)">Left→Right</button><button onclick="setLayout('circle',this)">Circle</button><button onclick="setLayout('diamond',this)">Diamond</button><button onclick="setLayout('force',this)">Force</button></div>
+<div class="theme-btns" id="themeBtns"><span class="theme-label">Theme:</span><button class="on" onclick="setGraphTheme('default',this)">Default</button><button onclick="setGraphTheme('neon',this)">Neon</button><button onclick="setGraphTheme('blueprint',this)">Blueprint</button><button onclick="setGraphTheme('sunset',this)">Sunset</button><button onclick="setGraphTheme('forest',this)">Forest</button><button onclick="setGraphTheme('cyber',this)">Cyber</button><button onclick="setGraphTheme('mono',this)">Mono</button><button onclick="setGraphTheme('ocean',this)">Ocean</button></div>
+<div class="view-btns" id="viewBtns"><span class="theme-label">View:</span><button class="on" onclick="setGraphView('standard',this)">Standard</button><button onclick="setGraphView('detailed',this)">Detailed</button><button onclick="setGraphView('compact',this)">Compact</button></div>
+<div id="gLegend" class="g-legend"></div>
+<div class="cv-wrap"><canvas id="cv" width="800" height="580"></canvas><div class="zoom-ctrl"><button onclick="zoomIn()">+</button><button onclick="zoomOut()">−</button><button onclick="zoomReset()">R</button></div></div>
+</div>
+<div class="tp" id="tp-clo2math"><div id="clo2mathContent"></div></div>
+</div>
+<div class="section" id="sec5" style="display:none">
+<div class="s-title">Network Simplex — Solusi Optimal (Bonus)</div>
+<div class="iter-controls" id="iterCtrl">
+<button onclick="iterGo(0)" id="iterFirst">|&lt;</button>
+<button onclick="iterGo(curIter-1)" id="iterPrev">&lt;</button>
+<span class="iter-badge" id="iterBadge">0/0</span>
+<button onclick="iterGo(curIter+1)" id="iterNext">&gt;</button>
+<button onclick="iterGo(iterStates.length-1)" id="iterLast">&gt;|</button>
+</div>
+<div class="play-ctrl"><button class="btn btn-sm btn-s" id="playBtn" onclick="togglePlay()">Play</button><select class="btn btn-sm btn-s" onchange="playSpd=+this.value"><option value="2000">0.5x</option><option value="1200" selected>1x</option><option value="600">2x</option></select></div>
+<div class="iter-detail" id="iterDetail"></div>
+<ul class="iter-changes" id="iterChanges"></ul>
+<div id="solBanner"></div>
+<div class="stat-row" id="solStats"></div>
+<div id="solTable"></div>
+</div>
+</div>
+</div>
 <script>
-var ICO={trophy:'<svg viewBox="0 0 24 24"><path d="M6 9H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h2M18 9h2a2 2 0 0 0 2-2V5a2 2 0 0 0-2-2h-2M4 22h16M10 22V16M14 22V16"/><path d="M6 2h12v7a6 6 0 0 1-12 0V2z"/></svg>',route:'<svg viewBox="0 0 24 24"><circle cx="6" cy="19" r="3"/><path d="M9 19h8.5a3.5 3.5 0 0 0 0-7h-11a3.5 3.5 0 0 1 0-7H18"/><circle cx="18" cy="5" r="3"/></svg>',info:'<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>',target:'<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/></svg>',coin:'<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="12" y1="6" x2="12" y2="18"/><path d="M9 10h4.5a1.5 1.5 0 0 1 0 3H9"/></svg>',map:'<svg viewBox="0 0 24 24"><polygon points="1 6 1 22 8 18 16 22 23 18 23 2 16 6 8 2 1 6"/><line x1="8" y1="2" x2="8" y2="18"/><line x1="16" y1="6" x2="16" y2="22"/></svg>',sparkle:'<svg viewBox="0 0 24 24"><path d="M12 2l2.4 7.2L22 12l-7.6 2.8L12 22l-2.4-7.2L2 12l7.6-2.8L12 2z"/></svg>',truck:'<svg viewBox="0 0 24 24"><rect x="1" y="3" width="15" height="13"/><polygon points="16 8 20 8 23 11 23 16 16 16 16 8"/><circle cx="5.5" cy="18.5" r="2.5"/><circle cx="18.5" cy="18.5" r="2.5"/></svg>',building:'<svg viewBox="0 0 24 24"><rect x="4" y="2" width="16" height="20" rx="2"/><line x1="9" y1="6" x2="9" y2="6.01"/><line x1="15" y1="6" x2="15" y2="6.01"/><line x1="9" y1="10" x2="9" y2="10.01"/><line x1="15" y1="10" x2="15" y2="10.01"/><line x1="9" y1="14" x2="9" y2="14.01"/><line x1="15" y1="14" x2="15" y2="14.01"/><line x1="9" y1="18" x2="15" y2="18"/></svg>',home:'<svg viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>',box:'<svg viewBox="0 0 24 24"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/><polyline points="3.27 6.96 12 12.01 20.73 6.96"/><line x1="12" y1="22.08" x2="12" y2="12"/></svg>'};
+var ICO={
+trophy:'<svg viewBox="0 0 24 24"><path d="M6 9H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h2M18 9h2a2 2 0 0 0 2-2V5a2 2 0 0 0-2-2h-2M4 22h16M10 22V16M14 22V16"/><path d="M6 2h12v7a6 6 0 0 1-12 0V2z"/></svg>',
+clock:'<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>',
+route:'<svg viewBox="0 0 24 24"><circle cx="6" cy="19" r="3"/><path d="M9 19h8.5a3.5 3.5 0 0 0 0-7h-11a3.5 3.5 0 0 1 0-7H18"/><circle cx="18" cy="5" r="3"/></svg>',
+info:'<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>',
+target:'<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/></svg>',
+check:'<svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>',
+flag:'<svg viewBox="0 0 24 24"><path d="M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1z"/><line x1="4" y1="22" x2="4" y2="15"/></svg>',
+coin:'<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="12" y1="6" x2="12" y2="18"/><path d="M9 10h4.5a1.5 1.5 0 0 1 0 3H9"/></svg>',
+map:'<svg viewBox="0 0 24 24"><polygon points="1 6 1 22 8 18 16 22 23 18 23 2 16 6 8 2 1 6"/><line x1="8" y1="2" x2="8" y2="18"/><line x1="16" y1="6" x2="16" y2="22"/></svg>',
+sparkle:'<svg viewBox="0 0 24 24"><path d="M12 2l2.4 7.2L22 12l-7.6 2.8L12 22l-2.4-7.2L2 12l7.6-2.8L12 2z"/></svg>',
+truck:'<svg viewBox="0 0 24 24"><rect x="1" y="3" width="15" height="13"/><polygon points="16 8 20 8 23 11 23 16 16 16 16 8"/><circle cx="5.5" cy="18.5" r="2.5"/><circle cx="18.5" cy="18.5" r="2.5"/></svg>',
+building:'<svg viewBox="0 0 24 24"><rect x="4" y="2" width="16" height="20" rx="2"/><line x1="9" y1="6" x2="9" y2="6.01"/><line x1="15" y1="6" x2="15" y2="6.01"/><line x1="9" y1="10" x2="9" y2="10.01"/><line x1="15" y1="10" x2="15" y2="10.01"/><line x1="9" y1="14" x2="9" y2="14.01"/><line x1="15" y1="14" x2="15" y2="14.01"/><line x1="9" y1="18" x2="15" y2="18"/></svg>',
+home:'<svg viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>',
+box:'<svg viewBox="0 0 24 24"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/><polyline points="3.27 6.96 12 12.01 20.73 6.96"/><line x1="12" y1="22.08" x2="12" y2="12"/></svg>'
+};
 function ico(n,s){return'<span class="ico'+(s==='sm'?' ico-sm':s==='lg'?' ico-lg':'')+'">'+ICO[n]+'</span>'}
-var LOC={A:['Perumahan Permata Buah Batu','Harmony Park Ciwastra','Buana Ciwastra Residence','Pesona Bali Residence','Perumahan Cherry Field','Mustika Hegar Regency','Cluster Batu Karang','Kinagara Regency 2','Perumahan Aster Village',"D'Amerta Residence"],B:['Jl. Gading Utama Barat','Jl. Sanggar Kencana Utama','Jl. Mars Utara','Jl. Aria Timur','Jl. Merkuri Utara','Jl. Kawaluyaan Raya','Jl. Aria Barat','Jl. Rancabolang','Jl. Venus Raya','Jl. Aria Utama'],D:['Wisma HSBC','Grha Indosurya','Wisma Bumiputera','Wisma CIMB Niaga','Kantor Pikiran Rakyat','PT PLN (Persero) – Kantor Distribusi Jawa Barat (Disjabar)','Dinas Perindustrian dan Perdagangan Provinsi Jawa Barat','Gedung Keuangan Negara','Menara BRI','Wisma Monex'],E:['PT Krom Bank Indonesia Tbk Bandung','Asuransi Astra (Garda Oto) - Cabang Bandung','Bank Danamon - KC Bandung Juanda','Kantor Regional 2 Jawa Barat OJK','Bank MNC International','Bank QNB Indonesia Bandung Dago','BCA Finance','Bukalapak Research & Development Office','Bank CIMB Niaga - Dago','Commonwealth Bank']};
+var LOC={
+A:['Perumahan Permata Buah Batu','Harmony Park Ciwastra','Buana Ciwastra Residence','Pesona Bali Residence','Perumahan Cherry Field','Mustika Hegar Regency','Cluster Batu Karang','Kinagara Regency 2','Perumahan Aster Village',"D'Amerta Residence"],
+B:['Jl. Gading Utama Barat','Jl. Sanggar Kencana Utama','Jl. Mars Utara','Jl. Aria Timur','Jl. Merkuri Utara','Jl. Kawaluyaan Raya','Jl. Aria Barat','Jl. Rancabolang','Jl. Venus Raya','Jl. Aria Utama'],
+D:['Wisma HSBC','Grha Indosurya','Wisma Bumiputera','Wisma CIMB Niaga','Kantor Pikiran Rakyat','PT PLN (Persero) – Kantor Distribusi Jawa Barat (Disjabar)','Dinas Perindustrian dan Perdagangan Provinsi Jawa Barat','Gedung Keuangan Negara','Menara BRI','Wisma Monex'],
+E:['PT Krom Bank Indonesia Tbk Bandung','Asuransi Astra (Garda Oto) - Cabang Bandung','Bank Danamon - KC Bandung Juanda','Kantor Regional 2 Jawa Barat OJK','Bank MNC International','Bank QNB Indonesia Bandung Dago','BCA Finance','Bukalapak Research & Development Office','Bank CIMB Niaga - Dago','Commonwealth Bank']
+};
 var LOC_C='Gedung Satrio Seskoad, Bandung';
-var isDark=false,sc=1,di=-1,dOff={x:0,y:0},cLo='mcf',curIter=0,iterStates=[],playInt=null,playSpd=1200;
-var locA='',locB='',locD='',locE='',graphTheme='default',graphView='standard',mouseXBg=-9999,mouseYBg=-9999;
-var ARCS=[{id:'AB',from:'A',to:'B',cap:20},{id:'AC',from:'A',to:'C',cap:Infinity},{id:'AD',from:'A',to:'D',cap:Infinity},{id:'BC',from:'B',to:'C',cap:Infinity},{id:'CE',from:'C',to:'E',cap:Infinity},{id:'DE',from:'D',to:'E',cap:Infinity},{id:'ED',from:'E',to:'D',cap:Infinity}];
-var NODES=[{id:'A',bi:110,type:'supply'},{id:'B',bi:90,type:'supply'},{id:'C',bi:0,type:'transit'},{id:'D',bi:-80,type:'demand'},{id:'E',bi:-120,type:'demand'}];
-var costs={},dists={},sol=null,pos=[],NODE_R=28,cvEl,ctx;
-var GRAPH_THEMES={default:{supply:null,transit:null,demand:null,nodeFill:null,edgeActive:null,edgeInactive:null,bg:null,glow:'#1565c0',labelBg:null,nodeGlow:true},neon:{supply:'#00e676',transit:'#ffd600',demand:'#ff1744',nodeFill:'#0a0a12',edgeActive:'#00e5ff',edgeInactive:'#1a1a2e',bg:'#08080f',glow:'#00e5ff',labelBg:'#0a0a12',nodeGlow:true},blueprint:{supply:'#90caf9',transit:'#fff176',demand:'#ef9a9a',nodeFill:'#0d1b2a',edgeActive:'#64b5f6',edgeInactive:'#1b3a5c',bg:'#0d1b2a',glow:'#42a5f5',labelBg:'#0d1b2a',nodeGlow:true},sunset:{supply:'#ff8a65',transit:'#ffd54f',demand:'#e57373',nodeFill:'#1a0a00',edgeActive:'#ffab40',edgeInactive:'#3e2723',bg:'#1a0f05',glow:'#ff6d00',labelBg:'#1a0f05',nodeGlow:true},forest:{supply:'#66bb6a',transit:'#aed581',demand:'#a1887f',nodeFill:'#0a1a0a',edgeActive:'#81c784',edgeInactive:'#1b3a1b',bg:'#0a150a',glow:'#4caf50',labelBg:'#0a150a',nodeGlow:true},cyber:{supply:'#e040fb',transit:'#40c4ff',demand:'#ff4081',nodeFill:'#0a0015',edgeActive:'#e040fb',edgeInactive:'#1a0030',bg:'#06000f',glow:'#e040fb',labelBg:'#0a0015',nodeGlow:true},mono:{supply:'#888',transit:'#aaa',demand:'#666',nodeFill:null,edgeActive:null,edgeInactive:null,bg:null,glow:'#666',labelBg:null,nodeGlow:false},ocean:{supply:'#26a69a',transit:'#4dd0e1',demand:'#0277bd',nodeFill:'#001a1a',edgeActive:'#00bcd4',edgeInactive:'#003333',bg:'#001215',glow:'#00bcd4',labelBg:'#001215',nodeGlow:true}};
-function setGraphTheme(t,b){graphTheme=t;document.querySelectorAll('.theme-btns button').forEach(function(x){x.classList.remove('on')});if(b)b.classList.add('on');if(pos.length)drawGraph()}
-function setGraphView(v,b){graphView=v;document.querySelectorAll('.view-btns button').forEach(function(x){x.classList.remove('on')});if(b)b.classList.add('on');if(pos.length)drawGraph()}
+var isDark=false,sc=1,di=-1,dOff={x:0,y:0},cLo='mcf';
+var curIter=0,iterStates=[],playInt=null,playSpd=1200;
+var locA='',locB='',locD='',locE='';
+var graphTheme='default',graphView='standard';
+var mouseXBg=0,mouseYBg=0;
+var ARCS=[
+{id:'AB',from:'A',to:'B',cap:20},
+{id:'AC',from:'A',to:'C',cap:Infinity},
+{id:'AD',from:'A',to:'D',cap:Infinity},
+{id:'BC',from:'B',to:'C',cap:Infinity},
+{id:'CE',from:'C',to:'E',cap:Infinity},
+{id:'DE',from:'D',to:'E',cap:Infinity},
+{id:'ED',from:'E',to:'D',cap:Infinity}
+];
+var NODES=[
+{id:'A',bi:110,type:'supply'},
+{id:'B',bi:90,type:'supply'},
+{id:'C',bi:0,type:'transit'},
+{id:'D',bi:-80,type:'demand'},
+{id:'E',bi:-120,type:'demand'}
+];
+var costs={},dists={},sol=null;
+var pos=[],NODE_R=28,cvEl,ctx;
+/* GRAPH THEMES */
+var GRAPH_THEMES={
+default:{supply:null,transit:null,demand:null,nodeFill:null,edgeActive:null,edgeInactive:null,bg:null,glow:'#1565c0',labelBg:null,nodeGlow:true},
+neon:{supply:'#00e676',transit:'#ffd600',demand:'#ff1744',nodeFill:'#0a0a12',edgeActive:'#00e5ff',edgeInactive:'#1a1a2e',bg:'#08080f',glow:'#00e5ff',labelBg:'#0a0a12',nodeGlow:true},
+blueprint:{supply:'#90caf9',transit:'#fff176',demand:'#ef9a9a',nodeFill:'#0d1b2a',edgeActive:'#64b5f6',edgeInactive:'#1b3a5c',bg:'#0d1b2a',glow:'#42a5f5',labelBg:'#0d1b2a',nodeGlow:true},
+sunset:{supply:'#ff8a65',transit:'#ffd54f',demand:'#e57373',nodeFill:'#1a0a00',edgeActive:'#ffab40',edgeInactive:'#3e2723',bg:'#1a0f05',glow:'#ff6d00',labelBg:'#1a0f05',nodeGlow:true},
+forest:{supply:'#66bb6a',transit:'#aed581',demand:'#a1887f',nodeFill:'#0a1a0a',edgeActive:'#81c784',edgeInactive:'#1b3a1b',bg:'#0a150a',glow:'#4caf50',labelBg:'#0a150a',nodeGlow:true},
+cyber:{supply:'#e040fb',transit:'#40c4ff',demand:'#ff4081',nodeFill:'#0a0015',edgeActive:'#e040fb',edgeInactive:'#1a0030',bg:'#06000f',glow:'#e040fb',labelBg:'#0a0015',nodeGlow:true},
+mono:{supply:'#888',transit:'#aaa',demand:'#666',nodeFill:null,edgeActive:null,edgeInactive:null,bg:null,glow:'#666',labelBg:null,nodeGlow:false},
+ocean:{supply:'#26a69a',transit:'#4dd0e1',demand:'#0277bd',nodeFill:'#001a1a',edgeActive:'#00bcd4',edgeInactive:'#003333',bg:'#001215',glow:'#00bcd4',labelBg:'#001215',nodeGlow:true}
+};
+function setGraphTheme(t,btn){graphTheme=t;document.querySelectorAll('.theme-btns button').forEach(function(b){b.classList.remove('on')});if(btn)btn.classList.add('on');if(pos.length)drawGraph()}
+function setGraphView(v,btn){graphView=v;document.querySelectorAll('.view-btns button').forEach(function(b){b.classList.remove('on')});if(btn)btn.classList.add('on');if(pos.length)drawGraph()}
 
-/* ========== PLEXUS ENGINE ========== */
-function spawnCluster(cx,cy,w,h,count,zMax){
-var pts=[];var spread=Math.min(w,h)*.18;
-for(var i=0;i<count;i++){
-var ang=Math.random()*Math.PI*2,rad=Math.random()*spread;
-pts.push({x:cx+Math.cos(ang)*rad,y:cy+Math.sin(ang)*rad,z:Math.random()*zMax,
-vx:(Math.random()-.5)*.5,vy:(Math.random()-.5)*.5,vz:(Math.random()-.5)*.3,
-r:Math.random()*1.6+.6,hue:195+Math.random()*50,a:0,maxA:1,
-fadeIn:30+Math.random()*30,life:250+Math.random()*350,age:0})
-}return pts
-}
-function runPlexus(cv,opts){
-var x=cv.getContext('2d'),pts=[],mx=-9999,my=-9999,W,H;
-var O=opts;
-function rz(){W=cv.width=O.wFn();H=cv.height=O.hFn();pts=[]}rz();
-addEventListener('resize',rz);
-(O.mEl||document).addEventListener('mousemove',function(e){mx=e.clientX;my=e.clientY});
-(O.mEl||document).addEventListener('touchmove',function(e){mx=e.touches[0].clientX;my=e.touches[0].clientY},{passive:true});
-// Spawn initial clusters
-for(var i=0;i<O.clusters;i++){pts=pts.concat(spawnCluster(Math.random()*W,Math.random()*H,W,H,O.perCluster,O.zMax))}
-var spawnTimer=0;
-function proj(p){var f=O.fov,s=f/(f+p.z);return{x:W/2+(p.x-W/2)*s,y:H/2+(p.y-H/2)*s,s:s}}
-function draw(){
-var dk=O.isDark?O.isDark():false;
-if(O.trail){x.fillStyle=O.trail;x.fillRect(0,0,W,H)}else{x.clearRect(0,0,W,H)}
-// Spawn new cluster periodically
-spawnTimer++;
-if(spawnTimer>O.spawnRate){spawnTimer=0;
-pts=pts.concat(spawnCluster(Math.random()*W,Math.random()*H,W,H,O.perCluster,O.zMax))}
-// Remove dead
-pts=pts.filter(function(p){return p.age<=p.fadeIn+p.life+40});
-for(var i=0;i<pts.length;i++){var a=pts[i];
-a.x+=a.vx;a.y+=a.vy;a.z+=a.vz;a.age++;
-if(a.z<0||a.z>O.zMax)a.vz*=-1;
-// Fade curve
-if(a.age<a.fadeIn)a.a=a.age/a.fadeIn;
-else if(a.age>a.fadeIn+a.life)a.a=Math.max(0,1-(a.age-a.fadeIn-a.life)/40);
-else a.a=1;
+/* ===== SPLASH 3D PLEXUS ===== */
+(function(){
+var c=document.getElementById('splashCanvas'),x=c.getContext('2d'),pts=[],mx=0,my=0;
+function rz(){c.width=innerWidth;c.height=innerHeight}rz();addEventListener('resize',rz);
+c.parentElement.addEventListener('mousemove',function(e){mx=e.clientX;my=e.clientY});
+c.parentElement.addEventListener('touchmove',function(e){mx=e.touches[0].clientX;my=e.touches[0].clientY},{passive:true});
+for(var i=0;i<120;i++)pts.push({x:Math.random()*2000-500,y:Math.random()*1400-200,z:Math.random()*800,vx:(Math.random()-.5)*.3,vy:(Math.random()-.5)*.3,vz:(Math.random()-.5)*.6,r:Math.random()*1.8+.3,b:Math.random()*.5+.5,hue:200+Math.random()*60});
+function proj(p){var f=900,s=f/(f+p.z);return{x:c.width/2+(p.x-c.width/2)*s,y:c.height/2+(p.y-c.height/2)*s,s:s,z:p.z}}
+function draw(){x.fillStyle='rgba(5,5,8,.15)';x.fillRect(0,0,c.width,c.height);
+var sorted=pts.slice().sort(function(a,b){return b.z-a.z});
+for(var i=0;i<sorted.length;i++){var a=sorted[i];
+a.x+=a.vx;a.y+=a.vy;a.z+=a.vz;
+if(a.x<-500||a.x>c.width+500)a.vx*=-1;
+if(a.y<-200||a.y>c.height+200)a.vy*=-1;
+if(a.z<0||a.z>800)a.vz*=-1;
 var pa=proj(a);
-var mD=Math.sqrt((pa.x-mx)*(pa.x-mx)+(pa.y-my)*(pa.y-my));
-var mI=Math.max(0,1-mD/O.mRadius);
-// LINES
-for(var j=i+1;j<pts.length;j++){var b=pts[j];var pb=proj(b);
+var mDist=Math.sqrt((pa.x-mx)*(pa.x-mx)+(pa.y-my)*(pa.y-my));
+var mouseInfluence=Math.max(0,1-mDist/200);
+for(var j=i+1;j<sorted.length;j++){var b2=sorted[j];var pb=proj(b2);
 var dx=pa.x-pb.x,dy=pa.y-pb.y,d=Math.sqrt(dx*dx+dy*dy);
-if(d<O.linkDist){
-var depth=Math.min(pa.s,pb.s);
-var fade=Math.min(a.a,b.a);
-// BASE: always bold
-var baseAl=(1-d/O.linkDist)*depth*fade*O.baseLineA;
-// MOUSE: extra bloom
-var mI2=Math.max(mI,Math.max(0,1-Math.sqrt((pb.x-mx)*(pb.x-mx)+(pb.y-my)*(pb.y-my))/O.mRadius));
-var bloom=mI2*(1-d/O.linkDist)*depth*fade*O.bloomLineA;
-var al=Math.min(baseAl+bloom,1);
-var lw=O.baseLineW+bloom*O.bloomLineW;
-if(mI2>.2){
-var g=x.createLinearGradient(pa.x,pa.y,pb.x,pb.y);
-g.addColorStop(0,'hsla('+a.hue+',80%,'+(dk?'72':'45')+'%,'+al+')');
-g.addColorStop(1,'hsla('+b.hue+',80%,'+(dk?'72':'45')+'%,'+al+')');
-x.strokeStyle=g;
-x.shadowColor='hsla('+a.hue+',90%,60%,'+(mI2*.6)+')';x.shadowBlur=6+mI2*16;
+var maxD=160;
+if(d<maxD){
+var alpha=(1-d/maxD)*Math.min(pa.s,pb.s);
+var mI2=Math.max(mouseInfluence,Math.max(0,1-Math.sqrt((pb.x-mx)*(pb.x-mx)+(pb.y-my)*(pb.y-my))/200));
+alpha*=(.3+mI2*2.5);
+if(alpha>1)alpha=1;
+var lineW=(.3+mI2*2)*Math.min(pa.s,pb.s);
+if(mI2>.3){
+var grad=x.createLinearGradient(pa.x,pa.y,pb.x,pb.y);
+var h1='hsla('+(a.hue)+',80%,70%,'+alpha+')';
+var h2='hsla('+(b2.hue)+',80%,70%,'+alpha+')';
+grad.addColorStop(0,h1);grad.addColorStop(1,h2);
+x.strokeStyle=grad;
+if(mI2>.6){x.shadowColor='hsla('+(a.hue)+',90%,60%,.5)';x.shadowBlur=8+mI2*15}
 }else{
-x.strokeStyle=dk?'rgba(150,175,220,'+al+')':'rgba(70,90,140,'+al+')';
-x.shadowBlur=0;
+x.strokeStyle='rgba(140,170,220,'+alpha*.6+')';
+x.shadowColor='transparent';x.shadowBlur=0;
 }
-x.beginPath();x.moveTo(pa.x,pa.y);x.lineTo(pb.x,pb.y);x.lineWidth=Math.min(lw,3.5);x.stroke();
+x.beginPath();x.moveTo(pa.x,pa.y);x.lineTo(pb.x,pb.y);x.lineWidth=Math.min(lineW,2.5);x.stroke();
 x.shadowBlur=0;
 }}
-// DOT
-var dSz=a.r*pa.s;
-var dA=a.a*pa.s;
-var gSz=dSz*(2.5+mI*4);
-var gr=x.createRadialGradient(pa.x,pa.y,0,pa.x,pa.y,gSz);
-gr.addColorStop(0,'hsla('+a.hue+','+(dk?'70':'45')+'%,'+(dk?'78':'52')+'%,'+(dA*O.baseDotA+mI*.3)+')');
-gr.addColorStop(.5,'hsla('+a.hue+','+(dk?'55':'35')+'%,'+(dk?'60':'42')+'%,'+(dA*O.baseDotA*.3+mI*.1)+')');
-gr.addColorStop(1,'transparent');
-x.fillStyle=gr;x.beginPath();x.arc(pa.x,pa.y,gSz,0,Math.PI*2);x.fill();
-x.fillStyle=dk?'rgba(220,232,255,'+(dA*O.baseDotA*.9)+')':'rgba(50,70,120,'+(dA*O.baseDotA*.7)+')';
-x.beginPath();x.arc(pa.x,pa.y,dSz*.5,0,Math.PI*2);x.fill();
+var dotSz=a.r*pa.s;
+var dotAlpha=a.b*pa.s*(.5+mouseInfluence*1.5);
+if(dotAlpha>1)dotAlpha=1;
+if(mouseInfluence>.2){
+var grd=x.createRadialGradient(pa.x,pa.y,0,pa.x,pa.y,dotSz*6);
+grd.addColorStop(0,'hsla('+a.hue+',80%,75%,'+dotAlpha*.6+')');
+grd.addColorStop(.3,'hsla('+a.hue+',70%,60%,'+dotAlpha*.2+')');
+grd.addColorStop(1,'transparent');
+x.fillStyle=grd;x.beginPath();x.arc(pa.x,pa.y,dotSz*6,0,Math.PI*2);x.fill();
 }
-requestAnimationFrame(draw)}
-draw()
+var grd2=x.createRadialGradient(pa.x,pa.y,0,pa.x,pa.y,dotSz*2.5);
+grd2.addColorStop(0,'hsla('+a.hue+',70%,85%,'+dotAlpha+')');
+grd2.addColorStop(.4,'hsla('+a.hue+',60%,65%,'+dotAlpha*.5+')');
+grd2.addColorStop(1,'transparent');
+x.fillStyle=grd2;x.beginPath();x.arc(pa.x,pa.y,dotSz*2.5,0,Math.PI*2);x.fill();
+x.fillStyle='rgba(220,235,255,'+dotAlpha*.9+')';
+x.beginPath();x.arc(pa.x,pa.y,dotSz*.35,0,Math.PI*2);x.fill();
 }
-
-/* ===== SPLASH ===== */
-(function(){
-var cv=document.getElementById('splashCanvas');
-runPlexus(cv,{
-wFn:function(){return innerWidth},hFn:function(){return innerHeight},
-mEl:cv.parentElement,isDark:function(){return true},
-trail:'rgba(4,4,6,.09)',fov:800,zMax:600,
-clusters:6,perCluster:18,spawnRate:120,
-linkDist:180,mRadius:250,
-baseLineA:.55,bloomLineA:1.8,baseLineW:.9,bloomLineW:3,
-baseDotA:.7
-});
-setTimeout(function(){document.getElementById('splashMenu').style.pointerEvents='auto';document.getElementById('splashMenu').style.opacity='1'},3200);
+requestAnimationFrame(draw)}draw();
+setTimeout(function(){var m=document.getElementById('splashMenu');m.style.pointerEvents='auto';m.style.opacity='1'},3200);
 window.launchApp=function(){var sp=document.getElementById('splashScreen');sp.classList.add('hidden');setTimeout(function(){sp.style.display='none';startApp()},900)};
 })();
 
-/* ===== MAIN BG ===== */
+/* ===== MAIN PLEXUS BG ===== */
 function initPlexus(){
-var cv=document.getElementById('plexusBg');
+var c=document.getElementById('plexusBg'),x=c.getContext('2d'),pts=[];
+function rz(){c.width=innerWidth;c.height=innerHeight}rz();addEventListener('resize',rz);
 document.addEventListener('mousemove',function(e){mouseXBg=e.clientX;mouseYBg=e.clientY});
-runPlexus(cv,{
-wFn:function(){return innerWidth},hFn:function(){return innerHeight},
-mEl:document,isDark:function(){return document.documentElement.getAttribute('data-theme')==='dark'},
-trail:null,fov:600,zMax:400,
-clusters:5,perCluster:14,spawnRate:180,
-linkDist:160,mRadius:220,
-baseLineA:.4,bloomLineA:1.5,baseLineW:.7,bloomLineW:2.5,
-baseDotA:.55
-});
+for(var i=0;i<65;i++)pts.push({x:Math.random()*c.width,y:Math.random()*c.height,z:Math.random()*500,vx:(Math.random()-.5)*.25,vy:(Math.random()-.5)*.25,vz:(Math.random()-.5)*.4,r:Math.random()*1.2+.4,b:Math.random()*.5+.5,hue:190+Math.random()*40});
+function proj(p){var f=700,s=f/(f+p.z);return{x:c.width/2+(p.x-c.width/2)*s,y:c.height/2+(p.y-c.height/2)*s,s:s}}
+function draw(){
+var cs=getComputedStyle(document.documentElement);
+var isDk=document.documentElement.getAttribute('data-theme')==='dark';
+x.clearRect(0,0,c.width,c.height);
+for(var i=0;i<pts.length;i++){var a=pts[i];
+a.x+=a.vx;a.y+=a.vy;a.z+=a.vz;
+if(a.x<0||a.x>c.width)a.vx*=-1;
+if(a.y<0||a.y>c.height)a.vy*=-1;
+if(a.z<0||a.z>500)a.vz*=-1;
+var pa=proj(a);
+var mD=Math.sqrt((pa.x-mouseXBg)*(pa.x-mouseXBg)+(pa.y-mouseYBg)*(pa.y-mouseYBg));
+var mI=Math.max(0,1-mD/180);
+for(var j=i+1;j<pts.length;j++){var b=pts[j];var pb=proj(b);
+var dx=pa.x-pb.x,dy=pa.y-pb.y,d=Math.sqrt(dx*dx+dy*dy);
+if(d<150){
+var al=(1-d/150)*Math.min(pa.s,pb.s);
+var mI2=Math.max(mI,Math.max(0,1-Math.sqrt((pb.x-mouseXBg)*(pb.x-mouseXBg)+(pb.y-mouseYBg)*(pb.y-mouseYBg))/180));
+al*=(.15+mI2*2);
+if(al>1)al=1;
+if(isDk){
+if(mI2>.3){
+x.strokeStyle='hsla('+a.hue+',60%,65%,'+al+')';
+x.shadowColor='hsla('+a.hue+',70%,55%,.3)';x.shadowBlur=6+mI2*10;
+}else{x.strokeStyle='rgba(255,255,255,'+al*.12+')';x.shadowBlur=0}
+}else{
+if(mI2>.3){
+x.strokeStyle='hsla('+a.hue+',40%,40%,'+al*.8+')';
+x.shadowColor='hsla('+a.hue+',50%,50%,.2)';x.shadowBlur=4+mI2*8;
+}else{x.strokeStyle='rgba(0,0,0,'+al*.1+')';x.shadowBlur=0}
 }
-
+x.beginPath();x.moveTo(pa.x,pa.y);x.lineTo(pb.x,pb.y);x.lineWidth=.4+mI2*1.5;x.stroke();x.shadowBlur=0;
+}}
+var dotA=a.b*pa.s*(.3+mI*1.2);if(dotA>1)dotA=1;
+if(mI>.15){
+var gsz=a.r*pa.s*5;
+var grd=x.createRadialGradient(pa.x,pa.y,0,pa.x,pa.y,gsz);
+if(isDk){
+grd.addColorStop(0,'hsla('+a.hue+',60%,70%,'+dotA*.4+')');
+grd.addColorStop(1,'transparent');
+}else{
+grd.addColorStop(0,'hsla('+a.hue+',40%,50%,'+dotA*.25+')');
+grd.addColorStop(1,'transparent');
+}
+x.fillStyle=grd;x.beginPath();x.arc(pa.x,pa.y,gsz,0,Math.PI*2);x.fill();
+}
+var coreA=isDk?dotA*.6:dotA*.4;
+x.fillStyle=isDk?'rgba(200,220,255,'+coreA+')':'rgba(40,60,100,'+coreA+')';
+x.beginPath();x.arc(pa.x,pa.y,a.r*pa.s*.5,0,Math.PI*2);x.fill();
+}
+requestAnimationFrame(draw)}draw()
+}
 function startApp(){initPlexus();if(localStorage.getItem('mcfdk')==='1'){isDark=true;document.documentElement.setAttribute('data-theme','dark');document.getElementById('darkBtn').textContent='Light'}document.getElementById('mainApp').style.display='block';initCanvas();var b=3+Math.floor(Math.random()*8);setInterval(function(){document.getElementById('onlineInd').textContent=(b+Math.floor(Math.random()*5)-2)+' online'},8000)}
 function toggleDark(){isDark=!isDark;document.documentElement.setAttribute('data-theme',isDark?'dark':'light');document.getElementById('darkBtn').textContent=isDark?'Light':'Dark';localStorage.setItem('mcfdk',isDark?'1':'0');if(pos.length)drawGraph()}
 function toast(m,t){var el=document.getElementById('toast');el.textContent=m;el.className='toast show '+(t==='success'?'toast-s':t==='error'?'toast-e':'toast-i');setTimeout(function(){el.classList.remove('show')},2500)}
 function sTab(n,b){b.parentElement.querySelectorAll('button').forEach(function(x){x.classList.remove('on')});b.classList.add('on');b.parentElement.parentElement.querySelectorAll('.tp').forEach(function(x){x.classList.remove('on')});document.getElementById('tp-'+n).classList.add('on')}
-function parseNIM(){var nim=document.getElementById('inpNIM').value.trim();if(nim.length<4){document.getElementById('nimResult').style.display='none';document.getElementById('sec2').style.display='none';return}var d=nim.slice(-4);if(!/^\d{4}$/.test(d)){toast('4 digit terakhir NIM harus angka','error');return}var dA=+d[0],dB=+d[1],dD=+d[2],dE=+d[3];locA=LOC.A[dA];locB=LOC.B[dB];locD=LOC.D[dD];locE=LOC.E[dE];var h='<div class="nim-grid"><div class="nc nh">Digit</div><div class="nc nh">Node</div><div class="nc nh">Tipe</div><div class="nc nh">Lokasi</div><div class="nc">'+dA+'</div><div class="nc">A</div><div class="nc"><span class="badge badge-g">SUPPLY</span></div><div class="nc">'+locA+'</div><div class="nc">'+dB+'</div><div class="nc">B</div><div class="nc"><span class="badge badge-g">SUPPLY</span></div><div class="nc">'+locB+'</div><div class="nc">—</div><div class="nc">C</div><div class="nc"><span class="badge badge-a">TRANSIT</span></div><div class="nc">'+LOC_C+'</div><div class="nc">'+dD+'</div><div class="nc">D</div><div class="nc"><span class="badge badge-r">DEMAND</span></div><div class="nc">'+locD+'</div><div class="nc">'+dE+'</div><div class="nc">E</div><div class="nc"><span class="badge badge-r">DEMAND</span></div><div class="nc">'+locE+'</div></div><div class="loc-cards">';[{l:'A',n:locA,bi:'+110',t:'Supply (Dapur)',c:'var(--green)',ico:'home'},{l:'B',n:locB,bi:'+90',t:'Supply (Dapur)',c:'var(--green)',ico:'home'},{l:'C',n:LOC_C,bi:'0',t:'Transshipment',c:'var(--amber)',ico:'box'},{l:'D',n:locD,bi:'-80',t:'Demand (Kantor)',c:'var(--red)',ico:'building'},{l:'E',n:locE,bi:'-120',t:'Demand (Kantor)',c:'var(--red)',ico:'building'}].forEach(function(lc){h+='<div class="loc-card"><div class="lc-label">'+ico(lc.ico,'sm')+' Node '+lc.l+'</div><div class="lc-name">'+lc.n+'</div><div class="lc-type" style="color:'+lc.c+'">'+lc.t+' (b<sub>'+lc.l+'</sub> = '+lc.bi+' porsi)</div></div>'});h+='</div>';document.getElementById('nimResult').innerHTML=h;document.getElementById('nimResult').style.display='block';buildCostInputs();document.getElementById('sec2').style.display='block';toast('Lokasi berhasil dideteksi dari NIM','success')}
-function locName(n){return n==='A'?locA:n==='B'?locB:n==='C'?LOC_C:n==='D'?locD:n==='E'?locE:''}
-function buildCostInputs(){var g=document.getElementById('costGrid');g.innerHTML='';ARCS.forEach(function(a){var fn=locName(a.from),tn=locName(a.to),ct=a.cap!==Infinity?' <span class="badge badge-a">max '+a.cap+'</span>':'';g.innerHTML+='<div class="cost-card"><h5>'+ico('route','sm')+' '+a.from+'→'+a.to+ct+'</h5><div class="cc-info">'+fn+' → '+tn+'</div><div class="fc"><label>Jarak (km)</label><input type="number" id="dist_'+a.id+'" placeholder="0.00" min="0" step="0.01" oninput="updateCost(\''+a.id+'\')"></div><div class="cc-result" id="cost_'+a.id+'">Biaya: —</div></div>'})}
-function updateCost(id){var v=parseFloat(document.getElementById('dist_'+id).value),el=document.getElementById('cost_'+id);if(!isNaN(v)&&v>0){var c=Math.round(v*100);dists[id]=v;costs[id]=c;el.textContent='Biaya: Rp '+c.toLocaleString('id')+',00 / porsi';el.style.color='var(--green)'}else{delete dists[id];delete costs[id];el.textContent='Biaya: —';el.style.color='var(--text3)'}}
-function generateAll(){var m=[];ARCS.forEach(function(a){if(!costs[a.id])m.push(a.from+'→'+a.to)});if(m.length){toast('Lengkapi jarak: '+m.join(', '),'error');return}buildCLO1();buildCLO2();buildMatrixTables();pos=[{x:100,y:110},{x:100,y:470},{x:400,y:290},{x:700,y:110},{x:700,y:470}];drawGraph();updateLegend();document.getElementById('sec3').style.display='block';document.getElementById('sec4').style.display='block';toast('Formulasi CLO 1 & CLO 2 berhasil dibuat!','success');document.getElementById('sec3').scrollIntoView({behavior:'smooth'})}
-function truncN(n,l){return!n?'':n.length>l?n.substring(0,l-1)+'…':n}
-function buildMatrixTables(){var ni=['A','B','C','D','E'],nn=[locA,locB,LOC_C.split(',')[0],locD,locE],am={};ARCS.forEach(function(a){am[a.from+'_'+a.to]=a.id});var h='<div class="ab"><h4>'+ico('map')+' Tabel 1 — Matriks Jarak Dari-Ke (km)</h4><p style="margin-bottom:8px">Jarak tempuh (km) antar node.</p><div style="overflow-x:auto"><table class="matrix-table"><thead><tr><th>Dari \\ Ke</th>';ni.forEach(function(n,i){h+='<th>'+n+'<br><span style="font-size:8px;font-weight:400">'+truncN(nn[i],12)+'</span></th>'});h+='</tr></thead><tbody>';ni.forEach(function(f,fi){h+='<tr><td class="row-header">'+f+' — '+truncN(nn[fi],14)+'</td>';ni.forEach(function(t){var k=f+'_'+t,a=am[k];h+=a&&dists[a]?'<td class="has-value">'+dists[a].toFixed(2)+'</td>':'<td class="empty-cell">—</td>'});h+='</tr>'});h+='</tbody></table></div><h4 style="margin-top:20px">'+ico('coin')+' Tabel 2 — Matriks Harga Dari-Ke (Rp/porsi)</h4><p style="margin-bottom:8px">Biaya = Rp 100 × jarak (km).</p><div style="overflow-x:auto"><table class="matrix-table"><thead><tr><th>Dari \\ Ke</th>';ni.forEach(function(n,i){h+='<th>'+n+'<br><span style="font-size:8px;font-weight:400">'+truncN(nn[i],12)+'</span></th>'});h+='</tr></thead><tbody>';ni.forEach(function(f,fi){h+='<tr><td class="row-header">'+f+' — '+truncN(nn[fi],14)+'</td>';ni.forEach(function(t){var k=f+'_'+t,a=am[k];h+=a&&costs[a]?'<td class="has-value">Rp '+costs[a].toLocaleString('id')+'</td>':'<td class="empty-cell">—</td>'});h+='</tr>'});h+='</tbody></table></div><h4 style="margin-top:16px">'+ico('sparkle')+' Detail Perhitungan</h4><table class="rt"><tr><th>Jalur</th><th>Jarak</th><th>×100</th><th>Biaya</th></tr>';ARCS.forEach(function(a){h+='<tr><td>'+a.from+'→'+a.to+'</td><td>'+dists[a.id].toFixed(2)+'km</td><td>×Rp100</td><td style="font-weight:700;color:var(--green)">Rp '+costs[a.id].toLocaleString('id')+'</td></tr>'});h+='</table></div>';document.getElementById('clo2matrixContent').innerHTML=h}
-function buildCLO1(){var h='<div class="ab"><h4>'+ico('target')+' Tujuan</h4><p>Meminimumkan total biaya pengiriman porsi makan siang.</p><h4>'+ico('truck')+' Variabel Keputusan</h4><p>X<sub>ij</sub> = jumlah porsi jalur i→j</p><table class="rt"><tr><th>Var</th><th>Jalur</th><th>Ket</th></tr>';ARCS.forEach(function(a){h+='<tr><td>X<sub>'+a.id+'</sub></td><td>'+a.from+'→'+a.to+'</td><td>'+locName(a.from)+'→'+locName(a.to)+'</td></tr>'});h+='</table><h4>'+ico('info')+' Constraint</h4><ul style="margin-left:18px;list-style:disc"><li>Dapur A: <strong>110 porsi</strong></li><li>Dapur B: <strong>90 porsi</strong></li><li>Transit C: <strong>0</strong></li><li>Kantor D: <strong>80 porsi</strong></li><li>Kantor E: <strong>120 porsi</strong></li><li>U<sub>AB</sub> ≤ <strong>20</strong></li><li>Lainnya: ∞</li><li>X<sub>ij</sub> ≥ 0</li></ul></div>';document.getElementById('clo1t1Content').innerHTML=h;var h2='<div class="ab"><h4>'+ico('sparkle')+' Variabel (X<sub>ij</sub>)</h4><table class="rt"><tr><th>Var</th><th>Deskripsi</th></tr>';ARCS.forEach(function(a){h2+='<tr><td>X<sub>'+a.id+'</sub></td><td>Porsi jalur '+a.from+'→'+a.to+' ('+locName(a.from)+'→'+locName(a.to)+')</td></tr>'});h2+='</table><h4>'+ico('coin')+' Kapasitas (U<sub>ij</sub>)</h4><table class="rt"><tr><th>Busur</th><th>Kap</th></tr>';ARCS.forEach(function(a){h2+='<tr><td>U<sub>'+a.id+'</sub></td><td>'+(a.cap!==Infinity?a.cap+' porsi':'∞')+'</td></tr>'});h2+='</table><h4>'+ico('building')+' Supply/Demand (b<sub>i</sub>)</h4><table class="rt"><tr><th>Node</th><th>Lokasi</th><th>b<sub>i</sub></th><th>Tipe</th></tr>';NODES.forEach(function(n){var c=n.bi>0?'var(--green)':n.bi<0?'var(--red)':'var(--amber)',bg=n.type==='supply'?'badge-g':n.type==='demand'?'badge-r':'badge-a';h2+='<tr><td>'+n.id+'</td><td>'+locName(n.id)+'</td><td style="color:'+c+';font-weight:700">'+(n.bi>0?'+':'')+n.bi+'</td><td><span class="badge '+bg+'">'+n.type.toUpperCase()+'</span></td></tr>'});h2+='</table><h4>'+ico('coin')+' Biaya (c<sub>ij</sub>)</h4><table class="rt"><tr><th>Jalur</th><th>Jarak</th><th>c<sub>ij</sub></th></tr>';ARCS.forEach(function(a){h2+='<tr><td>'+a.from+'→'+a.to+'</td><td>'+dists[a.id].toFixed(2)+'</td><td>Rp '+costs[a.id].toLocaleString('id')+'</td></tr>'});h2+='</table></div>';document.getElementById('clo1t2Content').innerHTML=h2}
-function buildCLO2(){var h='<div class="ab"><h4>'+ico('coin')+' Biaya per Porsi</h4><p>Biaya = Rp100 × jarak(km)</p><table class="rt"><tr><th>Jalur</th><th>Dari</th><th>Ke</th><th>Jarak</th><th>Biaya</th></tr>';ARCS.forEach(function(a){h+='<tr><td>'+a.from+'→'+a.to+'</td><td>'+locName(a.from)+'</td><td>'+locName(a.to)+'</td><td>'+dists[a.id].toFixed(2)+'km</td><td>Rp '+costs[a.id].toLocaleString('id')+'</td></tr>'});h+='</table></div>';document.getElementById('clo2costContent').innerHTML=h;var hm='<div class="fbox"><strong>Fungsi Tujuan:</strong>\nMin Z = '+ARCS.map(function(a){return costs[a.id]+'·X<sub>'+a.id+'</sub>'}).join(' + ')+'\n\n<strong>Constraint:</strong>\nNode A: X<sub>AB</sub>+X<sub>AC</sub>+X<sub>AD</sub>=110\nNode B: -X<sub>AB</sub>+X<sub>BC</sub>=90\nNode C: -X<sub>AC</sub>-X<sub>BC</sub>+X<sub>CE</sub>=0\nNode D: -X<sub>AD</sub>+X<sub>DE</sub>-X<sub>ED</sub>=-80\nNode E: -X<sub>CE</sub>-X<sub>DE</sub>+X<sub>ED</sub>=-120\n\n<strong>Kapasitas:</strong>\n0≤X<sub>AB</sub>≤20, X<sub>ij</sub>≥0\n</div>';document.getElementById('clo2mathContent').innerHTML=hm}
-function solveAndShow(){if(!costs['AB']){toast('Generate dulu!','error');return}iterStates=[];var c=costs,fl={AB:0,AC:0,AD:110,BC:90,CE:90,DE:30,ED:0},basis=['AD','BC','CE','DE'],nonBasis=['AB','AC','ED'];function Z(f){var z=0;ARCS.forEach(function(a){z+=(f[a.id]||0)*c[a.id]});return z}iterStates.push({title:'Solusi Basis Layak Awal',desc:'Spanning tree: AD,BC,CE,DE',changes:['Basis: X_AD='+fl.AD+', X_BC='+fl.BC+', X_CE='+fl.CE+', X_DE='+fl.DE,'Non-Basis: X_AB=0, X_AC=0, X_ED=0','Z=Rp '+Z(fl).toLocaleString('id')],flows:Object.assign({},fl),basis:basis.slice()});var d1=c.AB+c.BC+c.CE-c.DE-c.AD,d2=c.AC+c.CE-c.DE-c.AD,d3=c.ED+c.DE;iterStates.push({title:'Iterasi 1 — Cek Optimalitas',desc:'Hitung ΔZ',changes:['ΔZ(AB)='+d1,'ΔZ(AC)='+d2,'ΔZ(ED)='+d3,d2<0||d1<0?'Ada ΔZ<0 → belum optimal':'Semua ΔZ≥0 → OPTIMAL'],flows:Object.assign({},fl),basis:basis.slice()});var mi=10,it=0,cf=Object.assign({},fl),cb=basis.slice(),cn=nonBasis.slice();while(it<mi){it++;var ds=[];cn.forEach(function(nb){var dz=computeDeltaZ(nb,cb,c);if(dz)ds.push({key:nb,dz:dz.val,cycle:dz.cycle})});var en=null,md=0;ds.forEach(function(d){if(d.dz<md){md=d.dz;en=d}});if(!en){iterStates.push({title:'OPTIMAL — Iterasi '+it,desc:'Semua ΔZ≥0',changes:ds.map(function(d){return'ΔZ('+d.key+')='+d.dz}).concat(['OPTIMAL','Z*=Rp '+Z(cf).toLocaleString('id')]),flows:Object.assign({},cf),basis:cb.slice()});break}var th=Infinity,lk=null,lb='lower';en.cycle.forEach(function(ce){if(ce.key===en.key)return;if(ce.dir==='-'){if(cf[ce.key]<th){th=cf[ce.key];lk=ce.key;lb='lower'}}else{var ar=ARCS.find(function(a){return a.id===ce.key});if(ar&&ar.cap!==Infinity){var rm=ar.cap-cf[ce.key];if(rm<th){th=rm;lk=ce.key;lb='upper'}}}});var ea=ARCS.find(function(a){return a.id===en.key});if(ea&&ea.cap!==Infinity&&ea.cap<th){th=ea.cap;lk=en.key;lb='upper'}if(th===Infinity||th===0){en.cycle.forEach(function(ce){if(ce.key!==en.key&&ce.dir==='-'&&cf[ce.key]===0){lk=ce.key;lb='lower';th=0}});if(th===Infinity)th=0}cf[en.key]=(cf[en.key]||0)+th;en.cycle.forEach(function(ce){if(ce.key===en.key)return;if(ce.dir==='+')cf[ce.key]+=th;else cf[ce.key]-=th});if(lb==='lower'){var li=cb.indexOf(lk);if(li>=0)cb.splice(li,1);cb.push(en.key);var ei=cn.indexOf(en.key);if(ei>=0)cn.splice(ei,1);cn.push(lk)}else{var li=cb.indexOf(lk);if(li>=0)cb.splice(li,1);if(lk!==en.key)cb.push(en.key);var ei=cn.indexOf(en.key);if(ei>=0)cn.splice(ei,1);if(lk!==en.key)cn.push(lk)}var fs=[];for(var k in cf)if(cf[k]>0)fs.push('X_'+k+'='+cf[k]);iterStates.push({title:'Iterasi '+it,desc:'Enter:'+en.key+' Leave:'+lk+'('+lb+')',changes:['Enter:'+en.key+'(ΔZ='+md+')','θ='+th,'Leave:'+lk+'('+lb+(lb==='upper'?',UBT':'')+')',fs.join(', '),'Z=Rp '+Z(cf).toLocaleString('id')],flows:Object.assign({},cf),basis:cb.slice()})}sol={flows:cf,z:Z(cf)};curIter=0;document.getElementById('sec5').style.display='block';setupIterCtrl();iterGo(0);buildSolResults();toast('Solusi optimal!','success');document.getElementById('sec5').scrollIntoView({behavior:'smooth'})}
-function computeDeltaZ(ek,bs,c){var aj={};bs.forEach(function(k){var f=k[0],t=k[1];if(!aj[f])aj[f]=[];if(!aj[t])aj[t]=[];aj[f].push({n:t,key:k,fwd:true});aj[t].push({n:f,key:k,fwd:false})});var fr=ek[0],to=ek[1],vi={},pa={},q=[to];vi[to]=true;var fo=false;while(q.length){var cu=q.shift();if(cu===fr){fo=true;break}(aj[cu]||[]).forEach(function(e){if(!vi[e.n]){vi[e.n]=true;pa[e.n]={from:cu,key:e.key,fwd:e.fwd};q.push(e.n)}})}if(!fo)return null;var cy=[{key:ek,dir:'+'}],c2=fr;while(c2!==to){var p=pa[c2];cy.push({key:p.key,dir:p.fwd?'-':'+'});c2=p.from}var v=0;cy.forEach(function(ce){var co=c[ce.key]||0;if(ce.dir==='+')v+=co;else v-=co});return{val:v,cycle:cy}}
-function buildSolResults(){if(!sol)return;document.getElementById('solBanner').innerHTML='<div class="wb"><h3>'+ico('trophy','lg')+' Solusi Optimal</h3><p>Biaya Min: <strong>Rp '+sol.z.toLocaleString('id')+',00</strong>/hari | Rp '+(sol.z*44).toLocaleString('id')+',00 (44 hari)</p></div>';document.getElementById('solStats').innerHTML='<div class="stat-card hi"><div class="sv">Rp '+sol.z.toLocaleString('id')+'</div><div class="sl">Biaya/hari</div></div><div class="stat-card"><div class="sv">200</div><div class="sl">Porsi</div></div><div class="stat-card"><div class="sv">'+iterStates.length+'</div><div class="sl">Iterasi</div></div>';var h='<table class="rt"><tr><th>Jalur</th><th>Dari</th><th>Ke</th><th>Aliran</th><th>Biaya/p</th><th>Total</th></tr>';ARCS.forEach(function(a){var f=sol.flows[a.id]||0;h+='<tr><td>'+a.from+'→'+a.to+'</td><td>'+locName(a.from)+'</td><td>'+locName(a.to)+'</td><td style="font-weight:700;color:'+(f>0?'var(--green)':'var(--text3)')+'">'+f+'</td><td>Rp '+costs[a.id].toLocaleString('id')+'</td><td>Rp '+(f*costs[a.id]).toLocaleString('id')+'</td></tr>'});h+='<tr style="font-weight:700;background:var(--accent-bg)"><td colspan="3">TOTAL</td><td></td><td></td><td>Rp '+sol.z.toLocaleString('id')+'</td></tr></table>';document.getElementById('solTable').innerHTML=h}
+function parseNIM(){
+var nim=document.getElementById('inpNIM').value.trim();
+if(nim.length<4){document.getElementById('nimResult').style.display='none';document.getElementById('sec2').style.display='none';return}
+var d=nim.slice(-4);
+if(!/^\d{4}$/.test(d)){toast('4 digit terakhir NIM harus angka','error');return}
+var dA=+d[0],dB=+d[1],dD=+d[2],dE=+d[3];
+locA=LOC.A[dA];locB=LOC.B[dB];locD=LOC.D[dD];locE=LOC.E[dE];
+var h='<div class="nim-grid">';
+h+='<div class="nc nh">Digit</div><div class="nc nh">Node</div><div class="nc nh">Tipe</div><div class="nc nh">Lokasi</div>';
+h+='<div class="nc">'+dA+'</div><div class="nc">A</div><div class="nc"><span class="badge badge-g">SUPPLY</span></div><div class="nc">'+locA+'</div>';
+h+='<div class="nc">'+dB+'</div><div class="nc">B</div><div class="nc"><span class="badge badge-g">SUPPLY</span></div><div class="nc">'+locB+'</div>';
+h+='<div class="nc">—</div><div class="nc">C</div><div class="nc"><span class="badge badge-a">TRANSIT</span></div><div class="nc">'+LOC_C+'</div>';
+h+='<div class="nc">'+dD+'</div><div class="nc">D</div><div class="nc"><span class="badge badge-r">DEMAND</span></div><div class="nc">'+locD+'</div>';
+h+='<div class="nc">'+dE+'</div><div class="nc">E</div><div class="nc"><span class="badge badge-r">DEMAND</span></div><div class="nc">'+locE+'</div>';
+h+='</div>';
+h+='<div class="loc-cards">';
+var locs=[{l:'A',n:locA,bi:'+110',t:'Supply (Dapur)',c:'var(--green)',ico:'home'},{l:'B',n:locB,bi:'+90',t:'Supply (Dapur)',c:'var(--green)',ico:'home'},{l:'C',n:LOC_C,bi:'0',t:'Transshipment',c:'var(--amber)',ico:'box'},{l:'D',n:locD,bi:'-80',t:'Demand (Kantor)',c:'var(--red)',ico:'building'},{l:'E',n:locE,bi:'-120',t:'Demand (Kantor)',c:'var(--red)',ico:'building'}];
+locs.forEach(function(lc){h+='<div class="loc-card"><div class="lc-label">'+ico(lc.ico,'sm')+' Node '+lc.l+'</div><div class="lc-name">'+lc.n+'</div><div class="lc-type" style="color:'+lc.c+'">'+lc.t+' (b<sub>'+lc.l+'</sub> = '+lc.bi+' porsi)</div></div>'});
+h+='</div>';
+document.getElementById('nimResult').innerHTML=h;
+document.getElementById('nimResult').style.display='block';
+buildCostInputs();
+document.getElementById('sec2').style.display='block';
+toast('Lokasi berhasil dideteksi dari NIM','success');
+}
+function locName(node){return node==='A'?locA:node==='B'?locB:node==='C'?LOC_C:node==='D'?locD:node==='E'?locE:''}
+function buildCostInputs(){
+var g=document.getElementById('costGrid');g.innerHTML='';
+ARCS.forEach(function(arc){
+var fn=locName(arc.from),tn=locName(arc.to);
+var capTxt=arc.cap!==Infinity?' <span class="badge badge-a">max '+arc.cap+'</span>':'';
+g.innerHTML+='<div class="cost-card"><h5>'+ico('route','sm')+' '+arc.from+'→'+arc.to+capTxt+'</h5><div class="cc-info">'+fn+' → '+tn+'</div><div class="fc"><label>Jarak (km)</label><input type="number" id="dist_'+arc.id+'" placeholder="0.00" min="0" step="0.01" oninput="updateCost(\''+arc.id+'\')"></div><div class="cc-result" id="cost_'+arc.id+'">Biaya: —</div></div>';
+});
+}
+function updateCost(id){
+var v=parseFloat(document.getElementById('dist_'+id).value);
+var el=document.getElementById('cost_'+id);
+if(!isNaN(v)&&v>0){var c=Math.round(v*100);dists[id]=v;costs[id]=c;el.textContent='Biaya: Rp '+c.toLocaleString('id')+',00 / porsi';el.style.color='var(--green)'}
+else{delete dists[id];delete costs[id];el.textContent='Biaya: —';el.style.color='var(--text3)'}
+}
+function generateAll(){
+var missing=[];ARCS.forEach(function(a){if(!costs[a.id])missing.push(a.from+'→'+a.to)});
+if(missing.length){toast('Lengkapi jarak: '+missing.join(', '),'error');return}
+buildCLO1();buildCLO2();buildMatrixTables();
+pos=[{x:100,y:110},{x:100,y:470},{x:400,y:290},{x:700,y:110},{x:700,y:470}];
+drawGraph();updateLegend();
+document.getElementById('sec3').style.display='block';
+document.getElementById('sec4').style.display='block';
+toast('Formulasi CLO 1 & CLO 2 berhasil dibuat!','success');
+document.getElementById('sec3').scrollIntoView({behavior:'smooth'});
+}
+function truncN(n,l){if(!n)return'';return n.length>l?n.substring(0,l-1)+'…':n}
+function buildMatrixTables(){
+var nIds=['A','B','C','D','E'],nNms=[locA,locB,LOC_C.split(',')[0],locD,locE];
+var aMap={};ARCS.forEach(function(a){aMap[a.from+'_'+a.to]=a.id});
+var h='<div class="ab">';
+h+='<h4>'+ico('map')+' Tabel 1 — Matriks Jarak Dari-Ke (km)</h4>';
+h+='<p style="margin-bottom:8px">Jarak tempuh (km) antar node berdasarkan Google Maps.</p>';
+h+='<div style="overflow-x:auto"><table class="matrix-table"><thead><tr><th>Dari \\ Ke</th>';
+nIds.forEach(function(n,i){h+='<th>'+n+'<br><span style="font-size:8px;font-weight:400">'+truncN(nNms[i],12)+'</span></th>'});
+h+='</tr></thead><tbody>';
+nIds.forEach(function(fr,fi){h+='<tr><td class="row-header">'+fr+' — '+truncN(nNms[fi],14)+'</td>';nIds.forEach(function(to){var k=fr+'_'+to,aid=aMap[k];if(aid&&dists[aid])h+='<td class="has-value">'+dists[aid].toFixed(2)+'</td>';else h+='<td class="empty-cell">—</td>'});h+='</tr>'});
+h+='</tbody></table></div>';
+h+='<h4 style="margin-top:20px">'+ico('coin')+' Tabel 2 — Matriks Harga/Biaya Dari-Ke (Rp/porsi)</h4>';
+h+='<p style="margin-bottom:8px">Biaya pengiriman per porsi = Rp 100 × jarak (km).</p>';
+h+='<div style="overflow-x:auto"><table class="matrix-table"><thead><tr><th>Dari \\ Ke</th>';
+nIds.forEach(function(n,i){h+='<th>'+n+'<br><span style="font-size:8px;font-weight:400">'+truncN(nNms[i],12)+'</span></th>'});
+h+='</tr></thead><tbody>';
+nIds.forEach(function(fr,fi){h+='<tr><td class="row-header">'+fr+' — '+truncN(nNms[fi],14)+'</td>';nIds.forEach(function(to){var k=fr+'_'+to,aid=aMap[k];if(aid&&costs[aid])h+='<td class="has-value">Rp '+costs[aid].toLocaleString('id')+'</td>';else h+='<td class="empty-cell">—</td>'});h+='</tr>'});
+h+='</tbody></table></div>';
+h+='<h4 style="margin-top:16px">'+ico('sparkle')+' Detail Perhitungan</h4>';
+h+='<table class="rt"><tr><th>Jalur</th><th>Jarak (km)</th><th>× Rp 100</th><th>= Biaya/porsi</th></tr>';
+ARCS.forEach(function(a){h+='<tr><td>'+a.from+' → '+a.to+'</td><td>'+dists[a.id].toFixed(2)+' km</td><td>× Rp 100</td><td style="font-weight:700;color:var(--green)">Rp '+costs[a.id].toLocaleString('id')+',00</td></tr>'});
+h+='</table></div>';
+document.getElementById('clo2matrixContent').innerHTML=h;
+}
+function buildCLO1(){
+var h='<div class="ab">';
+h+='<h4>'+ico('target')+' Tujuan</h4><p>Meminimumkan total biaya pengiriman porsi makan siang dari dapur ke kantor.</p><p>Dengan biaya pengiriman per porsi = Rp 100 × jarak tempuh (km) untuk setiap jalur.</p>';
+h+='<h4>'+ico('truck')+' Variabel Keputusan</h4><p>X<sub>ij</sub> = jumlah porsi makan siang yang dialirkan melalui jalur i → j</p>';
+h+='<table class="rt"><tr><th>Variabel</th><th>Jalur</th><th>Keterangan</th></tr>';
+ARCS.forEach(function(a){h+='<tr><td>X<sub>'+a.id+'</sub></td><td>'+a.from+' → '+a.to+'</td><td>'+locName(a.from)+' → '+locName(a.to)+'</td></tr>'});
+h+='</table><h4>'+ico('info')+' Constraint</h4><ul style="margin-left:18px;list-style:disc">';
+h+='<li>Ketersediaan pasokan pada Dapur A sebesar <strong>110 porsi</strong></li>';
+h+='<li>Ketersediaan pasokan pada Dapur B sebesar <strong>90 porsi</strong></li>';
+h+='<li>Ketersediaan pasokan/demand pada Lokasi Transit C sebesar <strong>0 porsi</strong></li>';
+h+='<li>Demand pada Kantor D sebesar <strong>80 porsi</strong></li>';
+h+='<li>Demand pada Kantor E sebesar <strong>120 porsi</strong></li>';
+h+='<li>Kapasitas aliran pada jalur A→B (U<sub>AB</sub>) ≤ <strong>20 porsi</strong></li>';
+h+='<li>Jalur lainnya tidak memiliki batasan kapasitas (∞)</li>';
+h+='<li>Batasan non-negatif: X<sub>ij</sub> ≥ 0</li></ul></div>';
+document.getElementById('clo1t1Content').innerHTML=h;
+var h2='<div class="ab">';
+h2+='<h4>'+ico('sparkle')+' Variabel Keputusan (X<sub>ij</sub>)</h4><table class="rt"><tr><th>Variabel</th><th>Deskripsi</th></tr>';
+ARCS.forEach(function(a){h2+='<tr><td>X<sub>'+a.id+'</sub></td><td>Jumlah porsi jalur '+a.from+' → '+a.to+' ('+locName(a.from)+' → '+locName(a.to)+')</td></tr>'});
+h2+='</table><h4>'+ico('coin')+' Kapasitas Busur (U<sub>ij</sub>)</h4><table class="rt"><tr><th>Busur</th><th>Kapasitas</th></tr>';
+ARCS.forEach(function(a){h2+='<tr><td>U<sub>'+a.id+'</sub></td><td>'+(a.cap!==Infinity?a.cap+' porsi':'∞ (tak terbatas)')+'</td></tr>'});
+h2+='</table><h4>'+ico('building')+' Supply/Demand pada Node (b<sub>i</sub>)</h4><table class="rt"><tr><th>Node</th><th>Lokasi</th><th>b<sub>i</sub></th><th>Tipe</th></tr>';
+NODES.forEach(function(n){var col=n.bi>0?'var(--green)':n.bi<0?'var(--red)':'var(--amber)';var bg=n.type==='supply'?'badge-g':n.type==='demand'?'badge-r':'badge-a';h2+='<tr><td>'+n.id+'</td><td>'+locName(n.id)+'</td><td style="color:'+col+';font-weight:700">'+(n.bi>0?'+':'')+n.bi+'</td><td><span class="badge '+bg+'">'+n.type.toUpperCase()+'</span></td></tr>'});
+h2+='</table><h4>'+ico('coin')+' Biaya per Unit Aliran (c<sub>ij</sub>)</h4><table class="rt"><tr><th>Jalur</th><th>Jarak (km)</th><th>c<sub>ij</sub> (Rp/porsi)</th></tr>';
+ARCS.forEach(function(a){h2+='<tr><td>'+a.from+' → '+a.to+'</td><td>'+dists[a.id].toFixed(2)+'</td><td>Rp '+costs[a.id].toLocaleString('id')+'</td></tr>'});
+h2+='</table></div>';
+document.getElementById('clo1t2Content').innerHTML=h2;
+}
+function buildCLO2(){
+var h='<div class="ab"><h4>'+ico('coin')+' Biaya Pengiriman per Porsi</h4><p>Biaya = Rp 100,00 × jarak tempuh (km)</p>';
+h+='<table class="rt"><tr><th>Jalur</th><th>Dari</th><th>Ke</th><th>Jarak (km)</th><th>Biaya/porsi</th></tr>';
+ARCS.forEach(function(a){h+='<tr><td>'+a.from+' → '+a.to+'</td><td>'+locName(a.from)+'</td><td>'+locName(a.to)+'</td><td>'+dists[a.id].toFixed(2)+' km</td><td>Rp '+costs[a.id].toLocaleString('id')+',00</td></tr>'});
+h+='</table></div>';
+document.getElementById('clo2costContent').innerHTML=h;
+var hm='<div class="fbox"><strong>Fungsi Tujuan:</strong>\n';
+hm+='Min Z = '+ARCS.map(function(a){return costs[a.id]+'·X<sub>'+a.id+'</sub>'}).join(' + ')+'\n\n';
+hm+='<strong>Constraint (Flow Conservation):</strong>\n';
+hm+='Node A (b=110): X<sub>AB</sub> + X<sub>AC</sub> + X<sub>AD</sub> = 110\n';
+hm+='Node B (b=90): -X<sub>AB</sub> + X<sub>BC</sub> = 90\n';
+hm+='Node C (b=0): -X<sub>AC</sub> - X<sub>BC</sub> + X<sub>CE</sub> = 0\n';
+hm+='Node D (b=-80): -X<sub>AD</sub> + X<sub>DE</sub> - X<sub>ED</sub> = -80\n';
+hm+='Node E (b=-120): -X<sub>CE</sub> - X<sub>DE</sub> + X<sub>ED</sub> = -120\n\n';
+hm+='<strong>Kapasitas & Non-Negatif:</strong>\n0 ≤ X<sub>AB</sub> ≤ 20\nX<sub>ij</sub> ≥ 0 untuk semua (i,j)\n</div>';
+document.getElementById('clo2mathContent').innerHTML=hm;
+}
+function solveAndShow(){
+if(!costs['AB']){toast('Generate formulasi dulu!','error');return}
+iterStates=[];var c=costs;
+var fl={AB:0,AC:0,AD:110,BC:90,CE:90,DE:30,ED:0};
+var basis=['AD','BC','CE','DE'],nonBasis=['AB','AC','ED'];
+function Z(f){var z=0;ARCS.forEach(function(a){z+=(f[a.id]||0)*c[a.id]});return z}
+iterStates.push({title:'Solusi Basis Layak Awal',desc:'Spanning tree: AD, BC, CE, DE',changes:['Variabel Basis: X_AD='+fl.AD+', X_BC='+fl.BC+', X_CE='+fl.CE+', X_DE='+fl.DE,'Variabel Non Basis: X_AB=0, X_AC=0, X_ED=0','Z = Rp '+Z(fl).toLocaleString('id')],flows:Object.assign({},fl),basis:basis.slice()});
+var dzAB_=c.AB+c.BC+c.CE-c.DE-c.AD;var dzAC2=c.AC+c.CE-c.DE-c.AD;var dzED=c.ED+c.DE;
+iterStates.push({title:'Iterasi 1 — Cek Optimalitas',desc:'Menghitung ΔZ untuk setiap variabel non-basis',changes:['Siklus AB: AB-BC-CE-(-DE)-(-AD)','ΔZ(AB) = '+c.AB+' + '+c.BC+' + '+c.CE+' - '+c.DE+' - '+c.AD+' = '+dzAB_,'Siklus AC: AC-CE-(-DE)-(-AD)','ΔZ(AC) = '+c.AC+' + '+c.CE+' - '+c.DE+' - '+c.AD+' = '+dzAC2,'Siklus ED: ED-DE','ΔZ(ED) = '+c.ED+' + '+c.DE+' = '+dzED,dzAC2<0||dzAB_<0?'Masih ada ΔZ < 0 → belum optimal':'Semua ΔZ ≥ 0 → OPTIMAL'],flows:Object.assign({},fl),basis:basis.slice()});
+var maxIters=10,iter=0,curFlows=Object.assign({},fl),curBasis=basis.slice(),curNonBasis=nonBasis.slice();
+while(iter<maxIters){iter++;
+var deltas=[];curNonBasis.forEach(function(nb){var dz=computeDeltaZ(nb,curBasis,c);if(dz!==null)deltas.push({key:nb,dz:dz.val,cycle:dz.cycle})});
+var entering=null,minDz=0;deltas.forEach(function(d){if(d.dz<minDz){minDz=d.dz;entering=d}});
+if(!entering){iterStates.push({title:'OPTIMAL — Iterasi '+iter,desc:'Semua ΔZ ≥ 0',changes:deltas.map(function(d){return'ΔZ('+d.key+') = '+d.dz}).concat(['Semua ΔZ ≥ 0 → Solusi OPTIMAL','Z* = Rp '+Z(curFlows).toLocaleString('id')]),flows:Object.assign({},curFlows),basis:curBasis.slice()});break}
+var theta=Infinity,leavingKey=null,leavingBound='lower';
+entering.cycle.forEach(function(ce){if(ce.key===entering.key)return;if(ce.dir==='-'){if(curFlows[ce.key]<theta){theta=curFlows[ce.key];leavingKey=ce.key;leavingBound='lower'}}else{var arc=ARCS.find(function(a){return a.id===ce.key});if(arc&&arc.cap!==Infinity){var room=arc.cap-curFlows[ce.key];if(room<theta){theta=room;leavingKey=ce.key;leavingBound='upper'}}}});
+var eArc=ARCS.find(function(a){return a.id===entering.key});
+if(eArc&&eArc.cap!==Infinity&&eArc.cap<theta){theta=eArc.cap;leavingKey=entering.key;leavingBound='upper'}
+if(theta===Infinity||theta===0){entering.cycle.forEach(function(ce){if(ce.key!==entering.key&&ce.dir==='-'&&curFlows[ce.key]===0){leavingKey=ce.key;leavingBound='lower';theta=0}});if(theta===Infinity)theta=0}
+curFlows[entering.key]=(curFlows[entering.key]||0)+theta;
+entering.cycle.forEach(function(ce){if(ce.key===entering.key)return;if(ce.dir==='+')curFlows[ce.key]+=theta;else curFlows[ce.key]-=theta});
+if(leavingBound==='lower'){var li=curBasis.indexOf(leavingKey);if(li>=0)curBasis.splice(li,1);curBasis.push(entering.key);var ei=curNonBasis.indexOf(entering.key);if(ei>=0)curNonBasis.splice(ei,1);curNonBasis.push(leavingKey)}else{var li=curBasis.indexOf(leavingKey);if(li>=0)curBasis.splice(li,1);if(leavingKey!==entering.key)curBasis.push(entering.key);var ei=curNonBasis.indexOf(entering.key);if(ei>=0)curNonBasis.splice(ei,1);if(leavingKey!==entering.key)curNonBasis.push(leavingKey)}
+var fStr=[];for(var k in curFlows)if(curFlows[k]>0)fStr.push('X_'+k+'='+curFlows[k]);
+iterStates.push({title:'Iterasi '+iter+' — Perbaikan Solusi',desc:'Entering: '+entering.key+', Leaving: '+leavingKey+' ('+leavingBound+' bound)',changes:['Entering variable: '+entering.key+' (ΔZ = '+minDz+')','θ = '+theta,'Leaving variable: '+leavingKey+' ('+leavingBound+' bound'+(leavingBound==='upper'?', Upper Bound Technique diterapkan':'')+')', 'Solusi baru: '+fStr.join(', '),'Z = Rp '+Z(curFlows).toLocaleString('id')],flows:Object.assign({},curFlows),basis:curBasis.slice()});
+}
+sol={flows:curFlows,z:Z(curFlows)};curIter=0;
+document.getElementById('sec5').style.display='block';setupIterCtrl();iterGo(0);buildSolResults();
+toast('Solusi optimal ditemukan!','success');document.getElementById('sec5').scrollIntoView({behavior:'smooth'});
+}
+function computeDeltaZ(enterKey,basis,c){
+var adj={};basis.forEach(function(k){var f=k[0],t=k[1];if(!adj[f])adj[f]=[];if(!adj[t])adj[t]=[];adj[f].push({n:t,key:k,fwd:true});adj[t].push({n:f,key:k,fwd:false})});
+var from=enterKey[0],to=enterKey[1],vis={},par={},q=[to];vis[to]=true;var found=false;
+while(q.length){var cur=q.shift();if(cur===from){found=true;break}(adj[cur]||[]).forEach(function(e){if(!vis[e.n]){vis[e.n]=true;par[e.n]={from:cur,key:e.key,fwd:e.fwd};q.push(e.n)}})}
+if(!found)return null;var cycle=[{key:enterKey,dir:'+'}],cur2=from;
+while(cur2!==to){var p=par[cur2];cycle.push({key:p.key,dir:p.fwd?'-':'+'});cur2=p.from}
+var val=0;cycle.forEach(function(ce){var cost=c[ce.key]||0;if(ce.dir==='+')val+=cost;else val-=cost});return{val:val,cycle:cycle};
+}
+function buildSolResults(){
+if(!sol)return;
+document.getElementById('solBanner').innerHTML='<div class="wb"><h3>'+ico('trophy','lg')+' Solusi Optimal</h3><p>Total Biaya Minimum: <strong>Rp '+sol.z.toLocaleString('id')+',00</strong> per hari | Rp '+(sol.z*44).toLocaleString('id')+',00 untuk 2 bulan (44 hari kerja)</p></div>';
+document.getElementById('solStats').innerHTML='<div class="stat-card hi"><div class="sv">Rp '+sol.z.toLocaleString('id')+'</div><div class="sl">Total Biaya/hari</div></div><div class="stat-card"><div class="sv">200</div><div class="sl">Total Porsi</div></div><div class="stat-card"><div class="sv">'+iterStates.length+'</div><div class="sl">Iterasi</div></div>';
+var h='<table class="rt"><tr><th>Jalur</th><th>Dari</th><th>Ke</th><th>Aliran</th><th>Biaya/porsi</th><th>Total Biaya</th></tr>';
+ARCS.forEach(function(a){var f=sol.flows[a.id]||0;h+='<tr><td>'+a.from+'→'+a.to+'</td><td>'+locName(a.from)+'</td><td>'+locName(a.to)+'</td><td style="font-weight:700;color:'+(f>0?'var(--green)':'var(--text3)')+'">'+f+' porsi</td><td>Rp '+costs[a.id].toLocaleString('id')+'</td><td>Rp '+(f*costs[a.id]).toLocaleString('id')+'</td></tr>'});
+h+='<tr style="font-weight:700;background:var(--accent-bg)"><td colspan="3">TOTAL</td><td></td><td></td><td>Rp '+sol.z.toLocaleString('id')+'</td></tr></table>';
+document.getElementById('solTable').innerHTML=h;
+}
 function setupIterCtrl(){document.getElementById('iterCtrl').style.display='flex';document.getElementById('playBtn').parentElement.style.display='flex'}
 function iterGo(i){if(i<0)i=0;if(i>=iterStates.length)i=iterStates.length-1;curIter=i;updateIterUI();showIterInfo();if(pos.length)drawGraph()}
 function updateIterUI(){document.getElementById('iterBadge').textContent=(curIter+1)+'/'+iterStates.length;document.getElementById('iterFirst').disabled=!curIter;document.getElementById('iterPrev').disabled=!curIter;document.getElementById('iterNext').disabled=curIter>=iterStates.length-1;document.getElementById('iterLast').disabled=curIter>=iterStates.length-1}
-function showIterInfo(){var st=iterStates[curIter],el=document.getElementById('iterDetail');el.innerHTML='<div style="font-weight:700;margin-bottom:6px">'+st.title+'</div><div style="font-size:11px;color:var(--text3);margin-bottom:8px">'+st.desc+'</div>';if(st.flows){var fh='<div style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:8px">';for(var k in st.flows)fh+='<span class="badge '+(st.flows[k]>0?'badge-g':'badge-b')+'">X<sub>'+k+'</sub>='+st.flows[k]+'</span>';fh+='</div>';el.innerHTML+=fh}var cl=document.getElementById('iterChanges');cl.innerHTML='';st.changes.forEach(function(c){cl.innerHTML+='<li>'+c+'</li>'})}
+function showIterInfo(){var st=iterStates[curIter];var el=document.getElementById('iterDetail');el.innerHTML='<div style="font-weight:700;margin-bottom:6px">'+st.title+'</div><div style="font-size:11px;color:var(--text3);margin-bottom:8px">'+st.desc+'</div>';if(st.flows){var fh='<div style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:8px">';for(var k in st.flows)fh+='<span class="badge '+(st.flows[k]>0?'badge-g':'badge-b')+'">X<sub>'+k+'</sub>='+st.flows[k]+'</span>';fh+='</div>';el.innerHTML+=fh}var cl=document.getElementById('iterChanges');cl.innerHTML='';st.changes.forEach(function(c){cl.innerHTML+='<li>'+c+'</li>'})}
 function togglePlay(){if(playInt){clearInterval(playInt);playInt=null;document.getElementById('playBtn').textContent='Play'}else{document.getElementById('playBtn').textContent='Stop';playInt=setInterval(function(){if(curIter>=iterStates.length-1){clearInterval(playInt);playInt=null;document.getElementById('playBtn').textContent='Play';return}iterGo(curIter+1)},playSpd)}}
+
+/* ===== CANVAS GRAPH ===== */
 function initCanvas(){cvEl=document.getElementById('cv');ctx=cvEl.getContext('2d');cvEl.addEventListener('mousedown',onMD);cvEl.addEventListener('mousemove',onMM);cvEl.addEventListener('mouseup',onMU);cvEl.addEventListener('mouseleave',onMU);cvEl.addEventListener('touchstart',onTD,{passive:false});cvEl.addEventListener('touchmove',onTM,{passive:false});cvEl.addEventListener('touchend',onMU)}
 function cP(e){var r=cvEl.getBoundingClientRect();return{x:(e.clientX-r.left)/sc,y:(e.clientY-r.top)/sc}}
 function onMD(e){var p=cP(e);for(var i=pos.length-1;i>=0;i--){var dx=p.x-pos[i].x,dy=p.y-pos[i].y;if(dx*dx+dy*dy<1200){di=i;dOff={x:dx,y:dy};cvEl.style.cursor='grabbing';return}}}
@@ -306,16 +616,171 @@ function onMM(e){if(di<0)return;var p=cP(e);pos[di]={x:p.x-dOff.x,y:p.y-dOff.y};
 function onMU(){di=-1;cvEl.style.cursor='grab'}
 function onTD(e){e.preventDefault();var t=e.touches[0],r=cvEl.getBoundingClientRect(),p={x:(t.clientX-r.left)/sc,y:(t.clientY-r.top)/sc};for(var i=pos.length-1;i>=0;i--){var dx=p.x-pos[i].x,dy=p.y-pos[i].y;if(dx*dx+dy*dy<1200){di=i;dOff={x:dx,y:dy};return}}}
 function onTM(e){if(di<0)return;e.preventDefault();var t=e.touches[0],r=cvEl.getBoundingClientRect(),p={x:(t.clientX-r.left)/sc,y:(t.clientY-r.top)/sc};pos[di]={x:p.x-dOff.x,y:p.y-dOff.y};drawGraph()}
-function zoomIn(){sc=Math.min(sc*1.2,3);drawGraph()}function zoomOut(){sc=Math.max(sc/1.2,.3);drawGraph()}function zoomReset(){sc=1;drawGraph()}
-function setLayout(t,b){cLo=t;document.querySelectorAll('.layout-btns button').forEach(function(x){x.classList.remove('on')});if(b)b.classList.add('on');applyLayout();drawGraph()}
-function applyLayout(){var W=800,H=580;if(cLo==='mcf')pos=[{x:110,y:110},{x:110,y:470},{x:400,y:290},{x:690,y:110},{x:690,y:470}];else if(cLo==='lr')pos=[{x:80,y:150},{x:80,y:430},{x:320,y:290},{x:560,y:150},{x:720,y:430}];else if(cLo==='circle'){var cx=W/2,cy=H/2,r=Math.min(W,H)*.34;for(var i=0;i<5;i++){var a=2*Math.PI*i/5-Math.PI/2;pos[i]={x:cx+r*Math.cos(a),y:cy+r*Math.sin(a)}}}else if(cLo==='diamond')pos=[{x:400,y:60},{x:140,y:240},{x:660,y:240},{x:220,y:480},{x:580,y:480}];else{for(var i=0;i<5;i++)pos[i]={x:100+Math.random()*600,y:100+Math.random()*380}}}
+function zoomIn(){sc=Math.min(sc*1.2,3);drawGraph()}
+function zoomOut(){sc=Math.max(sc/1.2,.3);drawGraph()}
+function zoomReset(){sc=1;drawGraph()}
+function setLayout(t,btn){cLo=t;document.querySelectorAll('.layout-btns button').forEach(function(b){b.classList.remove('on')});if(btn)btn.classList.add('on');applyLayout();drawGraph()}
+function applyLayout(){
+var W=800,H=580,p=100;
+if(cLo==='mcf')pos=[{x:110,y:110},{x:110,y:470},{x:400,y:290},{x:690,y:110},{x:690,y:470}];
+else if(cLo==='lr')pos=[{x:80,y:150},{x:80,y:430},{x:320,y:290},{x:560,y:150},{x:720,y:430}];
+else if(cLo==='circle'){var cx=W/2,cy=H/2,r=Math.min(W,H)*.34;for(var i=0;i<5;i++){var a=2*Math.PI*i/5-Math.PI/2;pos[i]={x:cx+r*Math.cos(a),y:cy+r*Math.sin(a)}}}
+else if(cLo==='diamond')pos=[{x:400,y:60},{x:140,y:240},{x:660,y:240},{x:220,y:480},{x:580,y:480}];
+else{for(var i=0;i<5;i++)pos[i]={x:p+Math.random()*(W-2*p),y:p+Math.random()*(H-2*p)}}
+}
 function updateLegend(){document.getElementById('gLegend').style.display='flex';document.getElementById('gLegend').innerHTML='<span style="font-weight:700;font-size:9px;text-transform:uppercase;letter-spacing:1px">Legend:</span><span class="g-legend-item"><span class="g-legend-dot" style="background:var(--green)"></span> Supply</span><span class="g-legend-item"><span class="g-legend-dot" style="background:var(--amber)"></span> Transit</span><span class="g-legend-item"><span class="g-legend-dot" style="background:var(--red)"></span> Demand</span><span class="g-legend-item">─ Basis</span><span class="g-legend-item">┈ Non-basis</span>'}
-function drawGraph(){if(!cvEl||pos.length<5)return;var dpr=window.devicePixelRatio||1,W=cvEl.parentElement.clientWidth,H=580;cvEl.style.width=W+'px';cvEl.style.height=H+'px';cvEl.width=W*dpr;cvEl.height=H*dpr;ctx.setTransform(dpr*sc,0,0,dpr*sc,0,0);var cs=getComputedStyle(document.documentElement),cBg=cs.getPropertyValue('--canvas-bg').trim(),nF=cs.getPropertyValue('--node-fill').trim(),eC=cs.getPropertyValue('--edge-color').trim(),tC=cs.getPropertyValue('--text').trim(),t2c=cs.getPropertyValue('--text2').trim(),t3c=cs.getPropertyValue('--text3').trim(),gC=cs.getPropertyValue('--green').trim(),rC=cs.getPropertyValue('--red').trim(),aC=cs.getPropertyValue('--amber').trim(),bC=cs.getPropertyValue('--blue').trim();var gt=GRAPH_THEMES[graphTheme]||GRAPH_THEMES.default,thBg=gt.bg||cBg,thNF=gt.nodeFill||nF,thEA=gt.edgeActive||tC,thEI=gt.edgeInactive||eC,thGlow=gt.glow||bC,thLB=gt.labelBg||cBg,supC=gt.supply||gC,traC=gt.transit||aC,demC=gt.demand||rC;ctx.fillStyle=thBg;ctx.fillRect(0,0,W/sc,H/sc);if(graphTheme==='blueprint'){ctx.strokeStyle='rgba(100,180,255,.06)';ctx.lineWidth=.5;for(var gx=0;gx<W/sc;gx+=30){ctx.beginPath();ctx.moveTo(gx,0);ctx.lineTo(gx,H/sc);ctx.stroke()}for(var gy=0;gy<H/sc;gy+=30){ctx.beginPath();ctx.moveTo(0,gy);ctx.lineTo(W/sc,gy);ctx.stroke()}}var nC=[supC,supC,traC,demC,demC],nL=['A','B','C','D','E'],nN=[locA,locB,LOC_C.split(',')[0],locD,locE],bV=[110,90,0,-80,-120],nT=['Supply','Supply','Transit','Demand','Demand'];var cF=iterStates[curIter]?iterStates[curIter].flows:null,cB=iterStates[curIter]?iterStates[curIter].basis:null;var isD=graphView==='detailed',isC=graphView==='compact',NR=isC?22:NODE_R;var aD=[{f:0,t:1,id:'AB'},{f:0,t:2,id:'AC'},{f:0,t:3,id:'AD'},{f:1,t:2,id:'BC'},{f:2,t:4,id:'CE'},{f:3,t:4,id:'DE'},{f:4,t:3,id:'ED'}],lbs=[];aD.forEach(function(ad){var x1=pos[ad.f].x,y1=pos[ad.f].y,x2=pos[ad.t].x,y2=pos[ad.t].y,ib=cB&&cB.indexOf(ad.id)>=0,fl=cF?cF[ad.id]||0:0,co=ib?thEA:thEI,lw=ib?(fl>0?2.8:1.8):.8,da=!ib,cu=0;if(ad.id==='DE')cu=45;if(ad.id==='ED')cu=-45;var dx=x2-x1,dy=y2-y1,ln=Math.sqrt(dx*dx+dy*dy)||1,ux=dx/ln,uy=dy/ln;if(ib&&fl>0&&gt.nodeGlow){ctx.save();ctx.shadowColor=thGlow;ctx.shadowBlur=14}var lp;if(cu){var mx2=(x1+x2)/2,my2=(y1+y2)/2,nx=-dy/ln,ny=dx/ln,cpx=mx2+nx*cu,cpy=my2+ny*cu;ctx.save();ctx.beginPath();ctx.moveTo(x1,y1);ctx.quadraticCurveTo(cpx,cpy,x2,y2);ctx.strokeStyle=co;ctx.lineWidth=lw;if(da)ctx.setLineDash([5,4]);ctx.stroke();ctx.setLineDash([]);ctx.restore();var tv=1-NR/ln,tx=2*(1-tv)*(cpx-x1)+2*tv*(x2-cpx),ty=2*(1-tv)*(cpy-y1)+2*tv*(y2-cpy),tl=Math.sqrt(tx*tx+ty*ty)||1,ex=x1*(1-tv)*(1-tv)+2*cpx*tv*(1-tv)+x2*tv*tv,ey=y1*(1-tv)*(1-tv)+2*cpy*tv*(1-tv)+y2*tv*tv;drawAH(ctx,ex,ey,tx/tl,ty/tl,ib?10:7,co);lp={x:cpx*.65+mx2*.35,y:cpy*.65+my2*.35}}else{ctx.save();ctx.beginPath();ctx.moveTo(x1+ux*NR,y1+uy*NR);ctx.lineTo(x2-ux*NR,y2-uy*NR);ctx.strokeStyle=co;ctx.lineWidth=lw;if(da)ctx.setLineDash([5,4]);ctx.stroke();ctx.setLineDash([]);ctx.restore();drawAH(ctx,x2-ux*NR,y2-uy*NR,ux,uy,ib?10:7,co);var pD={AB:22,AC:-22,AD:22,BC:22,CE:-22},tP={AB:.45,AC:.35,AD:.4,BC:.55,CE:.4};lp={x:x1+dx*(tP[ad.id]||.5)+(-uy)*(pD[ad.id]||18),y:y1+dy*(tP[ad.id]||.5)+ux*(pD[ad.id]||18)}}if(ib&&fl>0&&gt.nodeGlow)ctx.restore();if(lp&&costs[ad.id]&&!isC){var fp=fixLbl(lp,lbs,55);var tx1,tx2='';if(isD){tx1=ad.id+':c='+costs[ad.id];if(cF&&fl>0)tx1=ad.id+':'+fl+'p';tx2='Rp'+costs[ad.id].toLocaleString('id')}else{tx1='c='+costs[ad.id];if(cF&&fl>0)tx1=fl+'p|c='+costs[ad.id]}ctx.font='600 8px JetBrains Mono';ctx.textAlign='center';ctx.textBaseline='middle';var tw=ctx.measureText(tx1).width,bw=tw+8,bh=tx2?24:15;rR(ctx,fp.x-bw/2,fp.y-bh/2,bw,bh,3);ctx.fillStyle=thLB;ctx.fill();ctx.strokeStyle=ib?co:thEI;ctx.lineWidth=.5;rR(ctx,fp.x-bw/2,fp.y-bh/2,bw,bh,3);ctx.stroke();ctx.fillStyle=ib?thEA:t2c;ctx.fillText(tx1,fp.x,fp.y-(tx2?5:0));if(tx2){ctx.font='500 7px JetBrains Mono';ctx.fillStyle=t3c;ctx.fillText(tx2,fp.x,fp.y+7)}if(ad.id==='AB'){ctx.font='600 7px JetBrains Mono';ctx.fillStyle=traC;ctx.fillText('U≤20',fp.x,fp.y+bh/2+9)}lbs.push({x:fp.x,y:fp.y})}else if(isC&&costs[ad.id]){var mp=cu?lp:{x:(x1+x2)/2+(-uy)*12,y:(y1+y2)/2+ux*12};ctx.font='600 7px JetBrains Mono';ctx.textAlign='center';ctx.textBaseline='middle';ctx.fillStyle=ib?thEA:t3c;ctx.fillText(costs[ad.id]+'',mp.x,mp.y)}});for(var i=0;i<5;i++){if(!pos[i])continue;var nx=pos[i].x,ny=pos[i].y;if(gt.nodeGlow){ctx.save();ctx.shadowColor=nC[i];ctx.shadowBlur=18;ctx.beginPath();ctx.arc(nx,ny,NR,0,Math.PI*2);ctx.fillStyle=thNF;ctx.fill();ctx.restore()}ctx.beginPath();ctx.arc(nx,ny,NR,0,Math.PI*2);ctx.fillStyle=thNF;ctx.fill();ctx.strokeStyle=nC[i];ctx.lineWidth=2.5;ctx.stroke();ctx.beginPath();ctx.arc(nx,ny,NR*.7,0,Math.PI*2);ctx.strokeStyle=nC[i];ctx.lineWidth=.4;ctx.globalAlpha=.2;ctx.stroke();ctx.globalAlpha=1;ctx.beginPath();ctx.arc(nx+NR*.6,ny-NR*.6,3,0,Math.PI*2);ctx.fillStyle=nC[i];ctx.fill();ctx.font='700 '+(isC?13:16)+'px JetBrains Mono';ctx.textAlign='center';ctx.textBaseline='middle';ctx.fillStyle=gt.bg?'#fff':tC;ctx.fillText(nL[i],nx,ny);var vs=(bV[i]>0?'+':'')+bV[i];ctx.font='600 '+(isC?8:9)+'px JetBrains Mono';var vw=ctx.measureText(vs).width;rR(ctx,nx-vw/2-5,ny-NR-20,vw+10,15,4);ctx.fillStyle=nC[i];ctx.globalAlpha=.15;ctx.fill();ctx.globalAlpha=1;rR(ctx,nx-vw/2-5,ny-NR-20,vw+10,15,4);ctx.strokeStyle=nC[i];ctx.lineWidth=.6;ctx.stroke();ctx.fillStyle=nC[i];ctx.textAlign='center';ctx.fillText(vs,nx,ny-NR-12);if(!isC){var nm=nN[i];if(nm&&nm.length>16)nm=nm.substring(0,14)+'…';if(nm){ctx.font='500 8px DM Sans';var nw=ctx.measureText(nm).width;rR(ctx,nx-nw/2-5,ny+NR+5,nw+10,14,3);ctx.fillStyle=thBg;ctx.fill();ctx.strokeStyle=thEI;ctx.lineWidth=.3;rR(ctx,nx-nw/2-5,ny+NR+5,nw+10,14,3);ctx.stroke();ctx.fillStyle=t2c;ctx.textAlign='center';ctx.fillText(nm,nx,ny+NR+12)}if(isD){ctx.font='600 7px JetBrains Mono';var tl=nT[i],tw=ctx.measureText(tl).width;rR(ctx,nx-tw/2-4,ny+NR+21,tw+8,12,3);ctx.fillStyle=nC[i];ctx.globalAlpha=.1;ctx.fill();ctx.globalAlpha=1;ctx.fillStyle=nC[i];ctx.fillText(tl,nx,ny+NR+27)}}}}
-function fixLbl(p,e,d){var a={x:p.x,y:p.y};for(var i=0;i<12;i++){var ok=true;for(var j=0;j<e.length;j++){var dx=a.x-e[j].x,dy=a.y-e[j].y;if(Math.sqrt(dx*dx+dy*dy)<d){ok=false;break}}for(var j=0;j<pos.length;j++){var dx=a.x-pos[j].x,dy=a.y-pos[j].y;if(Math.sqrt(dx*dx+dy*dy)<NODE_R+20){ok=false;break}}if(ok)break;var an=Math.PI*2*i/12;a={x:p.x+Math.cos(an)*22,y:p.y+Math.sin(an)*18}}return a}
-function rR(c,x,y,w,h,r){c.beginPath();c.moveTo(x+r,y);c.lineTo(x+w-r,y);c.quadraticCurveTo(x+w,y,x+w,y+r);c.lineTo(x+w,y+h-r);c.quadraticCurveTo(x+w,y+h,x+w-r,y+h);c.lineTo(x+r,y+h);c.quadraticCurveTo(x,y+h,x,y+h-r);c.lineTo(x,y+r);c.quadraticCurveTo(x,y,x+r,y);c.closePath()}
-function drawAH(c,tx,ty,ux,uy,sz,co){var bx=tx-ux*sz,by=ty-uy*sz,px=-uy,py=ux;c.beginPath();c.moveTo(tx,ty);c.lineTo(bx+px*sz*.4,by+py*sz*.4);c.lineTo(bx-px*sz*.4,by-py*sz*.4);c.closePath();c.fillStyle=co;c.fill()}
-function resetAll(){sol=null;curIter=0;iterStates=[];if(playInt)clearInterval(playInt);playInt=null;['inpNIM','inpNama','inpKelas'].forEach(function(id){document.getElementById(id).value=''});['nimResult','sec2','sec3','sec4','sec5'].forEach(function(id){document.getElementById(id).style.display='none'});costs={};dists={};toast('Reset','info')}
-function exportPDF(){toast('Print → Save as PDF','info');window.print()}
+
+function drawGraph(){
+if(!cvEl||pos.length<5)return;
+var dpr=window.devicePixelRatio||1,W=cvEl.parentElement.clientWidth,H=580;
+cvEl.style.width=W+'px';cvEl.style.height=H+'px';cvEl.width=W*dpr;cvEl.height=H*dpr;
+ctx.setTransform(dpr*sc,0,0,dpr*sc,0,0);
+var cs=getComputedStyle(document.documentElement);
+var cBg=cs.getPropertyValue('--canvas-bg').trim(),nF=cs.getPropertyValue('--node-fill').trim();
+var eC=cs.getPropertyValue('--edge-color').trim(),tC=cs.getPropertyValue('--text').trim();
+var t2c=cs.getPropertyValue('--text2').trim(),t3c=cs.getPropertyValue('--text3').trim();
+var gC=cs.getPropertyValue('--green').trim(),rC=cs.getPropertyValue('--red').trim();
+var aC=cs.getPropertyValue('--amber').trim(),bC=cs.getPropertyValue('--blue').trim();
+var gt=GRAPH_THEMES[graphTheme]||GRAPH_THEMES.default;
+var thBg=gt.bg||cBg,thNF=gt.nodeFill||nF;
+var thEA=gt.edgeActive||tC,thEI=gt.edgeInactive||eC,thGlow=gt.glow||bC,thLB=gt.labelBg||cBg;
+var supC=gt.supply||gC,traC=gt.transit||aC,demC=gt.demand||rC;
+ctx.fillStyle=thBg;ctx.fillRect(0,0,W/sc,H/sc);
+// Grid for blueprint
+if(graphTheme==='blueprint'){ctx.strokeStyle='rgba(100,180,255,.06)';ctx.lineWidth=.5;for(var gx=0;gx<W/sc;gx+=30){ctx.beginPath();ctx.moveTo(gx,0);ctx.lineTo(gx,H/sc);ctx.stroke()}for(var gy=0;gy<H/sc;gy+=30){ctx.beginPath();ctx.moveTo(0,gy);ctx.lineTo(W/sc,gy);ctx.stroke()}}
+var nodeC=[supC,supC,traC,demC,demC];
+var nodeL=['A','B','C','D','E'];
+var nodeN=[locA,locB,LOC_C.split(',')[0],locD,locE];
+var bVals=[110,90,0,-80,-120];
+var nodeTypes=['Supply','Supply','Transit','Demand','Demand'];
+var curFlows=iterStates[curIter]?iterStates[curIter].flows:null;
+var curBasis=iterStates[curIter]?iterStates[curIter].basis:null;
+var isDetailed=graphView==='detailed',isCompact=graphView==='compact';
+var NR=isCompact?22:NODE_R;
+var arcDraw=[{f:0,t:1,id:'AB'},{f:0,t:2,id:'AC'},{f:0,t:3,id:'AD'},{f:1,t:2,id:'BC'},{f:2,t:4,id:'CE'},{f:3,t:4,id:'DE'},{f:4,t:3,id:'ED'}];
+// Precompute edge midpoints and offsets
+var labels=[];
+arcDraw.forEach(function(ad,ai){
+var x1=pos[ad.f].x,y1=pos[ad.f].y,x2=pos[ad.t].x,y2=pos[ad.t].y;
+var isBas=curBasis&&curBasis.indexOf(ad.id)>=0;
+var flow=curFlows?curFlows[ad.id]||0:0;
+var col=isBas?thEA:thEI;
+var lw=isBas?(flow>0?2.8:1.8):.8;
+var dashed=!isBas;
+var isDEED=(ad.id==='DE'||ad.id==='ED');
+var curve=0;if(ad.id==='DE')curve=45;if(ad.id==='ED')curve=-45;
+var dx=x2-x1,dy=y2-y1,len=Math.sqrt(dx*dx+dy*dy)||1,ux=dx/len,uy=dy/len;
+// Glow for active basis
+if(isBas&&flow>0&&gt.nodeGlow){ctx.save();ctx.shadowColor=thGlow;ctx.shadowBlur=14}
+var labelPt;
+if(curve){
+var mx=(x1+x2)/2,my=(y1+y2)/2,nx=-dy/len,ny=dx/len;
+var cpx=mx+nx*curve,cpy=my+ny*curve;
+ctx.save();ctx.beginPath();ctx.moveTo(x1,y1);ctx.quadraticCurveTo(cpx,cpy,x2,y2);ctx.strokeStyle=col;ctx.lineWidth=lw;if(dashed)ctx.setLineDash([5,4]);ctx.stroke();ctx.setLineDash([]);ctx.restore();
+var t2v=1-NR/len;
+var tanX=2*(1-t2v)*(cpx-x1)+2*t2v*(x2-cpx),tanY=2*(1-t2v)*(cpy-y1)+2*t2v*(y2-cpy);
+var tl=Math.sqrt(tanX*tanX+tanY*tanY)||1;
+var ex=x1*(1-t2v)*(1-t2v)+2*cpx*t2v*(1-t2v)+x2*t2v*t2v;
+var ey=y1*(1-t2v)*(1-t2v)+2*cpy*t2v*(1-t2v)+y2*t2v*t2v;
+drawAH(ctx,ex,ey,tanX/tl,tanY/tl,isBas?10:7,col);
+labelPt={x:cpx*.65+mx*.35,y:cpy*.65+my*.35};
+}else{
+var sx=x1+ux*NR,sy=y1+uy*NR,ex2=x2-ux*NR,ey2=y2-uy*NR;
+ctx.save();ctx.beginPath();ctx.moveTo(sx,sy);ctx.lineTo(ex2,ey2);ctx.strokeStyle=col;ctx.lineWidth=lw;if(dashed)ctx.setLineDash([5,4]);ctx.stroke();ctx.setLineDash([]);ctx.restore();
+drawAH(ctx,x2-ux*NR,y2-uy*NR,ux,uy,isBas?10:7,col);
+// Carefully place labels to avoid nodes and other labels
+var perpD={AB:22,AC:-22,AD:22,BC:22,CE:-22,DE:0,ED:0};
+var tPos={AB:.45,AC:.35,AD:.4,BC:.55,CE:.4,DE:.5,ED:.5};
+var pd=perpD[ad.id]||18;
+var tp=tPos[ad.id]||.5;
+labelPt={x:x1+dx*tp+(-uy)*pd,y:y1+dy*tp+ux*pd};
+}
+if(isBas&&flow>0&&gt.nodeGlow)ctx.restore();
+// Label drawing
+if(labelPt&&costs[ad.id]&&!isCompact){
+var fPt=fixLabel(labelPt,labels,55);
+var txt,txt2='';
+if(isDetailed){
+txt=ad.id+': c='+costs[ad.id];
+if(curFlows&&flow>0)txt=ad.id+': '+flow+'p';
+txt2='Rp '+costs[ad.id].toLocaleString('id');
+}else{
+txt='c='+costs[ad.id];
+if(curFlows&&flow>0)txt=flow+'p | c='+costs[ad.id];
+}
+ctx.font='600 '+(isDetailed?'8':'8')+'px JetBrains Mono,monospace';ctx.textAlign='center';ctx.textBaseline='middle';
+var tw=ctx.measureText(txt).width;
+var bw=tw+8,bh=txt2?24:15;
+rRect(ctx,fPt.x-bw/2,fPt.y-bh/2,bw,bh,3);ctx.fillStyle=thLB;ctx.fill();
+ctx.strokeStyle=isBas?col:thEI;ctx.lineWidth=.5;
+rRect(ctx,fPt.x-bw/2,fPt.y-bh/2,bw,bh,3);ctx.stroke();
+ctx.fillStyle=isBas?thEA:t2c;ctx.fillText(txt,fPt.x,fPt.y-(txt2?5:0));
+if(txt2){ctx.font='500 7px JetBrains Mono';ctx.fillStyle=t3c;ctx.fillText(txt2,fPt.x,fPt.y+7)}
+if(ad.id==='AB'){ctx.font='600 7px JetBrains Mono';ctx.fillStyle=traC;ctx.fillText('U≤20',fPt.x,fPt.y+bh/2+9)}
+labels.push({x:fPt.x,y:fPt.y,w:bw,h:bh});
+}else if(isCompact&&costs[ad.id]){
+var mp={x:(x1+x2)/2+(-uy)*(curve?0:12),y:(y1+y2)/2+ux*(curve?0:12)};
+if(curve){mp=labelPt}
+ctx.font='600 7px JetBrains Mono';ctx.textAlign='center';ctx.textBaseline='middle';
+ctx.fillStyle=isBas?thEA:t3c;ctx.fillText(costs[ad.id]+'',mp.x,mp.y);
+}
+});
+// Draw nodes
+for(var i=0;i<5;i++){if(!pos[i])continue;
+var x=pos[i].x,y=pos[i].y;
+if(gt.nodeGlow){
+ctx.save();ctx.shadowColor=nodeC[i];ctx.shadowBlur=18;ctx.beginPath();ctx.arc(x,y,NR,0,Math.PI*2);ctx.fillStyle=thNF;ctx.fill();ctx.restore();
+}
+ctx.beginPath();ctx.arc(x,y,NR,0,Math.PI*2);ctx.fillStyle=thNF;ctx.fill();ctx.strokeStyle=nodeC[i];ctx.lineWidth=2.5;ctx.stroke();
+// Inner accent
+ctx.beginPath();ctx.arc(x,y,NR*.7,0,Math.PI*2);ctx.strokeStyle=nodeC[i];ctx.lineWidth=.4;ctx.globalAlpha=.2;ctx.stroke();ctx.globalAlpha=1;
+// Type indicator (small colored dot)
+ctx.beginPath();ctx.arc(x+NR*.6,y-NR*.6,3,0,Math.PI*2);ctx.fillStyle=nodeC[i];ctx.fill();
+// Letter
+ctx.font='700 '+(isCompact?13:16)+'px JetBrains Mono,monospace';ctx.textAlign='center';ctx.textBaseline='middle';ctx.fillStyle=gt.bg?'#fff':tC;ctx.fillText(nodeL[i],x,y);
+// Value badge above
+var vStr=(bVals[i]>0?'+':'')+bVals[i];
+ctx.font='600 '+(isCompact?8:9)+'px JetBrains Mono';
+var vW=ctx.measureText(vStr).width;
+rRect(ctx,x-vW/2-5,y-NR-20,vW+10,15,4);ctx.fillStyle=nodeC[i];ctx.globalAlpha=.15;ctx.fill();ctx.globalAlpha=1;
+rRect(ctx,x-vW/2-5,y-NR-20,vW+10,15,4);ctx.strokeStyle=nodeC[i];ctx.lineWidth=.6;ctx.stroke();
+ctx.fillStyle=nodeC[i];ctx.textAlign='center';ctx.fillText(vStr,x,y-NR-12);
+// Name below
+if(!isCompact){
+var nm=nodeN[i];if(nm&&nm.length>16)nm=nm.substring(0,14)+'…';
+if(nm){
+ctx.font='500 8px DM Sans,sans-serif';var nmW=ctx.measureText(nm).width;
+rRect(ctx,x-nmW/2-5,y+NR+5,nmW+10,14,3);ctx.fillStyle=thBg;ctx.fill();
+ctx.strokeStyle=thEI;ctx.lineWidth=.3;rRect(ctx,x-nmW/2-5,y+NR+5,nmW+10,14,3);ctx.stroke();
+ctx.fillStyle=t2c;ctx.textAlign='center';ctx.fillText(nm,x,y+NR+12);
+}
+// Type label (in detailed view)
+if(isDetailed){
+ctx.font='600 7px JetBrains Mono';
+var tl=nodeTypes[i];var tlW=ctx.measureText(tl).width;
+rRect(ctx,x-tlW/2-4,y+NR+21,tlW+8,12,3);ctx.fillStyle=nodeC[i];ctx.globalAlpha=.1;ctx.fill();ctx.globalAlpha=1;
+ctx.fillStyle=nodeC[i];ctx.fillText(tl,x,y+NR+27);
+}
+}
+}
+ctx.font='500 9px JetBrains Mono';ctx.fillStyle=gt.bg?'rgba(255,255,255,.04)':'rgba(0,0,0,.04)';ctx.textAlign='right';ctx.fillText('RADSTRIX',W/sc-10,H/sc-8);
+}
+function fixLabel(pt,ex,md){
+var adj={x:pt.x,y:pt.y};
+for(var a=0;a<12;a++){
+var ok=true;
+for(var i=0;i<ex.length;i++){var e=ex[i],dx=adj.x-e.x,dy=adj.y-e.y;if(Math.sqrt(dx*dx+dy*dy)<md){ok=false;break}}
+// Also check nodes
+for(var i=0;i<pos.length;i++){var dx=adj.x-pos[i].x,dy=adj.y-pos[i].y;if(Math.sqrt(dx*dx+dy*dy)<NODE_R+20){ok=false;break}}
+if(ok)break;
+var angle=Math.PI*2*a/12;adj={x:pt.x+Math.cos(angle)*22,y:pt.y+Math.sin(angle)*18};
+}
+return adj;
+}
+function rRect(c,x,y,w,h,r){c.beginPath();c.moveTo(x+r,y);c.lineTo(x+w-r,y);c.quadraticCurveTo(x+w,y,x+w,y+r);c.lineTo(x+w,y+h-r);c.quadraticCurveTo(x+w,y+h,x+w-r,y+h);c.lineTo(x+r,y+h);c.quadraticCurveTo(x,y+h,x,y+h-r);c.lineTo(x,y+r);c.quadraticCurveTo(x,y,x+r,y);c.closePath()}
+function drawAH(c,tx,ty,ux,uy,sz,col){var bx=tx-ux*sz,by=ty-uy*sz,px=-uy,py=ux;c.beginPath();c.moveTo(tx,ty);c.lineTo(bx+px*sz*.4,by+py*sz*.4);c.lineTo(bx-px*sz*.4,by-py*sz*.4);c.closePath();c.fillStyle=col;c.fill()}
+function resetAll(){sol=null;curIter=0;iterStates=[];if(playInt)clearInterval(playInt);playInt=null;['inpNIM','inpNama','inpKelas'].forEach(function(id){document.getElementById(id).value=''});['nimResult','sec2','sec3','sec4','sec5'].forEach(function(id){document.getElementById(id).style.display='none'});costs={};dists={};toast('Reset selesai','info')}
+function exportPDF(){toast('Gunakan Print → Save as PDF','info');window.print()}
 document.addEventListener('keydown',function(e){if(e.target.tagName==='INPUT'||e.target.tagName==='SELECT'||e.target.tagName==='TEXTAREA')return;if(e.key==='ArrowRight')iterGo(curIter+1);else if(e.key==='ArrowLeft')iterGo(curIter-1);else if(e.key==='Home')iterGo(0);else if(e.key==='End')iterGo(iterStates.length-1);else if(e.key===' '){e.preventDefault();togglePlay()}else if(e.key==='d'||e.key==='D')toggleDark()});
 </script>
 </body>
