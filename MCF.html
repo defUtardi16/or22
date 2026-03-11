@@ -189,11 +189,11 @@ textarea{font-size:11px;resize:vertical;min-height:40px}
 </div>
 <div class="section" id="sec2" style="display:none">
 <div class="s-title">Data Jarak & Biaya Pengiriman (CLO 2a)</div>
-<div style="font-size:12px;color:var(--text2);margin-bottom:6px">Masukkan <strong>jarak tempuh (km)</strong> dari Google Maps untuk setiap jalur. Biaya otomatis dihitung: <strong>Rp 100 × jarak (km)</strong>.</div>
+<div style="font-size:12px;color:var(--text2);margin-bottom:6px">Masukkan <strong>jarak tempuh (km)</strong> dari Google Maps untuk setiap jalur. Biaya otomatis dihitung: <strong>Rp 100 x jarak (km)</strong>.</div>
 <div style="font-size:11px;color:var(--text3);margin-bottom:14px">Gunakan Google Maps: pilih moda mobil, atur "depart at" sekitar waktu makan siang pada hari kerja.</div>
 <div class="cost-grid" id="costGrid"></div>
 <div class="cbox" style="margin-top:14px">
-<strong>Constraint Kapasitas:</strong> Jumlah porsi dari Dapur A ke Dapur B (U<sub>AB</sub>) ≤ 20 porsi. Jalur lainnya tidak dibatasi (∞).
+<strong>Constraint Kapasitas:</strong> Jumlah porsi dari Dapur A ke Dapur B (U<sub>AB</sub>) <= 20 porsi. Jalur lainnya tidak dibatasi.
 </div>
 <div style="margin-top:16px;display:flex;gap:8px;flex-wrap:wrap">
 <button class="btn btn-p" onclick="generateAll()">Generate Formulasi & Model Jaringan</button>
@@ -221,11 +221,11 @@ textarea{font-size:11px;resize:vertical;min-height:40px}
 <div class="tp on" id="tp-clo2cost"><div id="clo2costContent"></div></div>
 <div class="tp" id="tp-clo2matrix"><div id="clo2matrixContent"></div></div>
 <div class="tp" id="tp-clo2net">
-<div class="layout-btns"><button class="on" onclick="setLayout('mcf',this)">MCF Layout</button><button onclick="setLayout('lr',this)">Left→Right</button><button onclick="setLayout('circle',this)">Circle</button><button onclick="setLayout('diamond',this)">Diamond</button><button onclick="setLayout('force',this)">Force</button></div>
+<div class="layout-btns"><button class="on" onclick="setLayout('mcf',this)">MCF Layout</button><button onclick="setLayout('lr',this)">Left->Right</button><button onclick="setLayout('circle',this)">Circle</button><button onclick="setLayout('diamond',this)">Diamond</button><button onclick="setLayout('force',this)">Force</button></div>
 <div class="theme-btns" id="themeBtns"><span class="theme-label">Theme:</span><button class="on" onclick="setGraphTheme('default',this)">Default</button><button onclick="setGraphTheme('neon',this)">Neon</button><button onclick="setGraphTheme('blueprint',this)">Blueprint</button><button onclick="setGraphTheme('sunset',this)">Sunset</button><button onclick="setGraphTheme('forest',this)">Forest</button><button onclick="setGraphTheme('cyber',this)">Cyber</button><button onclick="setGraphTheme('mono',this)">Mono</button><button onclick="setGraphTheme('ocean',this)">Ocean</button></div>
 <div class="view-btns" id="viewBtns"><span class="theme-label">View:</span><button class="on" onclick="setGraphView('standard',this)">Standard</button><button onclick="setGraphView('detailed',this)">Detailed</button><button onclick="setGraphView('compact',this)">Compact</button></div>
 <div id="gLegend" class="g-legend"></div>
-<div class="cv-wrap"><canvas id="cv" width="800" height="580"></canvas><div class="zoom-ctrl"><button onclick="zoomIn()">+</button><button onclick="zoomOut()">−</button><button onclick="zoomReset()">R</button></div></div>
+<div class="cv-wrap"><canvas id="cv" width="800" height="580"></canvas><div class="zoom-ctrl"><button onclick="zoomIn()">+</button><button onclick="zoomOut()">-</button><button onclick="zoomReset()">R</button></div></div>
 </div>
 <div class="tp" id="tp-clo2math"><div id="clo2mathContent"></div></div>
 </div>
@@ -265,11 +265,13 @@ home:'<svg viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 
 box:'<svg viewBox="0 0 24 24"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/><polyline points="3.27 6.96 12 12.01 20.73 6.96"/><line x1="12" y1="22.08" x2="12" y2="12"/></svg>'
 };
 function ico(n,s){return'<span class="ico'+(s==='sm'?' ico-sm':s==='lg'?' ico-lg':'')+'">'+ICO[n]+'</span>'}
+
+/* ===== ALAMAT BARU SESUAI TABEL PDF ===== */
 var LOC={
-A:['Perumahan Permata Buah Batu','Harmony Park Ciwastra','Buana Ciwastra Residence','Pesona Bali Residence','Perumahan Cherry Field','Mustika Hegar Regency','Cluster Batu Karang','Kinagara Regency 2','Perumahan Aster Village',"D'Amerta Residence"],
-B:['Jl. Gading Utama Barat','Jl. Sanggar Kencana Utama','Jl. Mars Utara','Jl. Aria Timur','Jl. Merkuri Utara','Jl. Kawaluyaan Raya','Jl. Aria Barat','Jl. Rancabolang','Jl. Venus Raya','Jl. Aria Utama'],
-D:['Wisma HSBC','Grha Indosurya','Wisma Bumiputera','Wisma CIMB Niaga','Kantor Pikiran Rakyat','PT PLN (Persero) – Kantor Distribusi Jawa Barat (Disjabar)','Dinas Perindustrian dan Perdagangan Provinsi Jawa Barat','Gedung Keuangan Negara','Menara BRI','Wisma Monex'],
-E:['PT Krom Bank Indonesia Tbk Bandung','Asuransi Astra (Garda Oto) - Cabang Bandung','Bank Danamon - KC Bandung Juanda','Kantor Regional 2 Jawa Barat OJK','Bank MNC International','Bank QNB Indonesia Bandung Dago','BCA Finance','Bukalapak Research & Development Office','Bank CIMB Niaga - Dago','Commonwealth Bank']
+A:['Perumahan Permata Buah Batu','Harmony Park Ciwastra','Buana Ciwastra Residence','Pesona Bali Residence','Cherry Field Residence','Komplek Mustika Hegar Regency','Cluster Batu Karang (CBK)','Kinagara Regency 2','Aster Village Ciwastray',"D'Amerta Residence"],
+B:['Jl. Sanggar Kencana Utama','Jl. Gading Utama Barat','Jl. Merkuri Utara','Jl. Venus Raya','Jl. Mars Utara','Jl. Rancabolang','Jl. Aria Utama','Jl. Kawaluyaan Raya','Jl. Aria Timur','Jl. Aria Barat'],
+D:['Kantor Pikiran Rakyat','Menara BRI Bandung','PT PLN (Persero) UID Jawa Barat','Panin Bank','Wisma Monex','Wisma Bumiputera Bandung','Gedung Keuangan Negara','HSBC Asia Afrika','Gedung GRAHA SELARAS','Dinas Perindustrian dan Perdagangan Provinsi Jawa Barat'],
+E:['Bank OCBC Bandung - Dago','Bank MNC International','Bank Cimb Niaga - Dago','PT Krom Bank Indonesia Tbk Bandung','Asuransi Astra (Garda Oto) - Cabang Bandung','Golden Money Changer (GMC)','Bank QNB Indonesia Bandung Dago','BCA Finance Bandung','Bank Danamon - KC Bandung Juanda','Kantor Regional 2 Jawa Barat OJK']
 };
 var LOC_C='Gedung Satrio Seskoad, Bandung';
 var isDark=false,sc=1,di=-1,dOff={x:0,y:0},cLo='mcf';
@@ -295,6 +297,159 @@ var NODES=[
 ];
 var costs={},dists={},sol=null;
 var pos=[],NODE_R=28,cvEl,ctx;
+
+/* ===== PARAPHRASE ENGINE ===== */
+var paraphraseCounter=0;
+var PARAPHRASE_POOL={
+tujuan:[
+'Tujuan dari permasalahan ini adalah meminimumkan keseluruhan biaya pengiriman porsi makan siang yang dikirim dari dapur menuju kantor.',
+'Permasalahan ini bertujuan untuk mencari total biaya pengiriman paling rendah dalam mendistribusikan porsi makan siang dari lokasi dapur ke lokasi kantor.',
+'Secara keseluruhan, yang ingin dicapai adalah minimisasi biaya total untuk mengirimkan seluruh porsi makan siang dari dapur-dapur ke kantor-kantor tujuan.',
+'Fokus utama permasalahan ini terletak pada upaya meminimalkan total biaya yang dikeluarkan dalam proses pengiriman porsi makan siang dari dapur ke kantor.',
+'Minimisasi total ongkos pengiriman porsi makan siang dari setiap dapur ke setiap kantor merupakan tujuan yang hendak dicapai dalam permasalahan ini.',
+'Yang menjadi sasaran dalam persoalan ini adalah ditemukannya biaya pengiriman total yang paling minimum untuk seluruh porsi makan siang dari dapur ke kantor.',
+'Persoalan ini diformulasikan dengan tujuan agar biaya total pengiriman porsi makan siang dari dapur-dapur sumber ke kantor-kantor tujuan dapat diminimumkan.',
+'Dalam konteks permasalahan ini, tujuannya adalah mengoptimalkan aliran distribusi sehingga total biaya pengiriman porsi dari dapur ke kantor menjadi seminimal mungkin.'
+],
+biayaCalc:[
+'Biaya pengiriman per porsi dihitung berdasarkan jarak tempuh, yaitu sebesar Rp 100 dikalikan dengan jarak dalam kilometer untuk setiap jalur yang tersedia.',
+'Perhitungan biaya per porsi dilakukan dengan mengalikan Rp 100 terhadap jarak tempuh (km) pada masing-masing jalur pengiriman.',
+'Setiap jalur memiliki biaya pengiriman per porsi yang ditentukan oleh rumus Rp 100 dikali jarak tempuh dalam kilometer.',
+'Besaran biaya pengiriman untuk satu porsi pada setiap jalur diperoleh dari hasil perkalian antara Rp 100 dengan jarak tempuh jalur tersebut dalam satuan kilometer.',
+'Untuk menghitung biaya per porsi pada tiap jalur, digunakan formula sederhana: jarak tempuh (km) dikalikan dengan tarif Rp 100 per kilometer.',
+'Biaya yang dikenakan untuk setiap porsi pada suatu jalur merupakan hasil kali dari jarak tempuh jalur tersebut (km) dengan tarif tetap sebesar Rp 100.',
+'Tarif pengiriman per porsi bergantung pada jarak tempuh masing-masing jalur, dengan perhitungan Rp 100 untuk setiap kilometer jarak.',
+'Pada setiap jalur distribusi, biaya pengiriman satu porsi ditetapkan berdasarkan jarak, yakni Rp 100 per kilometer jarak tempuh.'
+],
+varKeputusan:[
+'Variabel keputusan X_ij merepresentasikan jumlah porsi makan siang yang dialirkan melalui jalur dari node i menuju node j.',
+'Setiap variabel keputusan X_ij menunjukkan banyaknya porsi yang mengalir pada jalur i ke j dalam jaringan distribusi.',
+'Jumlah porsi makan siang yang dikirim melalui setiap jalur i menuju j dinyatakan oleh variabel keputusan X_ij.',
+'Dalam model ini, X_ij digunakan sebagai variabel keputusan yang menyatakan berapa porsi yang dialirkan pada jalur dari i ke j.',
+'Variabel X_ij didefinisikan sebagai banyaknya porsi makan siang yang mengalir pada busur dari node i ke node j.',
+'Banyaknya porsi yang ditransfer melalui busur i ke j dalam jaringan dinotasikan sebagai variabel keputusan X_ij.',
+'X_ij merupakan variabel keputusan yang mencerminkan kuantitas porsi makan siang yang dikirimkan dari titik i ke titik j.',
+'Aliran porsi makan siang pada setiap busur dari i ke j direpresentasikan oleh variabel keputusan yang dinotasikan X_ij.'
+],
+constraintIntro:[
+'Berikut adalah batasan-batasan yang berlaku dalam permasalahan ini:',
+'Permasalahan ini memiliki sejumlah batasan yang harus dipenuhi, antara lain:',
+'Terdapat beberapa constraint yang membatasi solusi dari permasalahan ini, yaitu:',
+'Sejumlah batasan perlu diperhatikan dalam menyelesaikan permasalahan ini, di antaranya:',
+'Batasan-batasan yang harus dipenuhi dalam formulasi masalah ini mencakup hal-hal berikut:',
+'Model ini dibatasi oleh beberapa constraint yang harus selalu terpenuhi, meliputi:',
+'Dalam penyelesaian permasalahan ini, berlaku batasan-batasan sebagai berikut:',
+'Constraint yang membatasi ruang solusi pada permasalahan ini adalah sebagai berikut:'
+],
+supplyA:[
+'Dapur A menyediakan pasokan sebanyak 110 porsi makan siang.',
+'Ketersediaan pasokan pada Dapur A adalah sebesar 110 porsi.',
+'Sebanyak 110 porsi makan siang tersedia untuk dikirim dari Dapur A.',
+'Dari Dapur A, terdapat pasokan 110 porsi yang siap didistribusikan.',
+'Pasokan yang disediakan oleh Dapur A berjumlah 110 porsi makan siang.',
+'Dapur A memiliki kapasitas pasokan sebesar 110 porsi untuk didistribusikan.',
+'Total 110 porsi makan siang merupakan pasokan yang berasal dari Dapur A.',
+'Kapasitas produksi Dapur A memungkinkan penyediaan 110 porsi makan siang.'
+],
+supplyB:[
+'Dapur B menyediakan pasokan sebanyak 90 porsi makan siang.',
+'Ketersediaan pasokan pada Dapur B adalah sebesar 90 porsi.',
+'Sebanyak 90 porsi makan siang tersedia untuk dikirim dari Dapur B.',
+'Dari Dapur B, terdapat pasokan 90 porsi yang siap didistribusikan.',
+'Pasokan yang disediakan oleh Dapur B berjumlah 90 porsi makan siang.',
+'Dapur B memiliki kapasitas pasokan sebesar 90 porsi untuk didistribusikan.',
+'Total 90 porsi makan siang merupakan pasokan yang berasal dari Dapur B.',
+'Kapasitas produksi Dapur B memungkinkan penyediaan 90 porsi makan siang.'
+],
+transitC:[
+'Lokasi Transit C memiliki keseimbangan aliran nol, artinya seluruh porsi yang masuk harus sama dengan yang keluar.',
+'Pada node transit C, jumlah aliran masuk sama dengan aliran keluar (b_C = 0).',
+'Node C berfungsi sebagai titik transit di mana tidak ada penambahan maupun pengurangan porsi.',
+'Sebagai titik transshipment, node C tidak menghasilkan maupun mengonsumsi porsi (b_C = 0).',
+'Seluruh porsi yang tiba di node C akan diteruskan keluar tanpa ada yang tertahan (b_C = 0).',
+'Node C berperan sebagai titik perantara dengan keseimbangan aliran masuk dan keluar yang sama.',
+'Di titik transit C, berlaku prinsip konservasi aliran: total masuk harus sama dengan total keluar.',
+'Aliran yang melewati node C bersifat seimbang, yakni seluruh porsi masuk akan seluruhnya dialirkan keluar.'
+],
+demandD:[
+'Kantor D membutuhkan 80 porsi makan siang.',
+'Permintaan pada Kantor D adalah sebesar 80 porsi.',
+'Sebanyak 80 porsi makan siang dibutuhkan oleh Kantor D.',
+'Kantor D memiliki kebutuhan (demand) sebesar 80 porsi makan siang.',
+'Kebutuhan porsi makan siang di Kantor D berjumlah 80 porsi.',
+'Demand yang harus dipenuhi untuk Kantor D adalah 80 porsi makan siang.',
+'Kantor D mengharuskan penerimaan 80 porsi makan siang setiap harinya.',
+'Total 80 porsi makan siang merupakan permintaan harian dari Kantor D.'
+],
+demandE:[
+'Kantor E membutuhkan 120 porsi makan siang.',
+'Permintaan pada Kantor E adalah sebesar 120 porsi.',
+'Sebanyak 120 porsi makan siang dibutuhkan oleh Kantor E.',
+'Kantor E memiliki kebutuhan (demand) sebesar 120 porsi makan siang.',
+'Kebutuhan porsi makan siang di Kantor E berjumlah 120 porsi.',
+'Demand yang harus dipenuhi untuk Kantor E adalah 120 porsi makan siang.',
+'Kantor E mengharuskan penerimaan 120 porsi makan siang setiap harinya.',
+'Total 120 porsi makan siang merupakan permintaan harian dari Kantor E.'
+],
+capAB:[
+'Kapasitas aliran pada jalur A ke B dibatasi maksimal 20 porsi (U_AB <= 20).',
+'Jalur dari A menuju B memiliki batas kapasitas sebesar 20 porsi.',
+'Pada busur A ke B, jumlah porsi yang dapat dialirkan tidak boleh melebihi 20 porsi.',
+'Batasan kapasitas pada jalur A-B menetapkan bahwa aliran maksimum adalah 20 porsi.',
+'Tidak lebih dari 20 porsi yang diperbolehkan mengalir pada jalur dari A ke B.',
+'Aliran pada busur A menuju B dibatasi oleh kapasitas upper bound sebesar 20 porsi.',
+'Jalur A ke B memiliki pembatasan kapasitas, yakni maksimal 20 porsi yang dapat dikirim.',
+'Upper bound pada busur A-B ditetapkan sebesar 20 porsi sebagai batas aliran maksimum.'
+],
+capOther:[
+'Jalur-jalur lainnya tidak memiliki batasan kapasitas (tidak terbatas).',
+'Selain jalur A ke B, seluruh jalur lain tidak dibatasi kapasitasnya.',
+'Untuk jalur selain A-B, kapasitas aliran bersifat tak terbatas.',
+'Tidak ada pembatasan kapasitas pada jalur-jalur selain A menuju B.',
+'Kapasitas pada jalur lainnya bersifat unbounded atau tanpa batas.',
+'Jalur selain A-B dapat mengalirkan porsi dalam jumlah berapa pun tanpa batasan.',
+'Semua busur kecuali A-B memiliki kapasitas yang tidak dibatasi.',
+'Kecuali busur A ke B, seluruh jalur distribusi lainnya tidak memiliki batasan kapasitas.'
+],
+nonNegatif:[
+'Seluruh variabel keputusan harus bernilai non-negatif: X_ij >= 0.',
+'Batasan non-negatif berlaku untuk semua variabel keputusan (X_ij >= 0).',
+'Tidak ada variabel keputusan yang boleh bernilai negatif dalam model ini.',
+'Setiap variabel X_ij wajib memenuhi syarat non-negatif, yakni bernilai nol atau positif.',
+'Constraint non-negativitas mengharuskan seluruh X_ij bernilai >= 0.',
+'Semua aliran pada setiap busur harus bernilai non-negatif (X_ij >= 0).',
+'Nilai aliran pada setiap jalur tidak diperkenankan bernilai negatif.',
+'Syarat non-negatif diterapkan pada seluruh variabel keputusan dalam formulasi ini.'
+],
+solusiOptimal:[
+'Solusi optimal telah ditemukan dengan total biaya minimum sebesar',
+'Hasil optimasi menunjukkan bahwa biaya pengiriman paling rendah yang dapat dicapai adalah',
+'Total biaya minimum yang berhasil diperoleh dari penyelesaian network simplex adalah',
+'Berdasarkan hasil perhitungan, biaya pengiriman optimal yang ditemukan sebesar',
+'Network simplex menghasilkan solusi optimal dengan total biaya minimum',
+'Diperoleh solusi optimal dari permasalahan minimum cost flow ini dengan total biaya',
+'Proses iterasi network simplex menghasilkan biaya total minimum sebesar',
+'Solusi terbaik yang ditemukan memberikan total biaya pengiriman sebesar'
+],
+solusiDesc:[
+'per hari untuk mendistribusikan seluruh 200 porsi makan siang dari dapur ke kantor.',
+'setiap harinya, mencakup distribusi 200 porsi makan siang dari kedua dapur ke seluruh kantor tujuan.',
+'per hari, yang merupakan biaya distribusi 200 porsi makan siang melalui jalur-jalur optimal.',
+'setiap hari kerja, meliputi pengiriman total 200 porsi dari dapur-dapur ke kantor-kantor.',
+'per hari dalam rangka pengiriman 200 porsi makan siang ke seluruh kantor tujuan.',
+'per hari untuk memenuhi kebutuhan 200 porsi makan siang di seluruh kantor tujuan.',
+'setiap harinya untuk mengalirkan 200 porsi makan siang dari sumber ke tujuan secara optimal.',
+'per hari, yang mencerminkan biaya paling efisien untuk mendistribusikan seluruh 200 porsi.'
+]
+};
+function pickP(key){
+var pool=PARAPHRASE_POOL[key];
+if(!pool||pool.length===0)return'';
+var idx=(paraphraseCounter+Math.floor(Math.random()*pool.length))%pool.length;
+return pool[idx];
+}
+function shuffleParaphrase(){paraphraseCounter++}
+
 /* GRAPH THEMES */
 var GRAPH_THEMES={
 default:{supply:null,transit:null,demand:null,nodeFill:null,edgeActive:null,edgeInactive:null,bg:null,glow:'#1565c0',labelBg:null,nodeGlow:true},
@@ -466,7 +621,7 @@ var g=document.getElementById('costGrid');g.innerHTML='';
 ARCS.forEach(function(arc){
 var fn=locName(arc.from),tn=locName(arc.to);
 var capTxt=arc.cap!==Infinity?' <span class="badge badge-a">max '+arc.cap+'</span>':'';
-g.innerHTML+='<div class="cost-card"><h5>'+ico('route','sm')+' '+arc.from+'→'+arc.to+capTxt+'</h5><div class="cc-info">'+fn+' → '+tn+'</div><div class="fc"><label>Jarak (km)</label><input type="number" id="dist_'+arc.id+'" placeholder="0.00" min="0" step="0.01" oninput="updateCost(\''+arc.id+'\')"></div><div class="cc-result" id="cost_'+arc.id+'">Biaya: —</div></div>';
+g.innerHTML+='<div class="cost-card"><h5>'+ico('route','sm')+' '+arc.from+'->'+arc.to+capTxt+'</h5><div class="cc-info">'+fn+' -> '+tn+'</div><div class="fc"><label>Jarak (km)</label><input type="number" id="dist_'+arc.id+'" placeholder="0.00" min="0" step="0.01" oninput="updateCost(\''+arc.id+'\')"></div><div class="cc-result" id="cost_'+arc.id+'">Biaya: —</div></div>';
 });
 }
 function updateCost(id){
@@ -476,8 +631,9 @@ if(!isNaN(v)&&v>0){var c=Math.round(v*100);dists[id]=v;costs[id]=c;el.textConten
 else{delete dists[id];delete costs[id];el.textContent='Biaya: —';el.style.color='var(--text3)'}
 }
 function generateAll(){
-var missing=[];ARCS.forEach(function(a){if(!costs[a.id])missing.push(a.from+'→'+a.to)});
+var missing=[];ARCS.forEach(function(a){if(!costs[a.id])missing.push(a.from+'->'+a.to)});
 if(missing.length){toast('Lengkapi jarak: '+missing.join(', '),'error');return}
+shuffleParaphrase();
 buildCLO1();buildCLO2();buildMatrixTables();
 pos=[{x:100,y:110},{x:100,y:470},{x:400,y:290},{x:700,y:110},{x:700,y:470}];
 drawGraph();updateLegend();
@@ -486,7 +642,7 @@ document.getElementById('sec4').style.display='block';
 toast('Formulasi CLO 1 & CLO 2 berhasil dibuat!','success');
 document.getElementById('sec3').scrollIntoView({behavior:'smooth'});
 }
-function truncN(n,l){if(!n)return'';return n.length>l?n.substring(0,l-1)+'…':n}
+function truncN(n,l){if(!n)return'';return n.length>l?n.substring(0,l-1)+'...':n}
 function buildMatrixTables(){
 var nIds=['A','B','C','D','E'],nNms=[locA,locB,LOC_C.split(',')[0],locD,locE];
 var aMap={};ARCS.forEach(function(a){aMap[a.from+'_'+a.to]=a.id});
@@ -499,50 +655,50 @@ h+='</tr></thead><tbody>';
 nIds.forEach(function(fr,fi){h+='<tr><td class="row-header">'+fr+' — '+truncN(nNms[fi],14)+'</td>';nIds.forEach(function(to){var k=fr+'_'+to,aid=aMap[k];if(aid&&dists[aid])h+='<td class="has-value">'+dists[aid].toFixed(2)+'</td>';else h+='<td class="empty-cell">—</td>'});h+='</tr>'});
 h+='</tbody></table></div>';
 h+='<h4 style="margin-top:20px">'+ico('coin')+' Tabel 2 — Matriks Harga/Biaya Dari-Ke (Rp/porsi)</h4>';
-h+='<p style="margin-bottom:8px">Biaya pengiriman per porsi = Rp 100 × jarak (km).</p>';
+h+='<p style="margin-bottom:8px">'+pickP('biayaCalc')+'</p>';
 h+='<div style="overflow-x:auto"><table class="matrix-table"><thead><tr><th>Dari \\ Ke</th>';
 nIds.forEach(function(n,i){h+='<th>'+n+'<br><span style="font-size:8px;font-weight:400">'+truncN(nNms[i],12)+'</span></th>'});
 h+='</tr></thead><tbody>';
 nIds.forEach(function(fr,fi){h+='<tr><td class="row-header">'+fr+' — '+truncN(nNms[fi],14)+'</td>';nIds.forEach(function(to){var k=fr+'_'+to,aid=aMap[k];if(aid&&costs[aid])h+='<td class="has-value">Rp '+costs[aid].toLocaleString('id')+'</td>';else h+='<td class="empty-cell">—</td>'});h+='</tr>'});
 h+='</tbody></table></div>';
 h+='<h4 style="margin-top:16px">'+ico('sparkle')+' Detail Perhitungan</h4>';
-h+='<table class="rt"><tr><th>Jalur</th><th>Jarak (km)</th><th>× Rp 100</th><th>= Biaya/porsi</th></tr>';
-ARCS.forEach(function(a){h+='<tr><td>'+a.from+' → '+a.to+'</td><td>'+dists[a.id].toFixed(2)+' km</td><td>× Rp 100</td><td style="font-weight:700;color:var(--green)">Rp '+costs[a.id].toLocaleString('id')+',00</td></tr>'});
+h+='<table class="rt"><tr><th>Jalur</th><th>Jarak (km)</th><th>x Rp 100</th><th>= Biaya/porsi</th></tr>';
+ARCS.forEach(function(a){h+='<tr><td>'+a.from+' -> '+a.to+'</td><td>'+dists[a.id].toFixed(2)+' km</td><td>x Rp 100</td><td style="font-weight:700;color:var(--green)">Rp '+costs[a.id].toLocaleString('id')+',00</td></tr>'});
 h+='</table></div>';
 document.getElementById('clo2matrixContent').innerHTML=h;
 }
 function buildCLO1(){
 var h='<div class="ab">';
-h+='<h4>'+ico('target')+' Tujuan</h4><p>Meminimumkan total biaya pengiriman porsi makan siang dari dapur ke kantor.</p><p>Dengan biaya pengiriman per porsi = Rp 100 × jarak tempuh (km) untuk setiap jalur.</p>';
-h+='<h4>'+ico('truck')+' Variabel Keputusan</h4><p>X<sub>ij</sub> = jumlah porsi makan siang yang dialirkan melalui jalur i → j</p>';
+h+='<h4>'+ico('target')+' Tujuan</h4><p>'+pickP('tujuan')+'</p><p>'+pickP('biayaCalc')+'</p>';
+h+='<h4>'+ico('truck')+' Variabel Keputusan</h4><p>'+pickP('varKeputusan')+'</p>';
 h+='<table class="rt"><tr><th>Variabel</th><th>Jalur</th><th>Keterangan</th></tr>';
-ARCS.forEach(function(a){h+='<tr><td>X<sub>'+a.id+'</sub></td><td>'+a.from+' → '+a.to+'</td><td>'+locName(a.from)+' → '+locName(a.to)+'</td></tr>'});
-h+='</table><h4>'+ico('info')+' Constraint</h4><ul style="margin-left:18px;list-style:disc">';
-h+='<li>Ketersediaan pasokan pada Dapur A sebesar <strong>110 porsi</strong></li>';
-h+='<li>Ketersediaan pasokan pada Dapur B sebesar <strong>90 porsi</strong></li>';
-h+='<li>Ketersediaan pasokan/demand pada Lokasi Transit C sebesar <strong>0 porsi</strong></li>';
-h+='<li>Demand pada Kantor D sebesar <strong>80 porsi</strong></li>';
-h+='<li>Demand pada Kantor E sebesar <strong>120 porsi</strong></li>';
-h+='<li>Kapasitas aliran pada jalur A→B (U<sub>AB</sub>) ≤ <strong>20 porsi</strong></li>';
-h+='<li>Jalur lainnya tidak memiliki batasan kapasitas (∞)</li>';
-h+='<li>Batasan non-negatif: X<sub>ij</sub> ≥ 0</li></ul></div>';
+ARCS.forEach(function(a){h+='<tr><td>X<sub>'+a.id+'</sub></td><td>'+a.from+' -> '+a.to+'</td><td>'+locName(a.from)+' -> '+locName(a.to)+'</td></tr>'});
+h+='</table><h4>'+ico('info')+' Constraint</h4><p>'+pickP('constraintIntro')+'</p><ul style="margin-left:18px;list-style:disc">';
+h+='<li>'+pickP('supplyA')+'</li>';
+h+='<li>'+pickP('supplyB')+'</li>';
+h+='<li>'+pickP('transitC')+'</li>';
+h+='<li>'+pickP('demandD')+'</li>';
+h+='<li>'+pickP('demandE')+'</li>';
+h+='<li>'+pickP('capAB')+'</li>';
+h+='<li>'+pickP('capOther')+'</li>';
+h+='<li>'+pickP('nonNegatif')+'</li></ul></div>';
 document.getElementById('clo1t1Content').innerHTML=h;
 var h2='<div class="ab">';
-h2+='<h4>'+ico('sparkle')+' Variabel Keputusan (X<sub>ij</sub>)</h4><table class="rt"><tr><th>Variabel</th><th>Deskripsi</th></tr>';
-ARCS.forEach(function(a){h2+='<tr><td>X<sub>'+a.id+'</sub></td><td>Jumlah porsi jalur '+a.from+' → '+a.to+' ('+locName(a.from)+' → '+locName(a.to)+')</td></tr>'});
+h2+='<h4>'+ico('sparkle')+' Variabel Keputusan (X<sub>ij</sub>)</h4><p>'+pickP('varKeputusan')+'</p><table class="rt"><tr><th>Variabel</th><th>Deskripsi</th></tr>';
+ARCS.forEach(function(a){h2+='<tr><td>X<sub>'+a.id+'</sub></td><td>Jumlah porsi jalur '+a.from+' -> '+a.to+' ('+locName(a.from)+' -> '+locName(a.to)+')</td></tr>'});
 h2+='</table><h4>'+ico('coin')+' Kapasitas Busur (U<sub>ij</sub>)</h4><table class="rt"><tr><th>Busur</th><th>Kapasitas</th></tr>';
-ARCS.forEach(function(a){h2+='<tr><td>U<sub>'+a.id+'</sub></td><td>'+(a.cap!==Infinity?a.cap+' porsi':'∞ (tak terbatas)')+'</td></tr>'});
+ARCS.forEach(function(a){h2+='<tr><td>U<sub>'+a.id+'</sub></td><td>'+(a.cap!==Infinity?a.cap+' porsi':'Tak terbatas')+'</td></tr>'});
 h2+='</table><h4>'+ico('building')+' Supply/Demand pada Node (b<sub>i</sub>)</h4><table class="rt"><tr><th>Node</th><th>Lokasi</th><th>b<sub>i</sub></th><th>Tipe</th></tr>';
 NODES.forEach(function(n){var col=n.bi>0?'var(--green)':n.bi<0?'var(--red)':'var(--amber)';var bg=n.type==='supply'?'badge-g':n.type==='demand'?'badge-r':'badge-a';h2+='<tr><td>'+n.id+'</td><td>'+locName(n.id)+'</td><td style="color:'+col+';font-weight:700">'+(n.bi>0?'+':'')+n.bi+'</td><td><span class="badge '+bg+'">'+n.type.toUpperCase()+'</span></td></tr>'});
-h2+='</table><h4>'+ico('coin')+' Biaya per Unit Aliran (c<sub>ij</sub>)</h4><table class="rt"><tr><th>Jalur</th><th>Jarak (km)</th><th>c<sub>ij</sub> (Rp/porsi)</th></tr>';
-ARCS.forEach(function(a){h2+='<tr><td>'+a.from+' → '+a.to+'</td><td>'+dists[a.id].toFixed(2)+'</td><td>Rp '+costs[a.id].toLocaleString('id')+'</td></tr>'});
+h2+='</table><h4>'+ico('coin')+' Biaya per Unit Aliran (c<sub>ij</sub>)</h4><p>'+pickP('biayaCalc')+'</p><table class="rt"><tr><th>Jalur</th><th>Jarak (km)</th><th>c<sub>ij</sub> (Rp/porsi)</th></tr>';
+ARCS.forEach(function(a){h2+='<tr><td>'+a.from+' -> '+a.to+'</td><td>'+dists[a.id].toFixed(2)+'</td><td>Rp '+costs[a.id].toLocaleString('id')+'</td></tr>'});
 h2+='</table></div>';
 document.getElementById('clo1t2Content').innerHTML=h2;
 }
 function buildCLO2(){
-var h='<div class="ab"><h4>'+ico('coin')+' Biaya Pengiriman per Porsi</h4><p>Biaya = Rp 100,00 × jarak tempuh (km)</p>';
+var h='<div class="ab"><h4>'+ico('coin')+' Biaya Pengiriman per Porsi</h4><p>'+pickP('biayaCalc')+'</p>';
 h+='<table class="rt"><tr><th>Jalur</th><th>Dari</th><th>Ke</th><th>Jarak (km)</th><th>Biaya/porsi</th></tr>';
-ARCS.forEach(function(a){h+='<tr><td>'+a.from+' → '+a.to+'</td><td>'+locName(a.from)+'</td><td>'+locName(a.to)+'</td><td>'+dists[a.id].toFixed(2)+' km</td><td>Rp '+costs[a.id].toLocaleString('id')+',00</td></tr>'});
+ARCS.forEach(function(a){h+='<tr><td>'+a.from+' -> '+a.to+'</td><td>'+locName(a.from)+'</td><td>'+locName(a.to)+'</td><td>'+dists[a.id].toFixed(2)+' km</td><td>Rp '+costs[a.id].toLocaleString('id')+',00</td></tr>'});
 h+='</table></div>';
 document.getElementById('clo2costContent').innerHTML=h;
 var hm='<div class="fbox"><strong>Fungsi Tujuan:</strong>\n';
@@ -553,23 +709,24 @@ hm+='Node B (b=90): -X<sub>AB</sub> + X<sub>BC</sub> = 90\n';
 hm+='Node C (b=0): -X<sub>AC</sub> - X<sub>BC</sub> + X<sub>CE</sub> = 0\n';
 hm+='Node D (b=-80): -X<sub>AD</sub> + X<sub>DE</sub> - X<sub>ED</sub> = -80\n';
 hm+='Node E (b=-120): -X<sub>CE</sub> - X<sub>DE</sub> + X<sub>ED</sub> = -120\n\n';
-hm+='<strong>Kapasitas & Non-Negatif:</strong>\n0 ≤ X<sub>AB</sub> ≤ 20\nX<sub>ij</sub> ≥ 0 untuk semua (i,j)\n</div>';
+hm+='<strong>Kapasitas & Non-Negatif:</strong>\n0 <= X<sub>AB</sub> <= 20\nX<sub>ij</sub> >= 0 untuk semua (i,j)\n</div>';
 document.getElementById('clo2mathContent').innerHTML=hm;
 }
 function solveAndShow(){
 if(!costs['AB']){toast('Generate formulasi dulu!','error');return}
+shuffleParaphrase();
 iterStates=[];var c=costs;
 var fl={AB:0,AC:0,AD:110,BC:90,CE:90,DE:30,ED:0};
 var basis=['AD','BC','CE','DE'],nonBasis=['AB','AC','ED'];
 function Z(f){var z=0;ARCS.forEach(function(a){z+=(f[a.id]||0)*c[a.id]});return z}
 iterStates.push({title:'Solusi Basis Layak Awal',desc:'Spanning tree: AD, BC, CE, DE',changes:['Variabel Basis: X_AD='+fl.AD+', X_BC='+fl.BC+', X_CE='+fl.CE+', X_DE='+fl.DE,'Variabel Non Basis: X_AB=0, X_AC=0, X_ED=0','Z = Rp '+Z(fl).toLocaleString('id')],flows:Object.assign({},fl),basis:basis.slice()});
 var dzAB_=c.AB+c.BC+c.CE-c.DE-c.AD;var dzAC2=c.AC+c.CE-c.DE-c.AD;var dzED=c.ED+c.DE;
-iterStates.push({title:'Iterasi 1 — Cek Optimalitas',desc:'Menghitung ΔZ untuk setiap variabel non-basis',changes:['Siklus AB: AB-BC-CE-(-DE)-(-AD)','ΔZ(AB) = '+c.AB+' + '+c.BC+' + '+c.CE+' - '+c.DE+' - '+c.AD+' = '+dzAB_,'Siklus AC: AC-CE-(-DE)-(-AD)','ΔZ(AC) = '+c.AC+' + '+c.CE+' - '+c.DE+' - '+c.AD+' = '+dzAC2,'Siklus ED: ED-DE','ΔZ(ED) = '+c.ED+' + '+c.DE+' = '+dzED,dzAC2<0||dzAB_<0?'Masih ada ΔZ < 0 → belum optimal':'Semua ΔZ ≥ 0 → OPTIMAL'],flows:Object.assign({},fl),basis:basis.slice()});
+iterStates.push({title:'Iterasi 1 — Cek Optimalitas',desc:'Menghitung delta Z untuk setiap variabel non-basis',changes:['Siklus AB: AB-BC-CE-(-DE)-(-AD)','delta Z(AB) = '+c.AB+' + '+c.BC+' + '+c.CE+' - '+c.DE+' - '+c.AD+' = '+dzAB_,'Siklus AC: AC-CE-(-DE)-(-AD)','delta Z(AC) = '+c.AC+' + '+c.CE+' - '+c.DE+' - '+c.AD+' = '+dzAC2,'Siklus ED: ED-DE','delta Z(ED) = '+c.ED+' + '+c.DE+' = '+dzED,dzAC2<0||dzAB_<0?'Masih ada delta Z < 0, belum optimal':'Semua delta Z >= 0, OPTIMAL'],flows:Object.assign({},fl),basis:basis.slice()});
 var maxIters=10,iter=0,curFlows=Object.assign({},fl),curBasis=basis.slice(),curNonBasis=nonBasis.slice();
 while(iter<maxIters){iter++;
 var deltas=[];curNonBasis.forEach(function(nb){var dz=computeDeltaZ(nb,curBasis,c);if(dz!==null)deltas.push({key:nb,dz:dz.val,cycle:dz.cycle})});
 var entering=null,minDz=0;deltas.forEach(function(d){if(d.dz<minDz){minDz=d.dz;entering=d}});
-if(!entering){iterStates.push({title:'OPTIMAL — Iterasi '+iter,desc:'Semua ΔZ ≥ 0',changes:deltas.map(function(d){return'ΔZ('+d.key+') = '+d.dz}).concat(['Semua ΔZ ≥ 0 → Solusi OPTIMAL','Z* = Rp '+Z(curFlows).toLocaleString('id')]),flows:Object.assign({},curFlows),basis:curBasis.slice()});break}
+if(!entering){iterStates.push({title:'OPTIMAL — Iterasi '+iter,desc:'Semua delta Z >= 0',changes:deltas.map(function(d){return'delta Z('+d.key+') = '+d.dz}).concat(['Semua delta Z >= 0, solusi OPTIMAL','Z* = Rp '+Z(curFlows).toLocaleString('id')]),flows:Object.assign({},curFlows),basis:curBasis.slice()});break}
 var theta=Infinity,leavingKey=null,leavingBound='lower';
 entering.cycle.forEach(function(ce){if(ce.key===entering.key)return;if(ce.dir==='-'){if(curFlows[ce.key]<theta){theta=curFlows[ce.key];leavingKey=ce.key;leavingBound='lower'}}else{var arc=ARCS.find(function(a){return a.id===ce.key});if(arc&&arc.cap!==Infinity){var room=arc.cap-curFlows[ce.key];if(room<theta){theta=room;leavingKey=ce.key;leavingBound='upper'}}}});
 var eArc=ARCS.find(function(a){return a.id===entering.key});
@@ -579,7 +736,7 @@ curFlows[entering.key]=(curFlows[entering.key]||0)+theta;
 entering.cycle.forEach(function(ce){if(ce.key===entering.key)return;if(ce.dir==='+')curFlows[ce.key]+=theta;else curFlows[ce.key]-=theta});
 if(leavingBound==='lower'){var li=curBasis.indexOf(leavingKey);if(li>=0)curBasis.splice(li,1);curBasis.push(entering.key);var ei=curNonBasis.indexOf(entering.key);if(ei>=0)curNonBasis.splice(ei,1);curNonBasis.push(leavingKey)}else{var li=curBasis.indexOf(leavingKey);if(li>=0)curBasis.splice(li,1);if(leavingKey!==entering.key)curBasis.push(entering.key);var ei=curNonBasis.indexOf(entering.key);if(ei>=0)curNonBasis.splice(ei,1);if(leavingKey!==entering.key)curNonBasis.push(leavingKey)}
 var fStr=[];for(var k in curFlows)if(curFlows[k]>0)fStr.push('X_'+k+'='+curFlows[k]);
-iterStates.push({title:'Iterasi '+iter+' — Perbaikan Solusi',desc:'Entering: '+entering.key+', Leaving: '+leavingKey+' ('+leavingBound+' bound)',changes:['Entering variable: '+entering.key+' (ΔZ = '+minDz+')','θ = '+theta,'Leaving variable: '+leavingKey+' ('+leavingBound+' bound'+(leavingBound==='upper'?', Upper Bound Technique diterapkan':'')+')', 'Solusi baru: '+fStr.join(', '),'Z = Rp '+Z(curFlows).toLocaleString('id')],flows:Object.assign({},curFlows),basis:curBasis.slice()});
+iterStates.push({title:'Iterasi '+iter+' — Perbaikan Solusi',desc:'Entering: '+entering.key+', Leaving: '+leavingKey+' ('+leavingBound+' bound)',changes:['Entering variable: '+entering.key+' (delta Z = '+minDz+')','theta = '+theta,'Leaving variable: '+leavingKey+' ('+leavingBound+' bound'+(leavingBound==='upper'?', Upper Bound Technique diterapkan':'')+')', 'Solusi baru: '+fStr.join(', '),'Z = Rp '+Z(curFlows).toLocaleString('id')],flows:Object.assign({},curFlows),basis:curBasis.slice()});
 }
 sol={flows:curFlows,z:Z(curFlows)};curIter=0;
 document.getElementById('sec5').style.display='block';setupIterCtrl();iterGo(0);buildSolResults();
@@ -595,10 +752,12 @@ var val=0;cycle.forEach(function(ce){var cost=c[ce.key]||0;if(ce.dir==='+')val+=
 }
 function buildSolResults(){
 if(!sol)return;
-document.getElementById('solBanner').innerHTML='<div class="wb"><h3>'+ico('trophy','lg')+' Solusi Optimal</h3><p>Total Biaya Minimum: <strong>Rp '+sol.z.toLocaleString('id')+',00</strong> per hari | Rp '+(sol.z*44).toLocaleString('id')+',00 untuk 2 bulan (44 hari kerja)</p></div>';
+var solOptText=pickP('solusiOptimal');
+var solDescText=pickP('solusiDesc');
+document.getElementById('solBanner').innerHTML='<div class="wb"><h3>'+ico('trophy','lg')+' Solusi Optimal</h3><p>'+solOptText+' <strong>Rp '+sol.z.toLocaleString('id')+',00</strong> '+solDescText+' | Rp '+(sol.z*44).toLocaleString('id')+',00 untuk 2 bulan (44 hari kerja).</p></div>';
 document.getElementById('solStats').innerHTML='<div class="stat-card hi"><div class="sv">Rp '+sol.z.toLocaleString('id')+'</div><div class="sl">Total Biaya/hari</div></div><div class="stat-card"><div class="sv">200</div><div class="sl">Total Porsi</div></div><div class="stat-card"><div class="sv">'+iterStates.length+'</div><div class="sl">Iterasi</div></div>';
 var h='<table class="rt"><tr><th>Jalur</th><th>Dari</th><th>Ke</th><th>Aliran</th><th>Biaya/porsi</th><th>Total Biaya</th></tr>';
-ARCS.forEach(function(a){var f=sol.flows[a.id]||0;h+='<tr><td>'+a.from+'→'+a.to+'</td><td>'+locName(a.from)+'</td><td>'+locName(a.to)+'</td><td style="font-weight:700;color:'+(f>0?'var(--green)':'var(--text3)')+'">'+f+' porsi</td><td>Rp '+costs[a.id].toLocaleString('id')+'</td><td>Rp '+(f*costs[a.id]).toLocaleString('id')+'</td></tr>'});
+ARCS.forEach(function(a){var f=sol.flows[a.id]||0;h+='<tr><td>'+a.from+'->'+a.to+'</td><td>'+locName(a.from)+'</td><td>'+locName(a.to)+'</td><td style="font-weight:700;color:'+(f>0?'var(--green)':'var(--text3)')+'">'+f+' porsi</td><td>Rp '+costs[a.id].toLocaleString('id')+'</td><td>Rp '+(f*costs[a.id]).toLocaleString('id')+'</td></tr>'});
 h+='<tr style="font-weight:700;background:var(--accent-bg)"><td colspan="3">TOTAL</td><td></td><td></td><td>Rp '+sol.z.toLocaleString('id')+'</td></tr></table>';
 document.getElementById('solTable').innerHTML=h;
 }
@@ -628,7 +787,7 @@ else if(cLo==='circle'){var cx=W/2,cy=H/2,r=Math.min(W,H)*.34;for(var i=0;i<5;i+
 else if(cLo==='diamond')pos=[{x:400,y:60},{x:140,y:240},{x:660,y:240},{x:220,y:480},{x:580,y:480}];
 else{for(var i=0;i<5;i++)pos[i]={x:p+Math.random()*(W-2*p),y:p+Math.random()*(H-2*p)}}
 }
-function updateLegend(){document.getElementById('gLegend').style.display='flex';document.getElementById('gLegend').innerHTML='<span style="font-weight:700;font-size:9px;text-transform:uppercase;letter-spacing:1px">Legend:</span><span class="g-legend-item"><span class="g-legend-dot" style="background:var(--green)"></span> Supply</span><span class="g-legend-item"><span class="g-legend-dot" style="background:var(--amber)"></span> Transit</span><span class="g-legend-item"><span class="g-legend-dot" style="background:var(--red)"></span> Demand</span><span class="g-legend-item">─ Basis</span><span class="g-legend-item">┈ Non-basis</span>'}
+function updateLegend(){document.getElementById('gLegend').style.display='flex';document.getElementById('gLegend').innerHTML='<span style="font-weight:700;font-size:9px;text-transform:uppercase;letter-spacing:1px">Legend:</span><span class="g-legend-item"><span class="g-legend-dot" style="background:var(--green)"></span> Supply</span><span class="g-legend-item"><span class="g-legend-dot" style="background:var(--amber)"></span> Transit</span><span class="g-legend-item"><span class="g-legend-dot" style="background:var(--red)"></span> Demand</span><span class="g-legend-item">- Basis</span><span class="g-legend-item">-- Non-basis</span>'}
 
 function drawGraph(){
 if(!cvEl||pos.length<5)return;
@@ -646,7 +805,6 @@ var thBg=gt.bg||cBg,thNF=gt.nodeFill||nF;
 var thEA=gt.edgeActive||tC,thEI=gt.edgeInactive||eC,thGlow=gt.glow||bC,thLB=gt.labelBg||cBg;
 var supC=gt.supply||gC,traC=gt.transit||aC,demC=gt.demand||rC;
 ctx.fillStyle=thBg;ctx.fillRect(0,0,W/sc,H/sc);
-// Grid for blueprint
 if(graphTheme==='blueprint'){ctx.strokeStyle='rgba(100,180,255,.06)';ctx.lineWidth=.5;for(var gx=0;gx<W/sc;gx+=30){ctx.beginPath();ctx.moveTo(gx,0);ctx.lineTo(gx,H/sc);ctx.stroke()}for(var gy=0;gy<H/sc;gy+=30){ctx.beginPath();ctx.moveTo(0,gy);ctx.lineTo(W/sc,gy);ctx.stroke()}}
 var nodeC=[supC,supC,traC,demC,demC];
 var nodeL=['A','B','C','D','E'];
@@ -658,7 +816,6 @@ var curBasis=iterStates[curIter]?iterStates[curIter].basis:null;
 var isDetailed=graphView==='detailed',isCompact=graphView==='compact';
 var NR=isCompact?22:NODE_R;
 var arcDraw=[{f:0,t:1,id:'AB'},{f:0,t:2,id:'AC'},{f:0,t:3,id:'AD'},{f:1,t:2,id:'BC'},{f:2,t:4,id:'CE'},{f:3,t:4,id:'DE'},{f:4,t:3,id:'ED'}];
-// Precompute edge midpoints and offsets
 var labels=[];
 arcDraw.forEach(function(ad,ai){
 var x1=pos[ad.f].x,y1=pos[ad.f].y,x2=pos[ad.t].x,y2=pos[ad.t].y;
@@ -670,7 +827,6 @@ var dashed=!isBas;
 var isDEED=(ad.id==='DE'||ad.id==='ED');
 var curve=0;if(ad.id==='DE')curve=45;if(ad.id==='ED')curve=-45;
 var dx=x2-x1,dy=y2-y1,len=Math.sqrt(dx*dx+dy*dy)||1,ux=dx/len,uy=dy/len;
-// Glow for active basis
 if(isBas&&flow>0&&gt.nodeGlow){ctx.save();ctx.shadowColor=thGlow;ctx.shadowBlur=14}
 var labelPt;
 if(curve){
@@ -688,7 +844,6 @@ labelPt={x:cpx*.65+mx*.35,y:cpy*.65+my*.35};
 var sx=x1+ux*NR,sy=y1+uy*NR,ex2=x2-ux*NR,ey2=y2-uy*NR;
 ctx.save();ctx.beginPath();ctx.moveTo(sx,sy);ctx.lineTo(ex2,ey2);ctx.strokeStyle=col;ctx.lineWidth=lw;if(dashed)ctx.setLineDash([5,4]);ctx.stroke();ctx.setLineDash([]);ctx.restore();
 drawAH(ctx,x2-ux*NR,y2-uy*NR,ux,uy,isBas?10:7,col);
-// Carefully place labels to avoid nodes and other labels
 var perpD={AB:22,AC:-22,AD:22,BC:22,CE:-22,DE:0,ED:0};
 var tPos={AB:.45,AC:.35,AD:.4,BC:.55,CE:.4,DE:.5,ED:.5};
 var pd=perpD[ad.id]||18;
@@ -696,7 +851,6 @@ var tp=tPos[ad.id]||.5;
 labelPt={x:x1+dx*tp+(-uy)*pd,y:y1+dy*tp+ux*pd};
 }
 if(isBas&&flow>0&&gt.nodeGlow)ctx.restore();
-// Label drawing
 if(labelPt&&costs[ad.id]&&!isCompact){
 var fPt=fixLabel(labelPt,labels,55);
 var txt,txt2='';
@@ -716,7 +870,7 @@ ctx.strokeStyle=isBas?col:thEI;ctx.lineWidth=.5;
 rRect(ctx,fPt.x-bw/2,fPt.y-bh/2,bw,bh,3);ctx.stroke();
 ctx.fillStyle=isBas?thEA:t2c;ctx.fillText(txt,fPt.x,fPt.y-(txt2?5:0));
 if(txt2){ctx.font='500 7px JetBrains Mono';ctx.fillStyle=t3c;ctx.fillText(txt2,fPt.x,fPt.y+7)}
-if(ad.id==='AB'){ctx.font='600 7px JetBrains Mono';ctx.fillStyle=traC;ctx.fillText('U≤20',fPt.x,fPt.y+bh/2+9)}
+if(ad.id==='AB'){ctx.font='600 7px JetBrains Mono';ctx.fillStyle=traC;ctx.fillText('U<=20',fPt.x,fPt.y+bh/2+9)}
 labels.push({x:fPt.x,y:fPt.y,w:bw,h:bh});
 }else if(isCompact&&costs[ad.id]){
 var mp={x:(x1+x2)/2+(-uy)*(curve?0:12),y:(y1+y2)/2+ux*(curve?0:12)};
@@ -725,36 +879,29 @@ ctx.font='600 7px JetBrains Mono';ctx.textAlign='center';ctx.textBaseline='middl
 ctx.fillStyle=isBas?thEA:t3c;ctx.fillText(costs[ad.id]+'',mp.x,mp.y);
 }
 });
-// Draw nodes
 for(var i=0;i<5;i++){if(!pos[i])continue;
 var x=pos[i].x,y=pos[i].y;
 if(gt.nodeGlow){
 ctx.save();ctx.shadowColor=nodeC[i];ctx.shadowBlur=18;ctx.beginPath();ctx.arc(x,y,NR,0,Math.PI*2);ctx.fillStyle=thNF;ctx.fill();ctx.restore();
 }
 ctx.beginPath();ctx.arc(x,y,NR,0,Math.PI*2);ctx.fillStyle=thNF;ctx.fill();ctx.strokeStyle=nodeC[i];ctx.lineWidth=2.5;ctx.stroke();
-// Inner accent
 ctx.beginPath();ctx.arc(x,y,NR*.7,0,Math.PI*2);ctx.strokeStyle=nodeC[i];ctx.lineWidth=.4;ctx.globalAlpha=.2;ctx.stroke();ctx.globalAlpha=1;
-// Type indicator (small colored dot)
 ctx.beginPath();ctx.arc(x+NR*.6,y-NR*.6,3,0,Math.PI*2);ctx.fillStyle=nodeC[i];ctx.fill();
-// Letter
 ctx.font='700 '+(isCompact?13:16)+'px JetBrains Mono,monospace';ctx.textAlign='center';ctx.textBaseline='middle';ctx.fillStyle=gt.bg?'#fff':tC;ctx.fillText(nodeL[i],x,y);
-// Value badge above
 var vStr=(bVals[i]>0?'+':'')+bVals[i];
 ctx.font='600 '+(isCompact?8:9)+'px JetBrains Mono';
 var vW=ctx.measureText(vStr).width;
 rRect(ctx,x-vW/2-5,y-NR-20,vW+10,15,4);ctx.fillStyle=nodeC[i];ctx.globalAlpha=.15;ctx.fill();ctx.globalAlpha=1;
 rRect(ctx,x-vW/2-5,y-NR-20,vW+10,15,4);ctx.strokeStyle=nodeC[i];ctx.lineWidth=.6;ctx.stroke();
 ctx.fillStyle=nodeC[i];ctx.textAlign='center';ctx.fillText(vStr,x,y-NR-12);
-// Name below
 if(!isCompact){
-var nm=nodeN[i];if(nm&&nm.length>16)nm=nm.substring(0,14)+'…';
+var nm=nodeN[i];if(nm&&nm.length>16)nm=nm.substring(0,14)+'...';
 if(nm){
 ctx.font='500 8px DM Sans,sans-serif';var nmW=ctx.measureText(nm).width;
 rRect(ctx,x-nmW/2-5,y+NR+5,nmW+10,14,3);ctx.fillStyle=thBg;ctx.fill();
 ctx.strokeStyle=thEI;ctx.lineWidth=.3;rRect(ctx,x-nmW/2-5,y+NR+5,nmW+10,14,3);ctx.stroke();
 ctx.fillStyle=t2c;ctx.textAlign='center';ctx.fillText(nm,x,y+NR+12);
 }
-// Type label (in detailed view)
 if(isDetailed){
 ctx.font='600 7px JetBrains Mono';
 var tl=nodeTypes[i];var tlW=ctx.measureText(tl).width;
@@ -770,7 +917,6 @@ var adj={x:pt.x,y:pt.y};
 for(var a=0;a<12;a++){
 var ok=true;
 for(var i=0;i<ex.length;i++){var e=ex[i],dx=adj.x-e.x,dy=adj.y-e.y;if(Math.sqrt(dx*dx+dy*dy)<md){ok=false;break}}
-// Also check nodes
 for(var i=0;i<pos.length;i++){var dx=adj.x-pos[i].x,dy=adj.y-pos[i].y;if(Math.sqrt(dx*dx+dy*dy)<NODE_R+20){ok=false;break}}
 if(ok)break;
 var angle=Math.PI*2*a/12;adj={x:pt.x+Math.cos(angle)*22,y:pt.y+Math.sin(angle)*18};
@@ -780,7 +926,7 @@ return adj;
 function rRect(c,x,y,w,h,r){c.beginPath();c.moveTo(x+r,y);c.lineTo(x+w-r,y);c.quadraticCurveTo(x+w,y,x+w,y+r);c.lineTo(x+w,y+h-r);c.quadraticCurveTo(x+w,y+h,x+w-r,y+h);c.lineTo(x+r,y+h);c.quadraticCurveTo(x,y+h,x,y+h-r);c.lineTo(x,y+r);c.quadraticCurveTo(x,y,x+r,y);c.closePath()}
 function drawAH(c,tx,ty,ux,uy,sz,col){var bx=tx-ux*sz,by=ty-uy*sz,px=-uy,py=ux;c.beginPath();c.moveTo(tx,ty);c.lineTo(bx+px*sz*.4,by+py*sz*.4);c.lineTo(bx-px*sz*.4,by-py*sz*.4);c.closePath();c.fillStyle=col;c.fill()}
 function resetAll(){sol=null;curIter=0;iterStates=[];if(playInt)clearInterval(playInt);playInt=null;['inpNIM','inpNama','inpKelas'].forEach(function(id){document.getElementById(id).value=''});['nimResult','sec2','sec3','sec4','sec5'].forEach(function(id){document.getElementById(id).style.display='none'});costs={};dists={};toast('Reset selesai','info')}
-function exportPDF(){toast('Gunakan Print → Save as PDF','info');window.print()}
+function exportPDF(){toast('Gunakan Print -> Save as PDF','info');window.print()}
 document.addEventListener('keydown',function(e){if(e.target.tagName==='INPUT'||e.target.tagName==='SELECT'||e.target.tagName==='TEXTAREA')return;if(e.key==='ArrowRight')iterGo(curIter+1);else if(e.key==='ArrowLeft')iterGo(curIter-1);else if(e.key==='Home')iterGo(0);else if(e.key==='End')iterGo(iterStates.length-1);else if(e.key===' '){e.preventDefault();togglePlay()}else if(e.key==='d'||e.key==='D')toggleDark()});
 </script>
 </body>
